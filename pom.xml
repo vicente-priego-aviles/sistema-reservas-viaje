@@ -15,13 +15,11 @@
 
     <modules>
         <module>servicio-clientes</module>
-        <!--
         <module>servicio-vuelos</module>
         <module>servicio-hoteles</module>
         <module>servicio-alquiler-coches</module>
         <module>servicio-pagos</module>
         <module>servicio-reservas</module>
-        -->
     </modules>
 
     <properties>
