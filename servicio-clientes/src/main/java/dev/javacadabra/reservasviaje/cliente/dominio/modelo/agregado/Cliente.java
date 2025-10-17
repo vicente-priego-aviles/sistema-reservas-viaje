@@ -1,6 +1,6 @@
-package dev.javacadabra.reservasviaje.cliente.dominio.agregado;
+package dev.javacadabra.reservasviaje.cliente.dominio.modelo.agregado;
 
-import dev.javacadabra.reservasviaje.cliente.dominio.objetovalor.*;
+import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.*;
 import lombok.*;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;

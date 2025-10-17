@@ -1,8 +1,7 @@
 package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.camunda;
 
 import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteSalidaDTO;
-import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.*;
-import dev.javacadabra.reservasviaje.cliente.dominio.objetovalor.EstadoCliente;
+import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.EstadoCliente;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package dev.javacadabra.reservasviaje.cliente.dominio.objetovalor;
+package dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor;
 
 import org.jmolecules.ddd.annotation.ValueObject;
 
