@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_GestionCliente" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.37.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.7.0">
+  <bpmn:process id="subproceso-gestion-cliente" name="Gestión de Cliente" isExecutable="true">
+    <bpmn:startEvent id="gestion-cliente-inicio" name="Gestionar Cliente">
+      <bpmn:outgoing>flujo-a-obtener-cliente</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="obtener-datos-cliente" name="Obtener Datos del Cliente">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="obtener-datos-cliente" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-a-obtener-cliente</bpmn:incoming>
+      <bpmn:outgoing>flujo-a-gateway-cliente</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="gateway-cliente-encontrado" name="¿Cliente encontrado?">
+      <bpmn:incoming>flujo-a-gateway-cliente</bpmn:incoming>
+      <bpmn:outgoing>flujo-cliente-encontrado-si</bpmn:outgoing>
+      <bpmn:outgoing>flujo-cliente-encontrado-no</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="validar-tarjeta-credito" name="Validar Tarjeta de Crédito">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="validar-tarjeta-credito" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-cliente-encontrado-si</bpmn:incoming>
+      <bpmn:outgoing>flujo-a-actualizar-estado</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="actualizar-estado-en-proceso" name="Actualizar Estado: En Proceso">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="actualizar-estado-cliente" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;EN_PROCESO_RESERVA&#34;" target="nuevoEstado" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-a-actualizar-estado</bpmn:incoming>
+      <bpmn:outgoing>flujo-a-fin-cliente</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="fin-cliente-validado" name="Cliente Validado">
+      <bpmn:incoming>flujo-a-fin-cliente</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="evento-cliente-no-encontrado" name="Cliente No Encontrado">
+      <bpmn:incoming>flujo-cliente-encontrado-no</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDef_ClienteNoEncontrado" errorRef="Error_ClienteNoEncontrado" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="evento-tarjeta-invalida" name="Tarjeta Inválida">
+      <bpmn:incoming>flujo-desde-error-tarjeta</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDef_TarjetaInvalida" errorRef="Error_TarjetaInvalida" />
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="evento-error-tarjeta" name="Tarjeta Inválida" attachedToRef="validar-tarjeta-credito">
+      <bpmn:outgoing>flujo-desde-error-tarjeta</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDef_TarjetaInvalidaBoundary" errorRef="Error_TarjetaInvalida" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="flujo-a-obtener-cliente" sourceRef="gestion-cliente-inicio" targetRef="obtener-datos-cliente" />
+    <bpmn:sequenceFlow id="flujo-a-gateway-cliente" sourceRef="obtener-datos-cliente" targetRef="gateway-cliente-encontrado" />
+    <bpmn:sequenceFlow id="flujo-cliente-encontrado-si" name="Sí" sourceRef="gateway-cliente-encontrado" targetRef="validar-tarjeta-credito">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=clienteObtenido = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flujo-cliente-encontrado-no" name="No" sourceRef="gateway-cliente-encontrado" targetRef="evento-cliente-no-encontrado">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=clienteObtenido = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flujo-a-actualizar-estado" sourceRef="validar-tarjeta-credito" targetRef="actualizar-estado-en-proceso" />
+    <bpmn:sequenceFlow id="flujo-a-fin-cliente" sourceRef="actualizar-estado-en-proceso" targetRef="fin-cliente-validado" />
+    <bpmn:sequenceFlow id="flujo-desde-error-tarjeta" sourceRef="evento-error-tarjeta" targetRef="evento-tarjeta-invalida" />
+  </bpmn:process>
+  <bpmn:error id="Error_ClienteNoEncontrado" name="Error Cliente No Encontrado" errorCode="ERROR_CLIENTE_NO_ENCONTRADO" />
+  <bpmn:error id="Error_TarjetaInvalida" name="Error Tarjeta Inválida" errorCode="ERROR_TARJETA_INVALIDA" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_GestionCliente">
+    <bpmndi:BPMNPlane id="BPMNPlane_GestionCliente" bpmnElement="subproceso-gestion-cliente">
+      <bpmndi:BPMNShape id="Shape_gestion-cliente-inicio" bpmnElement="gestion-cliente-inicio">
+        <dc:Bounds x="152" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="127" y="153" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_obtener-datos-cliente" bpmnElement="obtener-datos-cliente">
+        <dc:Bounds x="240" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway-cliente-encontrado" bpmnElement="gateway-cliente-encontrado" isMarkerVisible="true">
+        <dc:Bounds x="395" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="389" y="76" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_validar-tarjeta-credito" bpmnElement="validar-tarjeta-credito">
+        <dc:Bounds x="500" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_actualizar-estado-en-proceso" bpmnElement="actualizar-estado-en-proceso">
+        <dc:Bounds x="660" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_fin-cliente-validado" bpmnElement="fin-cliente-validado">
+        <dc:Bounds x="822" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="800" y="153" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-cliente-no-encontrado" bpmnElement="evento-cliente-no-encontrado">
+        <dc:Bounds x="402" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="392" y="270" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-tarjeta-invalida" bpmnElement="evento-tarjeta-invalida">
+        <dc:Bounds x="532" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="513" y="272" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-error-tarjeta" bpmnElement="evento-error-tarjeta">
+        <dc:Bounds x="532" y="152" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="555" y="188" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-obtener-cliente" bpmnElement="flujo-a-obtener-cliente">
+        <di:waypoint x="188" y="130" />
+        <di:waypoint x="240" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-gateway-cliente" bpmnElement="flujo-a-gateway-cliente">
+        <di:waypoint x="340" y="130" />
+        <di:waypoint x="395" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-cliente-encontrado-si" bpmnElement="flujo-cliente-encontrado-si">
+        <di:waypoint x="445" y="130" />
+        <di:waypoint x="500" y="130" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="467" y="105" width="11" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-cliente-encontrado-no" bpmnElement="flujo-cliente-encontrado-no">
+        <di:waypoint x="420" y="155" />
+        <di:waypoint x="420" y="232" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="428" y="184" width="14" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-actualizar-estado" bpmnElement="flujo-a-actualizar-estado">
+        <di:waypoint x="600" y="130" />
+        <di:waypoint x="660" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-fin-cliente" bpmnElement="flujo-a-fin-cliente">
+        <di:waypoint x="760" y="130" />
+        <di:waypoint x="822" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-desde-error-tarjeta" bpmnElement="flujo-desde-error-tarjeta">
+        <di:waypoint x="550" y="188" />
+        <di:waypoint x="550" y="232" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
