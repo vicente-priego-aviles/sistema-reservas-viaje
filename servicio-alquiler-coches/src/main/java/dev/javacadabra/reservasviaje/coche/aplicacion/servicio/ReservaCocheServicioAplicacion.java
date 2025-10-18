@@ -5,6 +5,7 @@ import dev.javacadabra.reservasviaje.coche.aplicacion.puerto.salida.ReservaCoche
 import dev.javacadabra.reservasviaje.coche.dominio.modelo.agregado.ReservaCoche;
 import dev.javacadabra.reservasviaje.coche.dominio.modelo.objetovalor.CategoriaCoche;
 
+import dev.javacadabra.reservasviaje.coche.dominio.modelo.objetovalor.EstadoReservaCoche;
 import dev.javacadabra.reservasviaje.coche.dominio.modelo.objetovalor.ReservaCocheId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
