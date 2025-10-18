@@ -1,0 +1,172 @@
+# ============================================
+# docker-compose.yml
+# Microservicios del Sistema de Reservas
+# ============================================
+version: '3.8'
+
+services:
+
+  # ==========================================
+  # SERVICIO CLIENTES - Puerto 9080
+  # ==========================================
+  servicio-clientes:
+    build:
+      context: ./servicio-clientes
+      dockerfile: Dockerfile
+    container_name: servicio-clientes
+    ports:
+      - "9080:9080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZEEBE_ADDRESS=camunda-zeebe:26500
+      - ZEEBE_REST=http://camunda-operate:8080
+    depends_on:
+      - camunda-zeebe
+    networks:
+      - camunda-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # ==========================================
+  # SERVICIO VUELOS - Puerto 9081
+  # ==========================================
+  servicio-vuelos:
+    build:
+      context: ./servicio-vuelos
+      dockerfile: Dockerfile
+    container_name: servicio-vuelos
+    ports:
+      - "9081:9081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZEEBE_ADDRESS=camunda-zeebe:26500
+      - ZEEBE_REST=http://camunda-operate:8080
+    depends_on:
+      - camunda-zeebe
+    networks:
+      - camunda-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # ==========================================
+  # SERVICIO HOTELES - Puerto 9082
+  # ==========================================
+  servicio-hoteles:
+    build:
+      context: ./servicio-hoteles
+      dockerfile: Dockerfile
+    container_name: servicio-hoteles
+    ports:
+      - "9082:9082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZEEBE_ADDRESS=camunda-zeebe:26500
+      - ZEEBE_REST=http://camunda-operate:8080
+    depends_on:
+      - camunda-zeebe
+    networks:
+      - camunda-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # ==========================================
+  # SERVICIO COCHES - Puerto 9083
+  # ==========================================
+  servicio-coches:
+    build:
+      context: ./servicio-coches
+      dockerfile: Dockerfile
+    container_name: servicio-coches
+    ports:
+      - "9083:9083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZEEBE_ADDRESS=camunda-zeebe:26500
+      - ZEEBE_REST=http://camunda-operate:8080
+    depends_on:
+      - camunda-zeebe
+    networks:
+      - camunda-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9083/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # ==========================================
+  # SERVICIO PAGOS - Puerto 9084
+  # ==========================================
+  servicio-pagos:
+    build:
+      context: ./servicio-pagos
+      dockerfile: Dockerfile
+    container_name: servicio-pagos
+    ports:
+      - "9084:9084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZEEBE_ADDRESS=camunda-zeebe:26500
+      - ZEEBE_REST=http://camunda-operate:8080
+    depends_on:
+      - camunda-zeebe
+    networks:
+      - camunda-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9084/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # ==========================================
+  # SERVICIO RESERVAS - Puerto 9090 (Orquestador)
+  # ==========================================
+  servicio-reservas:
+    build:
+      context: ./servicio-reservas
+      dockerfile: Dockerfile
+    container_name: servicio-reservas
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZEEBE_ADDRESS=camunda-zeebe:26500
+      - ZEEBE_REST=http://camunda-operate:8080
+    depends_on:
+      camunda-zeebe:
+        condition: service_healthy
+      camunda-operate:
+        condition: service_healthy
+    networks:
+      - camunda-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    restart: unless-stopped
+    volumes:
+      - ./bpmn:/app/bpmn:ro
+
+networks:
+  camunda-network:
+    external: true
