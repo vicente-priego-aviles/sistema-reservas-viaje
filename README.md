@@ -1,79 +1,105 @@
-🎯 Sistema de Reservas de Viaje con Camunda Platform 8
-Sistema de microservicios orquestado por Camunda Platform 8.7 que implementa un flujo completo de reservas de viaje incluyendo vuelos, hoteles y coches, con procesamiento de pagos y gestión de clientes.
-📋 Tabla de Contenidos
+# 🎯 Sistema de Reservas de Viaje con Camunda Platform 8
 
-Arquitectura
-Tecnologías
-Prerequisitos
-Inicio Rápido
-Estructura del Proyecto
-Servicios
-Procesos BPMN
-API REST
-Testing
-Monitoreo
-Troubleshooting
+Sistema de microservicios orquestado por **Camunda Platform 8.7** que implementa un flujo completo de reservas de viaje incluyendo vuelos, hoteles y coches, con procesamiento de pagos y gestión de clientes.
 
+## 📋 Tabla de Contenidos
 
-🏗️ Arquitectura
-Patrón Arquitectónico
+- [Arquitectura](#-arquitectura)
+- [Tecnologías](#️-tecnologías)
+- [Prerequisitos](#-prerequisitos)
+- [Inicio Rápido](#-inicio-rápido)
+- [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Servicios](#-servicios)
+- [Procesos BPMN](#-procesos-bpmn)
+- [API REST](#-api-rest)
+- [Testing](#-testing)
+- [Monitoreo](#-monitoreo)
+- [Troubleshooting](#-troubleshooting)
 
-Arquitectura Hexagonal (Ports & Adapters)
-Domain-Driven Design (DDD) con JMolecules
-Microservicios comunicados vía Camunda Platform 8
-Patrón Saga para transacciones distribuidas con compensaciones
+---
 
-Diagrama de Alto Nivel
-┌─────────────────────┐
-│  Cliente / Frontend │
-└──────────┬──────────┘
-│ HTTP POST
-↓
-┌─────────────────────┐
-│ servicio-reservas   │
-│   (Orquestador)     │
-│   Puerto: 9090      │
-└──────────┬──────────┘
-│ Inicia Proceso
-↓
-┌─────────────────────┐
-│  Camunda Platform 8 │
-│   - Zeebe (26500)   │
-│   - Operate (8080)  │
-│   - Tasklist (8081) │
-└──────────┬──────────┘
-│
-┌─────────────────────┼─────────────────────┐
-│                     │                     │
-↓                     ↓                     ↓
+## 🏗️ Arquitectura
+
+### Patrón Arquitectónico
+
+- **Arquitectura Hexagonal** (Ports & Adapters)
+- **Domain-Driven Design (DDD)** con JMolecules
+- **Microservicios** comunicados vía Camunda Platform 8
+- **Patrón Saga** para transacciones distribuidas con compensaciones
+
+### Diagrama de Alto Nivel
+
+```
+                    ┌─────────────────────┐
+                    │  Cliente / Frontend │
+                    └──────────┬──────────┘
+                               │ HTTP POST
+                               ↓
+                    ┌─────────────────────┐
+                    │ servicio-reservas   │
+                    │   (Orquestador)     │
+                    │   Puerto: 9090      │
+                    └──────────┬──────────┘
+                               │ Inicia Proceso
+                               ↓
+                    ┌─────────────────────┐
+                    │  Camunda Platform 8 │
+                    │   - Zeebe (26500)   │
+                    │   - Operate (8080)  │
+                    │   - Tasklist (8081) │
+                    └──────────┬──────────┘
+                               │
+         ┌─────────────────────┼─────────────────────┐
+         │                     │                     │
+         ↓                     ↓                     ↓
 ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
 │  Gestión       │   │  Proceso       │   │  Proceso       │
 │  Cliente       │   │  Reserva       │   │  Pago          │
 │ (subproceso)   │   │ (subproceso)   │   │ (subproceso)   │
 └────────┬───────┘   └────────┬───────┘   └────────┬───────┘
-│                    │                     │
-↓                    ↓                     ↓
+         │                    │                     │
+         ↓                    ↓                     ↓
 ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
 │ servicio-      │   │ servicio-      │   │ servicio-      │
 │ clientes       │   │ vuelos/hoteles/│   │ pagos          │
 │ (9080)         │   │ coches         │   │ (9084)         │
 │                │   │ (9081/82/83)   │   │                │
 └────────────────┘   └────────────────┘   └────────────────┘
-Workers              Workers              Workers
+     Workers              Workers              Workers
+```
 
-🛠️ Tecnologías
-Backend (Todos los Microservicios)
-TecnologíaVersiónPropósitoJava21Lenguaje principalSpring Boot3.5.6Framework baseCamunda Platform8.7.0Orquestación BPMNSpring Zeebe8.8.0Integración con ZeebeH2 Database2.3.232Base de datos (desarrollo)Lombok1.18.36Reducción de boilerplateMapStruct1.6.3Mapeo DTO ↔ EntityJMolecules1.6.0Anotaciones DDDSpringDoc OpenAPI2.7.0Documentación API
-Infraestructura
+---
 
-Docker & Docker Compose
-Camunda Platform 8.7 (Zeebe, Operate, Tasklist)
-Elasticsearch 8.9 (para Camunda)
+## 🛠️ Tecnologías
 
+### Backend (Todos los Microservicios)
 
-📦 Prerequisitos
-Software Requerido
-bash# Java 21
+| Tecnología               | Versión  | Propósito                   |
+| ------------------------ | -------- | --------------------------- |
+| **Java**                 | 21       | Lenguaje principal          |
+| **Spring Boot**          | 3.5.6    | Framework base              |
+| **Camunda Platform**     | 8.7.0    | Orquestación BPMN           |
+| **Spring Zeebe**         | 8.8.0    | Integración con Zeebe       |
+| **H2 Database**          | 2.3.232  | Base de datos (desarrollo)  |
+| **Lombok**               | 1.18.36  | Reducción de boilerplate    |
+| **MapStruct**            | 1.6.3    | Mapeo DTO ↔ Entity          |
+| **JMolecules**           | 1.6.0    | Anotaciones DDD             |
+| **SpringDoc OpenAPI**    | 2.7.0    | Documentación API           |
+
+### Infraestructura
+
+- **Docker** & **Docker Compose**
+- **Camunda Platform 8.7** (Zeebe, Operate, Tasklist)
+- **Elasticsearch 8.9** (para Camunda)
+
+---
+
+## 📦 Prerequisitos
+
+### Software Requerido
+
+```bash
+# Java 21
 java --version  # Debe ser 21 o superior
 
 # Maven 3.9+
@@ -82,66 +108,102 @@ mvn --version
 # Docker & Docker Compose
 docker --version
 docker-compose --version
-Puertos Necesarios
+```
+
+### Puertos Necesarios
+
 Asegúrate de que estos puertos estén disponibles:
+
+```
 Camunda:
-- 26500  (Zeebe gRPC)
-- 8080   (Operate)
-- 8081   (Tasklist)
-- 9200   (Elasticsearch)
+  - 26500  (Zeebe gRPC)
+  - 8080   (Operate)
+  - 8081   (Tasklist)
+  - 9200   (Elasticsearch)
 
 Microservicios:
-- 9080   (servicio-clientes)
-- 9081   (servicio-vuelos)
-- 9082   (servicio-hoteles)
-- 9083   (servicio-coches)
-- 9084   (servicio-pagos)
-- 9090   (servicio-reservas - API Principal)
+  - 9080   (servicio-clientes)
+  - 9081   (servicio-vuelos)
+  - 9082   (servicio-hoteles)
+  - 9083   (servicio-coches)
+  - 9084   (servicio-pagos)
+  - 9090   (servicio-reservas - API Principal)
+```
 
-🚀 Inicio Rápido
-1. Clonar el Repositorio
-   bashgit clone <repository-url>
-   cd sistema-reservas-viaje
-2. Dar Permisos a Scripts
-   bashchmod +x start.sh stop.sh restart.sh logs.sh test-reserva.sh
-3. Iniciar el Sistema Completo
-   bash./start.sh
-   Este script:
+---
 
-✅ Compila todos los microservicios
-✅ Inicia Camunda Platform 8.7
-✅ Espera a que Camunda esté listo
-✅ Inicia todos los microservicios
-✅ Verifica la salud de los servicios
+## 🚀 Inicio Rápido
 
-Tiempo estimado: 3-5 minutos
-4. Verificar que Todo Esté Funcionando
-   bash# Verificar Camunda
-   curl http://localhost:9600/ready
+### 1. Clonar el Repositorio
+
+```bash
+git clone <repository-url>
+cd sistema-reservas-viaje
+```
+
+### 2. Dar Permisos a Scripts
+
+```bash
+chmod +x start.sh stop.sh restart.sh logs.sh test-reserva.sh
+```
+
+### 3. Iniciar el Sistema Completo
+
+```bash
+./start.sh
+```
+
+Este script:
+- ✅ Compila todos los microservicios
+- ✅ Inicia Camunda Platform 8.7
+- ✅ Espera a que Camunda esté listo
+- ✅ Inicia todos los microservicios
+- ✅ Verifica la salud de los servicios
+
+**Tiempo estimado**: 3-5 minutos
+
+### 4. Verificar que Todo Esté Funcionando
+
+```bash
+# Verificar Camunda
+curl http://localhost:9600/ready
 
 # Verificar microservicios
 curl http://localhost:9090/actuator/health
-5. Crear Tu Primera Reserva
-   bash./test-reserva.sh
-   O manualmente:
-   bashcurl -X POST http://localhost:9090/api/reservas \
-   -H "Content-Type: application/json" \
-   -d '{
-   "clienteId": "CLI-001",
-   "origen": "Madrid",
-   "destino": "Barcelona",
-   "fechaInicio": "2025-12-15",
-   "fechaFin": "2025-12-20",
-   "monto": 1500.00
-   }'
-6. Monitorear la Ejecución
+```
 
-Camunda Operate: http://localhost:8080 (demo/demo)
-Camunda Tasklist: http://localhost:8081 (demo/demo)
-Swagger Reservas: http://localhost:9090/swagger-ui.html
+### 5. Crear Tu Primera Reserva
 
+```bash
+./test-reserva.sh
+```
 
-📁 Estructura del Proyecto
+O manualmente:
+
+```bash
+curl -X POST http://localhost:9090/api/reservas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clienteId": "CLI-001",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2025-12-15",
+    "fechaFin": "2025-12-20",
+    "monto": 1500.00
+  }'
+```
+
+### 6. Monitorear la Ejecución
+
+- **Camunda Operate**: http://localhost:8080 (demo/demo)
+- **Camunda Tasklist**: http://localhost:8081 (demo/demo)
+- **Swagger Reservas**: http://localhost:9090/swagger-ui.html
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
 sistema-reservas-viaje/
 ├── bpmn/                              # Procesos BPMN
 │   ├── proceso-principal.bpmn
@@ -174,327 +236,408 @@ sistema-reservas-viaje/
 ├── test-reserva.sh                    # Prueba rápida
 ├── Makefile                           # Comandos make
 └── README.md                          # Este archivo
+```
 
-🔧 Servicios
-servicio-reservas (9090) - Orquestador Principal
-Responsabilidad:
+---
 
-Exponer API REST para iniciar reservas
-Desplegar procesos BPMN automáticamente
-Gestionar el agregado ReservaViaje
+## 🔧 Servicios
 
-Endpoints:
+### servicio-reservas (9090) - Orquestador Principal
+
+**Responsabilidad**: 
+- Exponer API REST para iniciar reservas
+- Desplegar procesos BPMN automáticamente
+- Gestionar el agregado `ReservaViaje`
+
+**Endpoints**:
+```
 POST /api/reservas          - Iniciar nueva reserva
 GET  /api/reservas/{id}     - Consultar estado de reserva
-NO tiene workers - Solo coordina el flujo BPMN
+```
 
-servicio-clientes (9080)
-Responsabilidad:
+**NO tiene workers** - Solo coordina el flujo BPMN
 
-Gestión de clientes
-Validación de tarjetas de crédito
-Control de estados del cliente
+---
 
-Workers Zeebe:
+### servicio-clientes (9080)
 
-obtener-datos-cliente
-validar-tarjeta-credito
-actualizar-estado-cliente
-revertir-estado-cliente
+**Responsabilidad**:
+- Gestión de clientes
+- Validación de tarjetas de crédito
+- Control de estados del cliente
 
-Agregado: Cliente
+**Workers Zeebe**:
+- `obtener-datos-cliente`
+- `validar-tarjeta-credito`
+- `actualizar-estado-cliente`
+- `revertir-estado-cliente`
 
-servicio-vuelos (9081)
-Responsabilidad:
+**Agregado**: `Cliente`
 
-Reserva de vuelos
-Cancelación de vuelos (compensación)
+---
 
-Workers Zeebe:
+### servicio-vuelos (9081)
 
-reservar-vuelo
-cancelar-vuelo
+**Responsabilidad**:
+- Reserva de vuelos
+- Cancelación de vuelos (compensación)
 
-Agregado: ReservaVuelo
+**Workers Zeebe**:
+- `reservar-vuelo`
+- `cancelar-vuelo`
 
-servicio-hoteles (9082)
-Responsabilidad:
+**Agregado**: `ReservaVuelo`
 
-Reserva de hoteles
-Cancelación de hoteles (compensación)
+---
 
-Workers Zeebe:
+### servicio-hoteles (9082)
 
-reservar-hotel
-cancelar-hotel
+**Responsabilidad**:
+- Reserva de hoteles
+- Cancelación de hoteles (compensación)
 
-Agregado: ReservaHotel
+**Workers Zeebe**:
+- `reservar-hotel`
+- `cancelar-hotel`
 
-servicio-coches (9083)
-Responsabilidad:
+**Agregado**: `ReservaHotel`
 
-Reserva de coches de alquiler
-Cancelación de coches (compensación)
+---
 
-Workers Zeebe:
+### servicio-coches (9083)
 
-reservar-coche
-cancelar-coche
+**Responsabilidad**:
+- Reserva de coches de alquiler
+- Cancelación de coches (compensación)
 
-Agregado: ReservaCoche
+**Workers Zeebe**:
+- `reservar-coche`
+- `cancelar-coche`
 
-servicio-pagos (9084)
-Responsabilidad:
+**Agregado**: `ReservaCoche`
 
-Procesamiento de pagos
-Confirmación de reservas
-Reversión de pagos
-Marcado de advertencias
+---
 
-Workers Zeebe:
+### servicio-pagos (9084)
 
-procesar-pago
-confirmar-reserva
-revertir-estado-cliente
-marcar-reserva-advertencia
+**Responsabilidad**:
+- Procesamiento de pagos
+- Confirmación de reservas
+- Reversión de pagos
+- Marcado de advertencias
 
-Agregado: Pago
+**Workers Zeebe**:
+- `procesar-pago`
+- `confirmar-reserva`
+- `revertir-estado-cliente`
+- `marcar-reserva-advertencia`
 
-📋 Procesos BPMN
-Proceso Principal
-ID: proceso-principal
-Descripción: Flujo orquestador que coordina todo el proceso de reserva
-Flujo:
+**Agregado**: `Pago`
+
+---
+
+## 📋 Procesos BPMN
+
+### Proceso Principal
+
+**ID**: `proceso-principal`  
+**Descripción**: Flujo orquestador que coordina todo el proceso de reserva
+
+**Flujo**:
+```
 1. ✅ Validar Datos de Entrada
 2. 👤 Gestión de Cliente (Call Activity)
 3. 📋 Revisar Datos (User Task)
 4. 🎟️ Proceso de Reserva (Call Activity)
 5. 💳 Proceso de Pago (Call Activity)
 6. ✅ Reserva Completada
+```
 
-Subproceso: Gestión de Cliente
-ID: subproceso-gestion-cliente
-Descripción: Valida cliente y tarjeta de crédito
-Tareas:
+---
 
-Obtener datos del cliente
-Validar cliente encontrado
-Validar tarjeta de crédito
-Actualizar estado: EN_PROCESO_RESERVA
+### Subproceso: Gestión de Cliente
 
-Errores Manejados:
+**ID**: `subproceso-gestion-cliente`  
+**Descripción**: Valida cliente y tarjeta de crédito
 
-ERROR_CLIENTE_NO_ENCONTRADO
-ERROR_TARJETA_INVALIDA
+**Tareas**:
+- Obtener datos del cliente
+- Validar cliente encontrado
+- Validar tarjeta de crédito
+- Actualizar estado: `EN_PROCESO_RESERVA`
 
+**Errores Manejados**:
+- `ERROR_CLIENTE_NO_ENCONTRADO`
+- `ERROR_TARJETA_INVALIDA`
 
-Subproceso: Proceso de Reserva
-ID: subproceso-proceso-reserva
-Descripción: Reservas paralelas con compensaciones automáticas
-Características:
+---
 
-⚡ Reservas paralelas (vuelo, hotel, coche)
-👤 3 User Tasks de revisión
-🔁 Compensaciones automáticas en caso de error
-📝 Eventos no interrumpibles (actualización de tarjeta)
+### Subproceso: Proceso de Reserva
 
-Flujo Paralelo:
+**ID**: `subproceso-proceso-reserva`  
+**Descripción**: Reservas paralelas con compensaciones automáticas
+
+**Características**:
+- ⚡ Reservas paralelas (vuelo, hotel, coche)
+- 👤 3 User Tasks de revisión
+- 🔁 Compensaciones automáticas en caso de error
+- 📝 Eventos no interrumpibles (actualización de tarjeta)
+
+**Flujo Paralelo**:
+```
 Gateway Split
-├→ Reservar Vuelo  → Revisar Vuelo
-├→ Reservar Hotel  → Revisar Hotel
-└→ Reservar Coche  → Revisar Coche
+  ├→ Reservar Vuelo  → Revisar Vuelo
+  ├→ Reservar Hotel  → Revisar Hotel
+  └→ Reservar Coche  → Revisar Coche
 Gateway Join
-Compensaciones:
+```
 
-Si falla cualquier reserva → Cancela todas automáticamente
-Patrón Saga implementado
+**Compensaciones**:
+- Si falla cualquier reserva → Cancela todas automáticamente
+- Patrón Saga implementado
 
+---
 
-Subproceso: Proceso de Pago
-ID: subproceso-pago
-Descripción: Procesamiento de pago con rollback
-Happy Path:
+### Subproceso: Proceso de Pago
+
+**ID**: `subproceso-pago`  
+**Descripción**: Procesamiento de pago con rollback
+
+**Happy Path**:
+```
 1. Procesar Pago
 2. Confirmar Reserva Completa
 3. Actualizar Estado: CONFIRMADA
 4. Fin: Viaje Reservado con Éxito
-   Path de Error (Pago):
+```
+
+**Path de Error (Pago)**:
+```
 1. Procesar Pago → ERROR
 2. Compensar Reserva (mensaje)
 3. Notificar Cliente
 4. Fin: Reserva No Completada
-   Path de Error (Actualización):
+```
+
+**Path de Error (Actualización)**:
+```
 1. Actualizar Estado → ERROR
 2. Revertir Estado Cliente
 3. Marcar Reserva con Advertencia
 4. Fin: Reserva Confirmada con Advertencia
+```
 
-🌐 API REST
-Endpoint Principal: Iniciar Reserva
-URL: POST http://localhost:9090/api/reservas
-Request Body:
-json{
-"clienteId": "CLI-001",
-"origen": "Madrid",
-"destino": "Barcelona",
-"fechaInicio": "2025-12-15",
-"fechaFin": "2025-12-20",
-"monto": 1500.00
+---
+
+## 🌐 API REST
+
+### Endpoint Principal: Iniciar Reserva
+
+**URL**: `POST http://localhost:9090/api/reservas`
+
+**Request Body**:
+```json
+{
+  "clienteId": "CLI-001",
+  "origen": "Madrid",
+  "destino": "Barcelona",
+  "fechaInicio": "2025-12-15",
+  "fechaFin": "2025-12-20",
+  "monto": 1500.00
 }
-Response (201 Created):
-json{
-"reservaId": "550e8400-e29b-41d4-a716-446655440000",
-"processInstanceKey": 2251799813685249,
-"estado": "INICIADA",
-"fechaCreacion": "2025-10-18T10:30:00",
-"mensaje": "Reserva iniciada correctamente. El proceso BPMN está en ejecución."
+```
+
+**Response (201 Created)**:
+```json
+{
+  "reservaId": "550e8400-e29b-41d4-a716-446655440000",
+  "processInstanceKey": 2251799813685249,
+  "estado": "INICIADA",
+  "fechaCreacion": "2025-10-18T10:30:00",
+  "mensaje": "Reserva iniciada correctamente. El proceso BPMN está en ejecución."
 }
-Validaciones:
+```
 
-✅ Todos los campos son obligatorios
-✅ fechaInicio debe ser futura
-✅ fechaFin debe ser posterior a fechaInicio
-✅ monto debe ser positivo
+**Validaciones**:
+- ✅ Todos los campos son obligatorios
+- ✅ `fechaInicio` debe ser futura
+- ✅ `fechaFin` debe ser posterior a `fechaInicio`
+- ✅ `monto` debe ser positivo
 
+---
 
-Endpoint: Consultar Reserva
-URL: GET http://localhost:9090/api/reservas/{reservaId}
-Response:
-json{
-"reservaId": "550e8400-e29b-41d4-a716-446655440000",
-"estado": "CONFIRMADA",
-"processInstanceKey": 2251799813685249,
-"detalleVuelo": {
-"numeroVuelo": "IB1234",
-"aerolinea": "Iberia",
-"asiento": "12A"
-},
-"detalleHotel": {
-"nombreHotel": "Hotel Barcelona Plaza",
-"numeroHabitacion": "305"
-},
-"detalleCoche": {
-"modelo": "Toyota Corolla",
-"matricula": "1234ABC"
-},
-"numeroConfirmacion": "CONF-1729249800000"
+### Endpoint: Consultar Reserva
+
+**URL**: `GET http://localhost:9090/api/reservas/{reservaId}`
+
+**Response**:
+```json
+{
+  "reservaId": "550e8400-e29b-41d4-a716-446655440000",
+  "estado": "CONFIRMADA",
+  "processInstanceKey": 2251799813685249,
+  "detalleVuelo": {
+    "numeroVuelo": "IB1234",
+    "aerolinea": "Iberia",
+    "asiento": "12A"
+  },
+  "detalleHotel": {
+    "nombreHotel": "Hotel Barcelona Plaza",
+    "numeroHabitacion": "305"
+  },
+  "detalleCoche": {
+    "modelo": "Toyota Corolla",
+    "matricula": "1234ABC"
+  },
+  "numeroConfirmacion": "CONF-1729249800000"
 }
+```
 
-Documentación Swagger
+---
+
+### Documentación Swagger
+
 Cada servicio expone su documentación Swagger:
 
-Reservas: http://localhost:9090/swagger-ui.html
-Clientes: http://localhost:9080/swagger-ui.html
-Vuelos: http://localhost:9081/swagger-ui.html
-Hoteles: http://localhost:9082/swagger-ui.html
-Coches: http://localhost:9083/swagger-ui.html
-Pagos: http://localhost:9084/swagger-ui.html
+- **Reservas**: http://localhost:9090/swagger-ui.html
+- **Clientes**: http://localhost:9080/swagger-ui.html
+- **Vuelos**: http://localhost:9081/swagger-ui.html
+- **Hoteles**: http://localhost:9082/swagger-ui.html
+- **Coches**: http://localhost:9083/swagger-ui.html
+- **Pagos**: http://localhost:9084/swagger-ui.html
 
+---
 
-🧪 Testing
-Prueba Manual Rápida
-bash# Script automatizado
+## 🧪 Testing
+
+### Prueba Manual Rápida
+
+```bash
+# Script automatizado
 ./test-reserva.sh
-Pruebas con curl
-1. Happy Path (Reserva Exitosa)
-   bashcurl -X POST http://localhost:9090/api/reservas \
-   -H "Content-Type: application/json" \
-   -d '{
-   "clienteId": "CLI-001",
-   "origen": "Madrid",
-   "destino": "Barcelona",
-   "fechaInicio": "2025-12-15",
-   "fechaFin": "2025-12-20",
-   "monto": 1500.00
-   }'
-   Resultado Esperado:
+```
 
-✅ Reserva creada con reservaId y processInstanceKey
-✅ User Task "Revisar Datos" aparece en Tasklist
-✅ 3 reservas (vuelo, hotel, coche) se procesan en paralelo
-✅ 3 User Tasks de revisión aparecen en Tasklist
-✅ Pago procesado correctamente
-✅ Estado final: CONFIRMADA
+### Pruebas con curl
 
+#### 1. Happy Path (Reserva Exitosa)
 
-2. Error: Monto Alto (> 10000)
-   bashcurl -X POST http://localhost:9090/api/reservas \
-   -H "Content-Type: application/json" \
-   -d '{
-   "clienteId": "CLI-001",
-   "origen": "Madrid",
-   "destino": "Barcelona",
-   "fechaInicio": "2025-12-15",
-   "fechaFin": "2025-12-20",
-   "monto": 15000.00
-   }'
-   Resultado Esperado:
+```bash
+curl -X POST http://localhost:9090/api/reservas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clienteId": "CLI-001",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2025-12-15",
+    "fechaFin": "2025-12-20",
+    "monto": 1500.00
+  }'
+```
 
-✅ Validación y cliente OK
-✅ Reservas completadas
-❌ Error en procesar-pago (monto excede límite)
-❌ Compensaciones ejecutadas automáticamente
-❌ Estado final: Error en pago
+**Resultado Esperado**:
+- ✅ Reserva creada con `reservaId` y `processInstanceKey`
+- ✅ User Task "Revisar Datos" aparece en Tasklist
+- ✅ 3 reservas (vuelo, hotel, coche) se procesan en paralelo
+- ✅ 3 User Tasks de revisión aparecen en Tasklist
+- ✅ Pago procesado correctamente
+- ✅ Estado final: `CONFIRMADA`
 
+---
 
-3. Error: Datos Inválidos
-   bashcurl -X POST http://localhost:9090/api/reservas \
-   -H "Content-Type: application/json" \
-   -d '{
-   "clienteId": "",
-   "origen": "Madrid",
-   "destino": "Barcelona"
-   }'
-   Resultado Esperado:
+#### 2. Error: Monto Alto (> 10000)
 
-❌ Error 400 Bad Request
-❌ Validación falla antes de iniciar el proceso
+```bash
+curl -X POST http://localhost:9090/api/reservas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clienteId": "CLI-001",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2025-12-15",
+    "fechaFin": "2025-12-20",
+    "monto": 15000.00
+  }'
+```
 
+**Resultado Esperado**:
+- ✅ Validación y cliente OK
+- ✅ Reservas completadas
+- ❌ Error en `procesar-pago` (monto excede límite)
+- ❌ Compensaciones ejecutadas automáticamente
+- ❌ Estado final: Error en pago
 
-Completar User Tasks en Tasklist
+---
 
-Abrir http://localhost:8081 (demo/demo)
-Ver tareas asignadas
-Completar cada tarea:
+#### 3. Error: Datos Inválidos
 
-📋 Revisar Datos de Entrada
-✈️ Revisar Reserva de Vuelo
-🏨 Revisar Reserva de Hotel
-🚗 Revisar Reserva de Coche
+```bash
+curl -X POST http://localhost:9090/api/reservas \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clienteId": "",
+    "origen": "Madrid",
+    "destino": "Barcelona"
+  }'
+```
 
+**Resultado Esperado**:
+- ❌ Error 400 Bad Request
+- ❌ Validación falla antes de iniciar el proceso
 
+---
 
+### Completar User Tasks en Tasklist
 
-📊 Monitoreo
-Camunda Operate (http://localhost:8080)
-Credenciales: demo/demo
-Funcionalidades:
+1. Abrir http://localhost:8081 (demo/demo)
+2. Ver tareas asignadas
+3. Completar cada tarea:
+   - 📋 Revisar Datos de Entrada
+   - ✈️ Revisar Reserva de Vuelo
+   - 🏨 Revisar Reserva de Hotel
+   - 🚗 Revisar Reserva de Coche
 
-Ver instancias de procesos activas/completadas/fallidas
-Navegar por Call Activities jerárquicamente
-Inspeccionar variables de proceso
-Resolver incidents manualmente
-Ver métricas de rendimiento
+---
 
-Navegación:
+## 📊 Monitoreo
+
+### Camunda Operate (http://localhost:8080)
+
+**Credenciales**: demo/demo
+
+**Funcionalidades**:
+- Ver instancias de procesos activas/completadas/fallidas
+- Navegar por Call Activities jerárquicamente
+- Inspeccionar variables de proceso
+- Resolver incidents manualmente
+- Ver métricas de rendimiento
+
+**Navegación**:
+```
 1. Processes → proceso-principal
 2. Click en instancia activa
 3. Click en Call Activity (ej: Gestión de Cliente)
 4. "View Called Process Instance"
 5. Ver detalle del subproceso
+```
 
-Camunda Tasklist (http://localhost:8081)
-Credenciales: demo/demo
-Funcionalidades:
+---
 
-Ver User Tasks pendientes
-Completar tareas asignadas
-Ver formularios asociados
-Filtrar por proceso/estado
+### Camunda Tasklist (http://localhost:8081)
 
+**Credenciales**: demo/demo
 
-Logs de Servicios
-bash# Ver logs de todos los servicios
+**Funcionalidades**:
+- Ver User Tasks pendientes
+- Completar tareas asignadas
+- Ver formularios asociados
+- Filtrar por proceso/estado
+
+---
+
+### Logs de Servicios
+
+```bash
+# Ver logs de todos los servicios
 ./logs.sh
 
 # Ver logs de un servicio específico
@@ -509,12 +652,20 @@ bash# Ver logs de todos los servicios
 ./logs.sh zeebe
 ./logs.sh operate
 ./logs.sh tasklist
-O con docker:
-bashdocker logs -f servicio-reservas
-docker logs -f camunda-zeebe
+```
 
-Health Checks
-bash# Verificar salud de servicios
+O con docker:
+```bash
+docker logs -f servicio-reservas
+docker logs -f camunda-zeebe
+```
+
+---
+
+### Health Checks
+
+```bash
+# Verificar salud de servicios
 curl http://localhost:9090/actuator/health
 curl http://localhost:9080/actuator/health
 # ... etc
@@ -522,35 +673,54 @@ curl http://localhost:9080/actuator/health
 # Verificar Zeebe
 curl http://localhost:9600/ready
 curl http://localhost:9600/health
+```
 
-Consolas H2 (Bases de Datos)
+---
+
+### Consolas H2 (Bases de Datos)
+
 Cada servicio tiene su propia base de datos H2:
+
+```
 URL: http://localhost:908X/h2-console
 
 JDBC URL: jdbc:h2:mem:clientes_db   (9080)
-jdbc:h2:mem:vuelos_db     (9081)
-jdbc:h2:mem:hoteles_db    (9082)
-jdbc:h2:mem:coches_db     (9083)
-jdbc:h2:mem:pagos_db      (9084)
-jdbc:h2:mem:reservas_db   (9090)
+          jdbc:h2:mem:vuelos_db     (9081)
+          jdbc:h2:mem:hoteles_db    (9082)
+          jdbc:h2:mem:coches_db     (9083)
+          jdbc:h2:mem:pagos_db      (9084)
+          jdbc:h2:mem:reservas_db   (9090)
 
 Usuario: sa
 Password: (vacío)
+```
 
-🐛 Troubleshooting
-Problema: Puertos en Uso
-Síntoma: Error al iniciar servicios
-Solución:
-bash# Ver qué proceso está usando el puerto
+---
+
+## 🐛 Troubleshooting
+
+### Problema: Puertos en Uso
+
+**Síntoma**: Error al iniciar servicios
+
+**Solución**:
+```bash
+# Ver qué proceso está usando el puerto
 lsof -i :9090
 
 # Matar el proceso
 kill -9 <PID>
+```
 
-Problema: Camunda No Responde
-Síntoma: curl http://localhost:9600/ready falla
-Solución:
-bash# Ver logs de Zeebe
+---
+
+### Problema: Camunda No Responde
+
+**Síntoma**: `curl http://localhost:9600/ready` falla
+
+**Solución**:
+```bash
+# Ver logs de Zeebe
 docker logs camunda-zeebe
 
 # Reiniciar Camunda
@@ -559,21 +729,33 @@ docker-compose -f docker-compose-camunda.yml restart
 # Si persiste, limpiar y reiniciar
 docker-compose -f docker-compose-camunda.yml down -v
 ./start.sh
+```
 
-Problema: Proceso BPMN No Encontrado
-Síntoma: Process definition with key 'subproceso-gestion-cliente' not found
-Solución:
-bash# Los procesos BPMN se despliegan automáticamente al iniciar servicio-reservas
+---
+
+### Problema: Proceso BPMN No Encontrado
+
+**Síntoma**: `Process definition with key 'subproceso-gestion-cliente' not found`
+
+**Solución**:
+```bash
+# Los procesos BPMN se despliegan automáticamente al iniciar servicio-reservas
 # Verificar logs del servicio-reservas
 docker logs servicio-reservas | grep "Desplegando"
 
 # Si no están desplegados, reiniciar el servicio
 docker-compose restart servicio-reservas
+```
 
-Problema: Workers No Se Registran
-Síntoma: Jobs quedan pendientes sin procesarse
-Solución:
-bash# Verificar que los microservicios están conectados a Zeebe
+---
+
+### Problema: Workers No Se Registran
+
+**Síntoma**: Jobs quedan pendientes sin procesarse
+
+**Solución**:
+```bash
+# Verificar que los microservicios están conectados a Zeebe
 docker logs servicio-clientes | grep "Zeebe"
 
 # Verificar conectividad
@@ -581,32 +763,49 @@ docker exec servicio-clientes ping camunda-zeebe
 
 # Reiniciar el servicio problemático
 docker-compose restart servicio-clientes
+```
 
-Problema: Incident en Proceso
-Síntoma: Proceso se detiene con incident en Operate
-Solución:
+---
 
-Ir a Operate → Incidents
-Ver el mensaje de error
-Corregir el problema (datos, código, etc.)
-Click en "Retry" en el incident
+### Problema: Incident en Proceso
+
+**Síntoma**: Proceso se detiene con incident en Operate
+
+**Solución**:
+1. Ir a Operate → Incidents
+2. Ver el mensaje de error
+3. Corregir el problema (datos, código, etc.)
+4. Click en "Retry" en el incident
 
 O desde CLI:
-bash# Resolver incident manualmente
+```bash
+# Resolver incident manualmente
 zbctl resolve incident <INCIDENT_KEY>
+```
 
-Problema: User Task No Aparece en Tasklist
-Síntoma: Proceso se detiene en User Task pero no aparece en Tasklist
-Solución:
-bash# Verificar en Operate que el proceso está en el User Task
+---
+
+### Problema: User Task No Aparece en Tasklist
+
+**Síntoma**: Proceso se detiene en User Task pero no aparece en Tasklist
+
+**Solución**:
+```bash
+# Verificar en Operate que el proceso está en el User Task
 # Refrescar Tasklist (Ctrl+R)
 
 # Verificar asignación en el BPMN
 # Debe tener: <zeebe:assignmentDefinition assignee="demo" />
+```
 
-📝 Comandos Útiles
-Makefile
-bash# Ver ayuda
+---
+
+## 📝 Comandos Útiles
+
+### Makefile
+
+```bash
+# Ver ayuda
 make help
 
 # Iniciar sistema
@@ -630,9 +829,14 @@ make build
 
 # Crear reserva de prueba
 make test-reserva
+```
 
-Scripts Bash
-bash# Iniciar sistema completo
+---
+
+### Scripts Bash
+
+```bash
+# Iniciar sistema completo
 ./start.sh
 
 # Detener sistema
@@ -647,9 +851,14 @@ bash# Iniciar sistema completo
 
 # Crear reserva de prueba
 ./test-reserva.sh
+```
 
-Docker Compose
-bash# Iniciar solo Camunda
+---
+
+### Docker Compose
+
+```bash
+# Iniciar solo Camunda
 docker-compose -f docker-compose-camunda.yml up -d
 
 # Iniciar microservicios
@@ -669,60 +878,84 @@ docker-compose up -d --build
 
 # Ver estado de servicios
 docker-compose ps
+```
 
-🎓 Buenas Prácticas Implementadas
-Arquitectura
-✅ Separación de Capas (Dominio, Aplicación, Infraestructura)
-✅ Inversión de Dependencias (Puertos y Adaptadores)
-✅ DDD con JMolecules (Agregados, Entidades, Value Objects explícitos)
-✅ Bounded Contexts (Cada microservicio es un contexto acotado)
-BPMN
-✅ Subprocesos Reutilizables (Call Activities)
-✅ Patrón Saga con compensaciones automáticas
-✅ Manejo de Errores con Boundary Events
-✅ Expresiones FEEL en lugar de JavaScript
-✅ IDs legibles en español (kebab-case)
-Código
-✅ Logs con Iconos para claridad visual
-✅ Validación de Datos con Jakarta Validation
-✅ MapStruct para mapeo automático DTOs
-✅ OpenAPI/Swagger para documentación
-✅ Health Checks en todos los servicios
-DevOps
-✅ Dockerfiles Multi-Stage optimizados
-✅ Health Checks en Docker Compose
-✅ Scripts de Automatización (start, stop, logs)
-✅ Makefile con comandos útiles
-✅ Variables de Entorno centralizadas
+---
 
-📚 Recursos Adicionales
-Documentación
+## 🎓 Buenas Prácticas Implementadas
 
-Documentación de Procesos BPMN
-Camunda Platform 8 Docs
-Zeebe Docs
+### Arquitectura
 
-Comunidad
+✅ **Separación de Capas** (Dominio, Aplicación, Infraestructura)  
+✅ **Inversión de Dependencias** (Puertos y Adaptadores)  
+✅ **DDD con JMolecules** (Agregados, Entidades, Value Objects explícitos)  
+✅ **Bounded Contexts** (Cada microservicio es un contexto acotado)
 
-Camunda Forum
-GitHub Issues
+### BPMN
 
+✅ **Subprocesos Reutilizables** (Call Activities)  
+✅ **Patrón Saga** con compensaciones automáticas  
+✅ **Manejo de Errores** con Boundary Events  
+✅ **Expresiones FEEL** en lugar de JavaScript  
+✅ **IDs legibles en español** (kebab-case)
 
-👥 Equipo y Contribución
-Autor
+### Código
+
+✅ **Logs con Iconos** para claridad visual  
+✅ **Validación de Datos** con Jakarta Validation  
+✅ **MapStruct** para mapeo automático DTOs  
+✅ **OpenAPI/Swagger** para documentación  
+✅ **Health Checks** en todos los servicios
+
+### DevOps
+
+✅ **Dockerfiles Multi-Stage** optimizados  
+✅ **Health Checks** en Docker Compose  
+✅ **Scripts de Automatización** (start, stop, logs)  
+✅ **Makefile** con comandos útiles  
+✅ **Variables de Entorno** centralizadas
+
+---
+
+## 📚 Recursos Adicionales
+
+### Documentación
+
+- [Documentación de Procesos BPMN](docs/doc_procesos_bpmn.md)
+- [Camunda Platform 8 Docs](https://docs.camunda.io)
+- [Zeebe Docs](https://docs.camunda.io/docs/components/zeebe/zeebe-overview/)
+
+### Comunidad
+
+- [Camunda Forum](https://forum.camunda.io)
+- [GitHub Issues](https://github.com/camunda/camunda)
+
+---
+
+## 👥 Equipo y Contribución
+
+### Autor
+
 Sistema desarrollado siguiendo las mejores prácticas de arquitectura de microservicios y DDD.
-Contribuir
 
-Fork el proyecto
-Crea una rama para tu feature (git checkout -b feature/AmazingFeature)
-Commit tus cambios (git commit -m 'Add some AmazingFeature')
-Push a la rama (git push origin feature/AmazingFeature)
-Abre un Pull Request
+### Contribuir
 
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
-📄 Licencia
+---
+
+## 📄 Licencia
+
 Este proyecto es un ejemplo educativo de implementación de microservicios con Camunda Platform 8.
 
-🎉 ¡Gracias por Usar el Sistema!
+---
+
+## 🎉 ¡Gracias por Usar el Sistema!
+
 Si tienes preguntas o encuentras problemas, por favor abre un issue en el repositorio.
-¡Felices Reservas de Viaje! ✈️🏨🚗
+
+**¡Felices Reservas de Viaje!** ✈️🏨🚗
