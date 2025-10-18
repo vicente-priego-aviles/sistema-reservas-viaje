@@ -1,4 +1,11 @@
 package dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor;
 
-public class DetalleCoche {
-}
+import org.jmolecules.ddd.annotation.ValueObject;
+
+@ValueObject
+public record DetalleCoche(
+        String modelo,
+        String matricula,
+        String puntoRecogida,
+        String numeroReserva
+) {}

@@ -1,9 +1,9 @@
-package dev.javacadabra.reservasviaje.vuelo.aplicacion;
+package dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.entrada.camunda;
 
-import dev.javacadabra.reservasviaje.vuelo.aplicacion.puerto.entrada.*;
+import dev.javacadabra.reservasviaje.vuelo.aplicacion.puerto.entrada.CancelarVueloPuertoEntrada;
+import dev.javacadabra.reservasviaje.vuelo.aplicacion.puerto.entrada.ReservarVueloPuertoEntrada;
 import dev.javacadabra.reservasviaje.vuelo.aplicacion.puerto.salida.ReservaVueloRepositorioPuertoSalida;
 import dev.javacadabra.reservasviaje.vuelo.dominio.modelo.agregado.ReservaVuelo;
-import dev.javacadabra.reservasviaje.vuelo.dominio.modelo.objetovalor.*;
 import io.camunda.client.annotation.JobWorker;
 import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;

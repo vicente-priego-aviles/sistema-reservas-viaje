@@ -11,9 +11,9 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>servicio-hoteles</artifactId>
-    <name>Servicio de Hoteles</name>
-    <description>Microservicio de gestión de hoteles</description>
+    <artifactId>servicio-alquiler-coches</artifactId>
+    <name>Servicio de Alquiler de Coches</name>
+    <description>Microservicio de alquiler de coches</description>
 
     <dependencies>
         <!-- Spring Boot Starters -->

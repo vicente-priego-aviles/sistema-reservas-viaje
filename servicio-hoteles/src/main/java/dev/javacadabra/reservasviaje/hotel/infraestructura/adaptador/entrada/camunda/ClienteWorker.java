@@ -1,4 +1,4 @@
-package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.camunda;
+package dev.javacadabra.reservasviaje.hotel.infraestructura.adaptador.entrada.camunda;
 
 import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteSalidaDTO;
 import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.EstadoCliente;

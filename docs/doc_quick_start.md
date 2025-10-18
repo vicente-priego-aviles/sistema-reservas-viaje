@@ -282,7 +282,7 @@ Ahora que tienes el sistema funcionando:
 
 ## 🆘 ¿Necesitas Ayuda?
 
-- 📖 Consulta la [documentación completa](../README.md)
+- 📖 Consulta la [documentación completa](../README_2.md)
 - 🐛 Reporta issues en [GitHub](https://github.com/tu-usuario/sistema-reservas-viaje/issues)
 - 💬 Pregunta en [Discussions](https://github.com/tu-usuario/sistema-reservas-viaje/discussions)
 

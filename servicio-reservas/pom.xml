@@ -11,9 +11,9 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>servicio-clientes</artifactId>
-    <name>Servicio de Clientes</name>
-    <description>Microservicio de gestión de clientes</description>
+    <artifactId>servicio-reservas</artifactId>
+    <name>Servicio de Reservas</name>
+    <description>Microservicio de gestión de reservas</description>
 
     <dependencies>
         <!-- Spring Boot Starters -->

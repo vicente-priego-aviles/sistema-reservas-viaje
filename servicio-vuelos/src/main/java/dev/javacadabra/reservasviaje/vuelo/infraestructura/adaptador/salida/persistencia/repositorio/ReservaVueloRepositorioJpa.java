@@ -1,4 +1,4 @@
-package dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.salida.persistencia;
+package dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.salida.persistencia.repositorio;
 
 import dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.salida.persistencia.entidad.ReservaVueloJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

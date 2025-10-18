@@ -11,9 +11,9 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>servicio-reservas</artifactId>
-    <name>Servicio de Reservas</name>
-    <description>Microservicio de gestión de reservas</description>
+    <artifactId>servicio-vuelos</artifactId>
+    <name>Servicio de Vuelos</name>
+    <description>Microservicio de gestión de vuelos</description>
 
     <dependencies>
         <!-- Spring Boot Starters -->

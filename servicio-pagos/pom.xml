@@ -11,9 +11,9 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>servicio-hoteles</artifactId>
-    <name>Servicio de Hoteles</name>
-    <description>Microservicio de gestión de hoteles</description>
+    <artifactId>servicio-pagos</artifactId>
+    <name>Servicio de Pagos</name>
+    <description>Microservicio de gestión de pagos</description>
 
     <dependencies>
         <!-- Spring Boot Starters -->

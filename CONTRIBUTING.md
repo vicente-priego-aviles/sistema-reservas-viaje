@@ -565,7 +565,7 @@ git checkout -b feat/mi-feature-metrics
 ## 📚 Recursos Adicionales
 
 ### Documentación
-- [README.md](README.md) - Visión general
+- [README.md](README_2.md) - Visión general
 - [ROADMAP.md](ROADMAP.md) - Plan de desarrollo
 - [docs/](docs/) - Documentación detallada
 

@@ -1,4 +1,6 @@
 package dev.javacadabra.reservasviaje.vuelo.aplicacion.puerto.entrada;
 
-public class CancelarVueloPuertoEntrada {
+public interface CancelarVueloPuertoEntrada {
+
+    void cancelarVuelo(String reservaViajeId);
 }

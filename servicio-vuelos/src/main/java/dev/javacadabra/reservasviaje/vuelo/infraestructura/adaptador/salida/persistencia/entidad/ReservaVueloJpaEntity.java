@@ -1,4 +1,4 @@
-package dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.salida.persistencia;
+package dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.salida.persistencia.entidad;
 
 import jakarta.persistence.*;
 import lombok.*;
