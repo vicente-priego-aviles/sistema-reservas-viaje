@@ -5,8 +5,11 @@ import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteSalida
 import dev.javacadabra.reservasviaje.cliente.aplicacion.mapper.ClienteMapper;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.*;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.salida.ClienteRepositorioPuertoSalida;
+import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoException;
 import dev.javacadabra.reservasviaje.cliente.dominio.modelo.agregado.Cliente;
-import dev.javacadabra.reservasviaje.cliente.dominio.modelo.valorobjeto.*;
+
+import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.ClienteId;
+import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.EstadoCliente;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
