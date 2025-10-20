@@ -34,8 +34,8 @@ public class CocheWorker {
             // Simular posible fallo (5% de probabilidad)
             if (Math.random() < 0.05) {
                 log.warn("⚠️ Simulando fallo en reserva de coche");
-                throw new ZeebeBpmnError("ERROR_RESERVA_COCHE",
-                        "No hay vehículos disponibles");
+                throw new ZeebeBpmnError("ERROR_RESERVA_COCHE", "No hay vehículos disponibles",
+                        Map.of());
             }
 
             ReservaCoche reserva = reservarCocheUseCase.reservarCoche(
@@ -54,7 +54,7 @@ public class CocheWorker {
 
         } catch (Exception e) {
             log.error("❌ Error al reservar coche: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_RESERVA_COCHE", e.getMessage());
+            throw new ZeebeBpmnError("ERROR_RESERVA_COCHE", e.getMessage(), Map.of());
         }
     }
 
