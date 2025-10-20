@@ -42,11 +42,11 @@ public class PagoWorker {
 
         } catch (MontoExcedeLimiteException e) {
             log.error("❌ Monto excede límite: {}€", monto);
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage());
+            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(), Map.of());
 
         } catch (Exception e) {
             log.error("❌ Error al procesar pago: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage());
+            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(), Map.of());
         }
     }
 
@@ -68,7 +68,7 @@ public class PagoWorker {
 
         } catch (Exception e) {
             log.error("❌ Error al confirmar reserva: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_CONFIRMAR_RESERVA", e.getMessage());
+            throw new ZeebeBpmnError("ERROR_CONFIRMAR_RESERVA", e.getMessage(), Map.of());
         }
     }
 

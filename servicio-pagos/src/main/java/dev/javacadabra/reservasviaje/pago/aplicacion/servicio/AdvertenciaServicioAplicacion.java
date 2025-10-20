@@ -1,4 +1,4 @@
-package dev.javacadabra.reservasviaje.pago.aplicacion.service;
+package dev.javacadabra.reservasviaje.pago.aplicacion.servicio;
 
 import dev.javacadabra.reservasviaje.pago.aplicacion.puerto.entrada.MarcarReservaAdvertenciaPuertoEntrada;
 import lombok.extern.slf4j.Slf4j;

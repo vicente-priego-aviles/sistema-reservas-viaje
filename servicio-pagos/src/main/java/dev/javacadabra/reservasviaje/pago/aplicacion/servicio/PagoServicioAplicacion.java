@@ -1,7 +1,8 @@
-package dev.javacadabra.reservasviaje.pago.aplicacion.service;
+package dev.javacadabra.reservasviaje.pago.aplicacion.servicio;
 
 import dev.javacadabra.reservasviaje.pago.aplicacion.puerto.entrada.*;
 import dev.javacadabra.reservasviaje.pago.aplicacion.puerto.salida.PagoRepositorioPuertoSalida;
+import dev.javacadabra.reservasviaje.pago.dominio.excepcion.PagoNoEncontradoException;
 import dev.javacadabra.reservasviaje.pago.dominio.modelo.agregado.Pago;
 import dev.javacadabra.reservasviaje.pago.dominio.modelo.objetovalor.*;
 import lombok.RequiredArgsConstructor;
