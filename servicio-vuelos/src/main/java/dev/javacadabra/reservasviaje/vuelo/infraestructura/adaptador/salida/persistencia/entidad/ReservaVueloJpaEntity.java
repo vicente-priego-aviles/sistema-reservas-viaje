@@ -44,9 +44,3 @@ public class ReservaVueloJpaEntity {
     private LocalDateTime fechaCancelacion;
 }
 
-enum EstadoReservaVueloEnum {
-    PENDIENTE,
-    RESERVADA,
-    CANCELADA,
-    COMPLETADA
-}

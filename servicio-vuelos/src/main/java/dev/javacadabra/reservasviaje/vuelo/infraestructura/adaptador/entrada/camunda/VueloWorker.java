@@ -36,7 +36,7 @@ public class VueloWorker {
             if (Math.random() < 0.05) {
                 log.warn("⚠️ Simulando fallo en reserva de vuelo");
                 throw new ZeebeBpmnError("ERROR_RESERVA_VUELO",
-                        "No hay vuelos disponibles para esta ruta");
+                        "No hay vuelos disponibles para esta ruta", Map.of());
             }
 
             ReservaVuelo reserva = reservarVueloUseCase.reservarVuelo(
@@ -54,7 +54,7 @@ public class VueloWorker {
 
         } catch (Exception e) {
             log.error("❌ Error al reservar vuelo: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_RESERVA_VUELO", e.getMessage());
+            throw new ZeebeBpmnError("ERROR_RESERVA_VUELO", e.getMessage(), Map.of());
         }
     }
 

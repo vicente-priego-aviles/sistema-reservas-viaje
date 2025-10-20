@@ -1,4 +1,8 @@
 package dev.javacadabra.reservasviaje.vuelo.infraestructura.adaptador.salida.persistencia.entidad;
 
-public class EstadoReservaVueloEnum {
+public enum EstadoReservaVueloEnum {
+    PENDIENTE,
+    RESERVADA,
+    CANCELADA,
+    COMPLETADA
 }
