@@ -33,8 +33,10 @@ public class HotelWorker {
             // Simular posible fallo (5% de probabilidad)
             if (Math.random() < 0.05) {
                 log.warn("⚠️ Simulando fallo en reserva de hotel");
-                throw new ZeebeBpmnError("ERROR_RESERVA_HOTEL",
-                        "No hay habitaciones disponibles");
+                throw new ZeebeBpmnError(
+                        "ERROR_RESERVA_HOTEL",
+                        "No hay habitaciones disponibles",
+                        Map.of());
             }
 
             ReservaHotel reserva = reservarHotelUseCase.reservarHotel(
@@ -52,7 +54,7 @@ public class HotelWorker {
 
         } catch (Exception e) {
             log.error("❌ Error al reservar hotel: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_RESERVA_HOTEL", e.getMessage());
+            throw new ZeebeBpmnError("ERROR_RESERVA_HOTEL", e.getMessage(),Map.of());
         }
     }
 
