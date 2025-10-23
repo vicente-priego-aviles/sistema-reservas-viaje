@@ -7,9 +7,7 @@ import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.DatosHot
 import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.EstadoReserva;
 import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.PrecioReserva;
 import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.ReservaId;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
 import java.time.LocalDateTime;

@@ -1,39 +1,35 @@
 package dev.javacadabra.reservasviaje.reserva.dominio.evento;
 
 import lombok.Getter;
-import org.jmolecules.ddd.annotation.DomainEvent;
+import org.jmolecules.event.annotation.DomainEvent;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Evento de dominio que se dispara cuando se crea una reserva de hotel.
+ * Evento de dominio que se dispara cuando se crea una reserva de vuelo.
  */
 @DomainEvent
 @Getter
-public class ReservaHotelCreadaEvento {
+public class ReservaVueloCreadaEvento {
 
     private final String reservaId;
     private final String clienteId;
-    private final String nombreHotel;
-    private final LocalDate fechaEntrada;
-    private final LocalDate fechaSalida;
+    private final String numeroVuelo;
+    private final LocalDateTime fechaSalida;
     private final BigDecimal precio;
     private final LocalDateTime fechaEvento;
 
-    public ReservaHotelCreadaEvento(
+    public ReservaVueloCreadaEvento(
             String reservaId,
             String clienteId,
-            String nombreHotel,
-            LocalDate fechaEntrada,
-            LocalDate fechaSalida,
+            String numeroVuelo,
+            LocalDateTime fechaSalida,
             BigDecimal precio) {
 
         this.reservaId = reservaId;
         this.clienteId = clienteId;
-        this.nombreHotel = nombreHotel;
-        this.fechaEntrada = fechaEntrada;
+        this.numeroVuelo = numeroVuelo;
         this.fechaSalida = fechaSalida;
         this.precio = precio;
         this.fechaEvento = LocalDateTime.now();

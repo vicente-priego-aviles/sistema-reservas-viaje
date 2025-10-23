@@ -11,6 +11,7 @@ import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.ReservaI
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 
 import java.time.LocalDateTime;

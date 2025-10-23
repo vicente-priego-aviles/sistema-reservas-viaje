@@ -1,4 +1,4 @@
 package dev.javacadabra.reservasviaje.cliente.dominio.excepcion;
 
-public class ClienteNoEncontradoException {
+public class TarjetaNoEncontradaExcepcion {
 }

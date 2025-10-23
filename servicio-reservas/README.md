@@ -125,10 +125,10 @@ El diseño del dominio sigue los principios de **DDD** utilizando **JMolecules**
 | Librería | Versión | Propósito |
 |----------|---------|-----------|
 | **Lombok** | 1.18.36 | Reducción de boilerplate |
-| **MapStruct** | 1.6.3 | Mapeo entre DTOs y entidades |
-| **Apache Commons Lang** | 3.18.0 | Utilidades (StringUtils, validaciones) |
-| **JMolecules** | 1.6.0 | Anotaciones DDD explícitas |
-| **SpringDoc OpenAPI** | 2.7.0 | Documentación API automática |
+| **MapStruct** | 1.6.3   | Mapeo entre DTOs y entidades |
+| **Apache Commons Lang** | 3.18.0  | Utilidades (StringUtils, validaciones) |
+| **JMolecules** | 1.10.0  | Anotaciones DDD explícitas |
+| **SpringDoc OpenAPI** | 2.7.0   | Documentación API automática |
 
 ### Testing
 

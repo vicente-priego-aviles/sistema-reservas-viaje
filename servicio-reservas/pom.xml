@@ -5,53 +5,22 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- ========================================== -->
+    <!-- Parent: POM Raíz del Proyecto -->
+    <!-- ========================================== -->
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
-        <relativePath/>
+        <groupId>dev.javacadabra</groupId>
+        <artifactId>reservasviaje</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>dev.javacadabra</groupId>
     <artifactId>servicio-reservas</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Servicio de Reservas</name>
     <description>Microservicio de gestión de reservas de viajes (Vuelos, Hoteles, Coches) con Camunda Platform 8</description>
-
-    <properties>
-        <!-- Java Version -->
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!-- Spring Boot Version -->
-        <spring-boot.version>3.5.6</spring-boot.version>
-
-        <!-- Camunda Platform 8 -->
-        <camunda-spring-boot.version>8.8.0</camunda-spring-boot.version>
-
-        <!-- Database -->
-        <h2.version>2.3.232</h2.version>
-
-        <!-- Utilities -->
-        <lombok.version>1.18.36</lombok.version>
-        <mapstruct.version>1.6.3</mapstruct.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
-
-        <!-- DDD -->
-        <jmolecules.version>1.6.0</jmolecules.version>
-
-        <!-- API Documentation -->
-        <springdoc.version>2.7.0</springdoc.version>
-
-        <!-- Testing -->
-        <testcontainers.version>1.20.4</testcontainers.version>
-        <archunit.version>1.3.0</archunit.version>
-    </properties>
 
     <dependencies>
         <!-- ========================================== -->
@@ -89,7 +58,7 @@
         <dependency>
             <groupId>io.camunda</groupId>
             <artifactId>camunda-spring-boot-starter</artifactId>
-            <version>${camunda-spring-boot.version}</version>
+            <!-- ✅ Versión heredada del parent -->
         </dependency>
 
         <!-- ========================================== -->
@@ -100,7 +69,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
+            <!-- ✅ Versión heredada del parent -->
             <scope>runtime</scope>
         </dependency>
 
@@ -112,7 +81,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
+            <!-- ✅ Versión heredada del parent -->
             <optional>true</optional>
         </dependency>
 
@@ -120,39 +89,46 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
+            <!-- ✅ Versión heredada del parent -->
         </dependency>
 
         <!-- Apache Commons Lang3 - Utilidades (StringUtils, etc.) -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
+            <!-- ✅ Versión heredada del parent -->
         </dependency>
 
         <!-- ========================================== -->
         <!-- DDD - JMolecules -->
         <!-- ========================================== -->
 
+        <!-- JMolecules DDD - Anotaciones básicas (@AggregateRoot, @Entity, @ValueObject) -->
         <dependency>
             <groupId>org.jmolecules</groupId>
             <artifactId>jmolecules-ddd</artifactId>
-            <version>${jmolecules.version}</version>
+            <!-- ✅ Versión heredada del parent (1.10.0) -->
         </dependency>
 
-        <dependency>
-            <groupId>org.jmolecules.integrations</groupId>
-            <artifactId>jmolecules-spring</artifactId>
-        </dependency>
-
+        <!-- JMolecules Events - Para @DomainEvent -->
         <dependency>
             <groupId>org.jmolecules</groupId>
             <artifactId>jmolecules-events</artifactId>
+            <!-- ✅ Versión heredada del parent (1.10.0) -->
         </dependency>
 
+        <!-- JMolecules Spring Integration (OPCIONAL - Integraciones automáticas con Spring) -->
+        <dependency>
+            <groupId>org.jmolecules.integrations</groupId>
+            <artifactId>jmolecules-spring</artifactId>
+            <!-- ✅ Versión heredada del parent (0.19.0) -->
+        </dependency>
+
+        <!-- JMolecules JPA Integration (OPCIONAL - Integraciones automáticas con JPA) -->
         <dependency>
             <groupId>org.jmolecules.integrations</groupId>
             <artifactId>jmolecules-jpa</artifactId>
+            <!-- ✅ Versión heredada del parent (0.19.0) -->
         </dependency>
 
         <!-- ========================================== -->
@@ -162,7 +138,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
+            <!-- ✅ Versión heredada del parent -->
         </dependency>
 
         <!-- ========================================== -->
@@ -180,14 +156,14 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>${testcontainers.version}</version>
+            <!-- ✅ Versión heredada del parent -->
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <!-- ✅ Versión heredada del parent -->
             <scope>test</scope>
         </dependency>
 
@@ -195,7 +171,7 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>${archunit.version}</version>
+            <!-- ✅ Versión heredada del parent -->
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -208,62 +184,28 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
+                <!-- ✅ Configuración heredada del parent -->
             </plugin>
 
             <!-- Maven Compiler Plugin con procesadores de anotaciones -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <annotationProcessorPaths>
-                        <!-- Lombok -->
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        <!-- MapStruct -->
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${mapstruct.version}</version>
-                        </path>
-                        <!-- Lombok-MapStruct Binding -->
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok-mapstruct-binding</artifactId>
-                            <version>${lombok-mapstruct-binding.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
+                <!-- ✅ Configuración heredada del parent -->
             </plugin>
 
             <!-- Maven Surefire Plugin - Tests unitarios -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
+                <!-- ✅ Configuración heredada del parent -->
             </plugin>
 
             <!-- Maven Failsafe Plugin - Tests de integración -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.5.2</version>
+                <!-- ✅ Configuración heredada del parent -->
             </plugin>
         </plugins>
     </build>

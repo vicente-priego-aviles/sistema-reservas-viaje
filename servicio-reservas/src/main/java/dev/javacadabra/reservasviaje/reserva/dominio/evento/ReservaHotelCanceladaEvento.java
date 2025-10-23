@@ -1,7 +1,7 @@
 package dev.javacadabra.reservasviaje.reserva.dominio.evento;
 
 import lombok.Getter;
-import org.jmolecules.ddd.annotation.DomainEvent;
+import org.jmolecules.event.annotation.DomainEvent;
 
 import java.time.LocalDateTime;
 
