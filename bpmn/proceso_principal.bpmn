@@ -81,11 +81,6 @@
     <bpmn:sequenceFlow id="flujo-error-cliente-a-fin" sourceRef="evento-error-gestion-cliente" targetRef="evento-fin-error-gestion-cliente" />
     <bpmn:sequenceFlow id="flujo-notificar-a-fin-reserva-fallida" sourceRef="notificar-cliente-reserva-fallida" targetRef="evento-fin-reserva-fallida" />
     <bpmn:sequenceFlow id="flujo-error-pago-a-fin" sourceRef="evento-error-proceso-pago" targetRef="evento-fin-error-pago" />
-    <bpmn:sequenceFlow id="flujo-error-reserva-a-notificar" sourceRef="evento-error-proceso-reserva" targetRef="notificar-cliente-reserva-fallida" />
-    <bpmn:intermediateCatchEvent id="evento-error-proceso-reserva" name="❌ Error Reserva">
-      <bpmn:outgoing>flujo-error-reserva-a-notificar</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDefinition_0tx09i2" errorRef="Error_ReservaFallida" />
-    </bpmn:intermediateCatchEvent>
     <bpmn:callActivity id="call-activity-gestion-cliente" name="👤 Gestión de Cliente">
       <bpmn:extensionElements>
         <zeebe:calledElement processId="subproceso-gestion-cliente" propagateAllChildVariables="true" />
@@ -93,6 +88,11 @@
       <bpmn:incoming>flujo-validar-a-gestion-cliente</bpmn:incoming>
       <bpmn:outgoing>flujo-gestion-cliente-a-revisar-datos</bpmn:outgoing>
     </bpmn:callActivity>
+    <bpmn:sequenceFlow id="flujo-error-reserva-a-notificar" sourceRef="Event_1rjxxez" targetRef="notificar-cliente-reserva-fallida" />
+    <bpmn:boundaryEvent id="Event_1rjxxez" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
+      <bpmn:outgoing>flujo-error-reserva-a-notificar</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1bfojac" />
+    </bpmn:boundaryEvent>
   </bpmn:process>
   <bpmn:error id="Error_ValidacionDatos" name="Error Validación Datos" errorCode="ERROR_VALIDACION_DATOS" />
   <bpmn:error id="Error_ReservaFallida" name="Error Reserva Fallida" errorCode="ERROR_RESERVA_FALLIDA" />
@@ -107,44 +107,11 @@
       <bpmndi:BPMNShape id="Shape_validar-datos-entrada" bpmnElement="validar-datos-entrada">
         <dc:Bounds x="260" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_call-activity-gestion-cliente" bpmnElement="call-activity-gestion-cliente">
-        <dc:Bounds x="410" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_revisar-datos-entrada" bpmnElement="revisar-datos-entrada">
-        <dc:Bounds x="560" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_call-activity-proceso-reserva" bpmnElement="call-activity-proceso-reserva">
-        <dc:Bounds x="710" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_call-activity-proceso-pago" bpmnElement="call-activity-proceso-pago">
-        <dc:Bounds x="860" y="100" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-fin-solicitud-completada" bpmnElement="evento-fin-solicitud-completada">
-        <dc:Bounds x="1012" y="122" width="36" height="36" />
+      <bpmndi:BPMNShape id="Shape_evento-fin-datos-invalidos" bpmnElement="evento-fin-datos-invalidos">
+        <dc:Bounds x="362" y="262" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="986" y="86" width="88" height="27" />
+          <dc:Bounds x="356" y="303" width="48" height="27" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-fin-error-pago" bpmnElement="evento-fin-error-pago">
-        <dc:Bounds x="1012" y="232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="988" y="275" width="79" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_11w323l_di" bpmnElement="evento-error-proceso-reserva">
-        <dc:Bounds x="782" y="162" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="816" y="203" width="88" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-fin-reserva-fallida" bpmnElement="evento-fin-reserva-fallida">
-        <dc:Bounds x="1012" y="312" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1001" y="355" width="60" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_notificar-cliente-reserva-fallida" bpmnElement="notificar-cliente-reserva-fallida">
-        <dc:Bounds x="750" y="290" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-error-gestion-cliente" bpmnElement="evento-fin-error-gestion-cliente">
         <dc:Bounds x="548" y="262" width="36" height="36" />
@@ -152,17 +119,38 @@
           <dc:Bounds x="537" y="306" width="58" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-fin-datos-invalidos" bpmnElement="evento-fin-datos-invalidos">
-        <dc:Bounds x="362" y="262" width="36" height="36" />
+      <bpmndi:BPMNShape id="Shape_revisar-datos-entrada" bpmnElement="revisar-datos-entrada">
+        <dc:Bounds x="560" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_call-activity-proceso-reserva" bpmnElement="call-activity-proceso-reserva">
+        <dc:Bounds x="710" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_notificar-cliente-reserva-fallida" bpmnElement="notificar-cliente-reserva-fallida">
+        <dc:Bounds x="750" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-fin-reserva-fallida" bpmnElement="evento-fin-reserva-fallida">
+        <dc:Bounds x="1012" y="312" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="356" y="303" width="48" height="27" />
+          <dc:Bounds x="1001" y="355" width="60" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-error-validacion-datos" bpmnElement="evento-error-validacion-datos">
-        <dc:Bounds x="292" y="162" width="36" height="36" />
+      <bpmndi:BPMNShape id="Shape_call-activity-proceso-pago" bpmnElement="call-activity-proceso-pago">
+        <dc:Bounds x="860" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-fin-error-pago" bpmnElement="evento-fin-error-pago">
+        <dc:Bounds x="1012" y="232" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="325" y="196" width="50" height="27" />
+          <dc:Bounds x="988" y="275" width="79" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-fin-solicitud-completada" bpmnElement="evento-fin-solicitud-completada">
+        <dc:Bounds x="1012" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="986" y="86" width="88" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_call-activity-gestion-cliente" bpmnElement="call-activity-gestion-cliente">
+        <dc:Bounds x="410" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-error-proceso-pago" bpmnElement="evento-error-proceso-pago">
         <dc:Bounds x="942" y="162" width="36" height="36" />
@@ -174,6 +162,18 @@
         <dc:Bounds x="492" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="526" y="203" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-error-validacion-datos" bpmnElement="evento-error-validacion-datos">
+        <dc:Bounds x="292" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="325" y="196" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mp78mk_di" bpmnElement="Event_1rjxxez">
+        <dc:Bounds x="772" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="806" y="203" width="88" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_flujo-inicio-a-validar-datos" bpmnElement="flujo-inicio-a-validar-datos">
@@ -219,9 +219,9 @@
         <di:waypoint x="960" y="250" />
         <di:waypoint x="1012" y="250" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0mnwy0i_di" bpmnElement="flujo-error-reserva-a-notificar">
-        <di:waypoint x="800" y="198" />
-        <di:waypoint x="800" y="290" />
+      <bpmndi:BPMNEdge id="Flow_1l0ivq1_di" bpmnElement="flujo-error-reserva-a-notificar">
+        <di:waypoint x="790" y="198" />
+        <di:waypoint x="790" y="290" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

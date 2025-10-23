@@ -200,4 +200,14 @@ public class ReservaCoche {
         }
         this.reservaId = id;
     }
+
+    public static ReservaCoche reconstruir(ReservaId reservaId,
+                                           DatosCoche datosCoche,
+                                           PrecioReserva precio,
+                                           EstadoReserva estado,
+                                           DetalleReserva detalleReserva,
+                                           LocalDateTime fechaCreacion,
+                                           LocalDateTime fechaModificacion) {
+        return new ReservaCoche(reservaId, datosCoche, precio, estado, detalleReserva, fechaCreacion, fechaModificacion);
+    }
 }

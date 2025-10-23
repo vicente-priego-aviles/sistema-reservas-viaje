@@ -9,22 +9,13 @@ import org.mapstruct.*;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-/**
- * Mapeador entre ReservaCoche (dominio) y ReservaCocheEntidad (JPA).
- * MapStruct genera automáticamente la implementación.
- */
-@Mapper(
-        componentModel = "spring",
+@Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR
-)
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ReservaCocheMapeador {
 
-    /**
-     * Convierte el agregado de dominio a entidad JPA.
-     */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "reservaId", source = "reservaId")
+    @Mapping(target = "reservaId", source = "reservaId.valor")
     @Mapping(target = "empresaAlquiler", source = "datosCoche.empresaAlquiler")
     @Mapping(target = "modeloCoche", source = "datosCoche.modeloCoche")
     @Mapping(target = "categoriaCoche", source = "datosCoche.categoriaCoche")
@@ -43,32 +34,28 @@ public interface ReservaCocheMapeador {
     @Mapping(target = "fechaModificacion", source = "fechaModificacion")
     ReservaCocheEntidad aEntidad(ReservaCoche reservaCoche);
 
-    /**
-     * Convierte la entidad JPA a agregado de dominio.
-     */
-    @Mapping(target = "reservaId", expression = "java(mapReservaId(entidad.getReservaId()))")
-    @Mapping(target = "datosCoche", expression = "java(mapDatosCoche(entidad))")
-    @Mapping(target = "precio", expression = "java(mapPrecio(entidad.getPrecio(), entidad.getCodigoMoneda()))")
-    @Mapping(target = "estado", expression = "java(mapEstado(entidad.getEstado()))")
-    @Mapping(target = "detalleReserva", expression = "java(mapDetalleReserva(entidad))")
-    ReservaCoche aDominio(ReservaCocheEntidad entidad);
-
-    // ========== Métodos de mapeo de Value Objects ==========
-
-    default String mapReservaIdToString(ReservaId reservaId) {
-        return reservaId != null ? reservaId.getValor() : null;
+    default ReservaCoche aDominio(ReservaCocheEntidad entidad) {
+        return ReservaCoche.reconstruir(
+                mapReservaId(entidad.getReservaId()),
+                mapDatosCoche(entidad),
+                mapPrecio(entidad.getPrecio(), entidad.getCodigoMoneda()),
+                mapEstado(entidad.getEstado()),
+                mapDetalleReserva(entidad),
+                entidad.getFechaCreacion(),
+                entidad.getFechaModificacion()
+        );
     }
 
+    @AfterMapping
+    default void asignarId(@MappingTarget ReservaCoche reserva, ReservaCocheEntidad entidad) {
+        if (entidad.getReservaId() != null) {
+            reserva.asignarId(ReservaId.de(entidad.getReservaId()));
+        }
+    }
+
+    // =================== AUXILIARES ===================
     default ReservaId mapReservaId(String reservaId) {
         return reservaId != null ? ReservaId.de(reservaId) : null;
-    }
-
-    default String mapEstadoToString(EstadoReserva estado) {
-        return estado != null ? estado.name() : null;
-    }
-
-    default EstadoReserva mapEstado(String estado) {
-        return estado != null ? EstadoReserva.valueOf(estado) : null;
     }
 
     default DatosCoche mapDatosCoche(ReservaCocheEntidad entidad) {
@@ -85,9 +72,7 @@ public interface ReservaCocheMapeador {
 
     default PrecioReserva mapPrecio(BigDecimal monto, String codigoMoneda) {
         if (monto == null) return null;
-        Currency moneda = codigoMoneda != null
-                ? Currency.getInstance(codigoMoneda)
-                : Currency.getInstance("EUR");
+        Currency moneda = codigoMoneda != null ? Currency.getInstance(codigoMoneda) : Currency.getInstance("EUR");
         return PrecioReserva.de(monto, moneda);
     }
 
@@ -101,5 +86,9 @@ public interface ReservaCocheMapeador {
                 .fechaModificacion(entidad.getFechaModificacion())
                 .motivoCancelacion(entidad.getMotivoCancelacion())
                 .build();
+    }
+
+    default EstadoReserva mapEstado(String estado) {
+        return estado != null ? EstadoReserva.valueOf(estado) : null;
     }
 }

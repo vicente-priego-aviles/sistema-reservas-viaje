@@ -12,22 +12,14 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 
-/**
- * Mapeador entre ReservaVuelo (dominio) y ReservaVueloEntidad (JPA).
- * MapStruct genera automáticamente la implementación.
- */
-@Mapper(
-        componentModel = "spring",
+@Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR
-)
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ReservaVueloMapeador {
 
-    /**
-     * Convierte el agregado de dominio a entidad JPA.
-     */
+    // =================== DOMINIO → ENTIDAD ===================
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "reservaId", source = "reservaId")
+    @Mapping(target = "reservaId", source = "reservaId.valor")
     @Mapping(target = "numeroVuelo", source = "datosVuelo.numeroVuelo")
     @Mapping(target = "aerolinea", source = "datosVuelo.aerolinea")
     @Mapping(target = "origen", source = "datosVuelo.origen")
@@ -48,56 +40,41 @@ public interface ReservaVueloMapeador {
     @Mapping(target = "pasajeros", source = "pasajeros")
     ReservaVueloEntidad aEntidad(ReservaVuelo reservaVuelo);
 
-    /**
-     * Convierte la entidad JPA a agregado de dominio.
-     */
-    @Mapping(target = "reservaId", expression = "java(mapReservaId(entidad.getReservaId()))")
-    @Mapping(target = "datosVuelo", expression = "java(mapDatosVuelo(entidad))")
-    @Mapping(target = "precio", expression = "java(mapPrecio(entidad.getPrecio(), entidad.getCodigoMoneda()))")
-    @Mapping(target = "estado", expression = "java(mapEstado(entidad.getEstado()))")
-    @Mapping(target = "detalleReserva", expression = "java(mapDetalleReserva(entidad))")
-    @Mapping(target = "pasajeros", source = "pasajeros")
-    ReservaVuelo aDominio(ReservaVueloEntidad entidad);
+    // =================== ENTIDAD → DOMINIO ===================
+    default ReservaVuelo aDominio(ReservaVueloEntidad entidad) {
+        return ReservaVuelo.reconstruir(
+                mapReservaId(entidad.getReservaId()),
+                mapDatosVuelo(entidad),
+                pasajerosADominio(entidad.getPasajeros()),
+                mapPrecio(entidad.getPrecio(), entidad.getCodigoMoneda()),
+                mapEstado(entidad.getEstado()),
+                mapDetalleReserva(entidad),
+                entidad.getFechaCreacion(),
+                entidad.getFechaModificacion()
+        );
+    }
 
-    /**
-     * Convierte Pasajero (dominio) a PasajeroEntidad (JPA).
-     */
+    @AfterMapping
+    default void asignarId(@MappingTarget ReservaVuelo reserva, ReservaVueloEntidad entidad) {
+        if (entidad.getReservaId() != null) {
+            reserva.asignarId(ReservaId.de(entidad.getReservaId()));
+        }
+    }
+
+    // =================== PASAJEROS ===================
     @Mapping(target = "id", source = "id")
     @Mapping(target = "reservaVuelo", ignore = true)
     PasajeroEntidad pasajeroAEntidad(Pasajero pasajero);
 
-    /**
-     * Convierte PasajeroEntidad (JPA) a Pasajero (dominio).
-     */
     @Mapping(target = "id", source = "id")
     Pasajero pasajeroADominio(PasajeroEntidad entidad);
 
-    /**
-     * Convierte lista de Pasajeros a lista de PasajeroEntidades.
-     */
     List<PasajeroEntidad> pasajerosAEntidades(List<Pasajero> pasajeros);
-
-    /**
-     * Convierte lista de PasajeroEntidades a lista de Pasajeros.
-     */
     List<Pasajero> pasajerosADominio(List<PasajeroEntidad> entidades);
 
-    // ========== Métodos de mapeo de Value Objects ==========
-
-    default String mapReservaIdToString(ReservaId reservaId) {
-        return reservaId != null ? reservaId.getValor() : null;
-    }
-
+    // =================== AUXILIARES ===================
     default ReservaId mapReservaId(String reservaId) {
         return reservaId != null ? ReservaId.de(reservaId) : null;
-    }
-
-    default String mapEstadoToString(EstadoReserva estado) {
-        return estado != null ? estado.name() : null;
-    }
-
-    default EstadoReserva mapEstado(String estado) {
-        return estado != null ? EstadoReserva.valueOf(estado) : null;
     }
 
     default DatosVuelo mapDatosVuelo(ReservaVueloEntidad entidad) {
@@ -115,9 +92,7 @@ public interface ReservaVueloMapeador {
 
     default PrecioReserva mapPrecio(BigDecimal monto, String codigoMoneda) {
         if (monto == null) return null;
-        Currency moneda = codigoMoneda != null
-                ? Currency.getInstance(codigoMoneda)
-                : Currency.getInstance("EUR");
+        Currency moneda = codigoMoneda != null ? Currency.getInstance(codigoMoneda) : Currency.getInstance("EUR");
         return PrecioReserva.de(monto, moneda);
     }
 
@@ -131,5 +106,9 @@ public interface ReservaVueloMapeador {
                 .fechaModificacion(entidad.getFechaModificacion())
                 .motivoCancelacion(entidad.getMotivoCancelacion())
                 .build();
+    }
+
+    default EstadoReserva mapEstado(String estado) {
+        return estado != null ? EstadoReserva.valueOf(estado) : null;
     }
 }

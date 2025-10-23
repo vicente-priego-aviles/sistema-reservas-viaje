@@ -1,9 +1,9 @@
 spring:
   application:
-    name: servicio-pagos
+    name: servicio-reservas
 
   datasource:
-    url: jdbc:h2:mem:pagos_db
+    url: jdbc:h2:mem:reservas_db
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -22,7 +22,7 @@ spring:
       path: /h2-console
 
 server:
-  port: 9084
+  port: 9090
   shutdown: graceful
 
 camunda:
@@ -31,7 +31,7 @@ camunda:
       gateway-address: ${ZEEBE_ADDRESS:localhost:26500}
       rest-address: ${ZEEBE_REST:http://localhost:8080}
       prefer-rest-over-grpc: false
-    mode: simple
+    mode: self-managed
     auth:
       username: demo
       password: demo

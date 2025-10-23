@@ -184,4 +184,14 @@ public class ReservaHotel {
         }
         this.reservaId = id;
     }
+
+    public static ReservaHotel reconstruir(ReservaId reservaId,
+                                           DatosHotel datosHotel,
+                                           PrecioReserva precio,
+                                           EstadoReserva estado,
+                                           DetalleReserva detalleReserva,
+                                           LocalDateTime fechaCreacion,
+                                           LocalDateTime fechaModificacion) {
+        return new ReservaHotel(reservaId, datosHotel, precio, estado, detalleReserva, fechaCreacion, fechaModificacion);
+    }
 }

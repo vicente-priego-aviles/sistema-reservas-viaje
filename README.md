@@ -74,17 +74,17 @@ Sistema de microservicios orquestado por **Camunda Platform 8.7** que implementa
 
 ### Backend (Todos los Microservicios)
 
-| Tecnología               | Versión  | Propósito                   |
-| ------------------------ | -------- | --------------------------- |
-| **Java**                 | 21       | Lenguaje principal          |
-| **Spring Boot**          | 3.5.6    | Framework base              |
-| **Camunda Platform**     | 8.7.0    | Orquestación BPMN           |
-| **Spring Zeebe**         | 8.8.0    | Integración con Zeebe       |
-| **H2 Database**          | 2.3.232  | Base de datos (desarrollo)  |
-| **Lombok**               | 1.18.36  | Reducción de boilerplate    |
-| **MapStruct**            | 1.6.3    | Mapeo DTO ↔ Entity          |
-| **JMolecules**           | 1.6.0    | Anotaciones DDD             |
-| **SpringDoc OpenAPI**    | 2.7.0    | Documentación API           |
+| Tecnología               | Versión | Propósito                   |
+| ------------------------ |---------| --------------------------- |
+| **Java**                 | 21      | Lenguaje principal          |
+| **Spring Boot**          | 3.5.6   | Framework base              |
+| **Camunda Platform**     | 8.7.0   | Orquestación BPMN           |
+| **Spring Zeebe**         | 8.8.0   | Integración con Zeebe       |
+| **H2 Database**          | 2.3.232 | Base de datos (desarrollo)  |
+| **Lombok**               | 1.18.36 | Reducción de boilerplate    |
+| **MapStruct**            | 1.6.3   | Mapeo DTO ↔ Entity          |
+| **JMolecules**           | 1.10.0  | Anotaciones DDD             |
+| **SpringDoc OpenAPI**    | 2.7.0   | Documentación API           |
 
 ### Infraestructura
 

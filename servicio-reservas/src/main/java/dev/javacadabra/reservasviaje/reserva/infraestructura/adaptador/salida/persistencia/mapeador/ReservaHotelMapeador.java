@@ -9,22 +9,13 @@ import org.mapstruct.*;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-/**
- * Mapeador entre ReservaHotel (dominio) y ReservaHotelEntidad (JPA).
- * MapStruct genera automáticamente la implementación.
- */
-@Mapper(
-        componentModel = "spring",
+@Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR
-)
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ReservaHotelMapeador {
 
-    /**
-     * Convierte el agregado de dominio a entidad JPA.
-     */
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "reservaId", source = "reservaId")
+    @Mapping(target = "reservaId", source = "reservaId.valor")
     @Mapping(target = "nombreHotel", source = "datosHotel.nombreHotel")
     @Mapping(target = "ciudad", source = "datosHotel.ciudad")
     @Mapping(target = "direccion", source = "datosHotel.direccion")
@@ -44,32 +35,28 @@ public interface ReservaHotelMapeador {
     @Mapping(target = "fechaModificacion", source = "fechaModificacion")
     ReservaHotelEntidad aEntidad(ReservaHotel reservaHotel);
 
-    /**
-     * Convierte la entidad JPA a agregado de dominio.
-     */
-    @Mapping(target = "reservaId", expression = "java(mapReservaId(entidad.getReservaId()))")
-    @Mapping(target = "datosHotel", expression = "java(mapDatosHotel(entidad))")
-    @Mapping(target = "precio", expression = "java(mapPrecio(entidad.getPrecio(), entidad.getCodigoMoneda()))")
-    @Mapping(target = "estado", expression = "java(mapEstado(entidad.getEstado()))")
-    @Mapping(target = "detalleReserva", expression = "java(mapDetalleReserva(entidad))")
-    ReservaHotel aDominio(ReservaHotelEntidad entidad);
-
-    // ========== Métodos de mapeo de Value Objects ==========
-
-    default String mapReservaIdToString(ReservaId reservaId) {
-        return reservaId != null ? reservaId.getValor() : null;
+    default ReservaHotel aDominio(ReservaHotelEntidad entidad) {
+        return ReservaHotel.reconstruir(
+                mapReservaId(entidad.getReservaId()),
+                mapDatosHotel(entidad),
+                mapPrecio(entidad.getPrecio(), entidad.getCodigoMoneda()),
+                mapEstado(entidad.getEstado()),
+                mapDetalleReserva(entidad),
+                entidad.getFechaCreacion(),
+                entidad.getFechaModificacion()
+        );
     }
 
+    @AfterMapping
+    default void asignarId(@MappingTarget ReservaHotel reserva, ReservaHotelEntidad entidad) {
+        if (entidad.getReservaId() != null) {
+            reserva.asignarId(ReservaId.de(entidad.getReservaId()));
+        }
+    }
+
+    // =================== AUXILIARES ===================
     default ReservaId mapReservaId(String reservaId) {
         return reservaId != null ? ReservaId.de(reservaId) : null;
-    }
-
-    default String mapEstadoToString(EstadoReserva estado) {
-        return estado != null ? estado.name() : null;
-    }
-
-    default EstadoReserva mapEstado(String estado) {
-        return estado != null ? EstadoReserva.valueOf(estado) : null;
     }
 
     default DatosHotel mapDatosHotel(ReservaHotelEntidad entidad) {
@@ -87,9 +74,7 @@ public interface ReservaHotelMapeador {
 
     default PrecioReserva mapPrecio(BigDecimal monto, String codigoMoneda) {
         if (monto == null) return null;
-        Currency moneda = codigoMoneda != null
-                ? Currency.getInstance(codigoMoneda)
-                : Currency.getInstance("EUR");
+        Currency moneda = codigoMoneda != null ? Currency.getInstance(codigoMoneda) : Currency.getInstance("EUR");
         return PrecioReserva.de(monto, moneda);
     }
 
@@ -103,5 +88,9 @@ public interface ReservaHotelMapeador {
                 .fechaModificacion(entidad.getFechaModificacion())
                 .motivoCancelacion(entidad.getMotivoCancelacion())
                 .build();
+    }
+
+    default EstadoReserva mapEstado(String estado) {
+        return estado != null ? EstadoReserva.valueOf(estado) : null;
     }
 }
