@@ -49,7 +49,8 @@
         <springdoc.version>2.7.0</springdoc.version>
 
         <!-- DDD -->
-        <jmolecules.version>1.6.0</jmolecules.version>
+        <jmolecules.version>1.10.0</jmolecules.version>
+        <jmolecules-integration.version>0.19.0</jmolecules-integration.version>
 
         <!-- Testing -->
         <testcontainers.version>1.19.3</testcontainers.version>
@@ -106,23 +107,39 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
 
-            <!-- JMolecules -->
+            <!-- JMolecules DDD (Principal) -->
             <dependency>
                 <groupId>org.jmolecules</groupId>
                 <artifactId>jmolecules-ddd</artifactId>
                 <version>${jmolecules.version}</version>
             </dependency>
 
+            <!-- JMolecules Events (para eventos de dominio) -->
             <dependency>
-                <groupId>org.jmolecules.integrations</groupId>
-                <artifactId>jmolecules-spring</artifactId>
+                <groupId>org.jmolecules</groupId>
+                <artifactId>jmolecules-events</artifactId>
                 <version>${jmolecules.version}</version>
             </dependency>
 
+            <!-- JMolecules Architecture (opcional, para hexagonal) -->
+            <dependency>
+                <groupId>org.jmolecules</groupId>
+                <artifactId>jmolecules-architecture</artifactId>
+                <version>${jmolecules.version}</version>
+            </dependency>
+
+            <!-- JMolecules Spring Integration (OPCIONAL) -->
+            <dependency>
+                <groupId>org.jmolecules.integrations</groupId>
+                <artifactId>jmolecules-spring</artifactId>
+                <version>${jmolecules-integration.version}</version>
+            </dependency>
+
+            <!-- JMolecules JPA Integration (OPCIONAL) -->
             <dependency>
                 <groupId>org.jmolecules.integrations</groupId>
                 <artifactId>jmolecules-jpa</artifactId>
-                <version>${jmolecules.version}</version>
+                <version>${jmolecules-integration.version}</version>
             </dependency>
 
             <!-- SpringDoc OpenAPI -->

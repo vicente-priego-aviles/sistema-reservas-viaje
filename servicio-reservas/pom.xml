@@ -143,13 +143,16 @@
         <dependency>
             <groupId>org.jmolecules.integrations</groupId>
             <artifactId>jmolecules-spring</artifactId>
-            <version>${jmolecules.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jmolecules</groupId>
+            <artifactId>jmolecules-events</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.jmolecules.integrations</groupId>
             <artifactId>jmolecules-jpa</artifactId>
-            <version>${jmolecules.version}</version>
         </dependency>
 
         <!-- ========================================== -->
