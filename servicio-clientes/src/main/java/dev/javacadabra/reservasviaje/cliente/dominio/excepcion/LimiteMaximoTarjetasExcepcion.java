@@ -1,82 +1,56 @@
 package dev.javacadabra.reservasviaje.cliente.dominio.excepcion;
 
-import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.ClienteId;
-
 /**
  * Excepción lanzada cuando un cliente intenta agregar más tarjetas
- * del límite permitido.
+ * de las permitidas por el sistema.
  *
- * <p>Por defecto, un cliente puede tener máximo 5 tarjetas activas
- * para evitar abusos y facilitar la gestión.
+ * <p>El límite máximo de tarjetas por cliente es 3.
+ *
+ * <p>Esta restricción existe por motivos de seguridad y para
+ * simplificar la gestión de métodos de pago del cliente.
  *
  * @author javacadabra
  * @version 1.0.0
  */
 public class LimiteMaximoTarjetasExcepcion extends ClienteDominioExcepcion {
 
-    private final String clienteId;
-    private final int limiteMaximo;
-    private final int tarjetasActuales;
+    private static final int LIMITE_MAXIMO = 3;
 
     /**
-     * Constructor con detalles del límite.
+     * Constructor con el ID del cliente que excedió el límite.
      *
-     * @param clienteId ID del cliente
-     * @param limiteMaximo límite máximo de tarjetas permitidas
-     * @param tarjetasActuales cantidad actual de tarjetas del cliente
+     * @param clienteId identificador del cliente
      */
-    public LimiteMaximoTarjetasExcepcion(ClienteId clienteId, int limiteMaximo, int tarjetasActuales) {
+    public LimiteMaximoTarjetasExcepcion(String clienteId) {
         super(String.format(
-                "El cliente %s ha alcanzado el límite máximo de tarjetas (%d). Tarjetas actuales: %d",
-                clienteId.valor(), limiteMaximo, tarjetasActuales
+                "El cliente %s ha alcanzado el límite máximo de %d tarjetas",
+                clienteId,
+                LIMITE_MAXIMO
         ));
-        this.clienteId = clienteId.valor();
-        this.limiteMaximo = limiteMaximo;
-        this.tarjetasActuales = tarjetasActuales;
     }
 
     /**
-     * Constructor con ID de cliente como String.
+     * Constructor con cantidad actual de tarjetas.
      *
-     * @param clienteId ID del cliente
-     * @param limiteMaximo límite máximo de tarjetas permitidas
-     * @param tarjetasActuales cantidad actual de tarjetas del cliente
+     * @param clienteId identificador del cliente
+     * @param cantidadActual cantidad actual de tarjetas del cliente
      */
-    public LimiteMaximoTarjetasExcepcion(String clienteId, int limiteMaximo, int tarjetasActuales) {
+    public LimiteMaximoTarjetasExcepcion(String clienteId, int cantidadActual) {
         super(String.format(
-                "El cliente %s ha alcanzado el límite máximo de tarjetas (%d). Tarjetas actuales: %d",
-                clienteId, limiteMaximo, tarjetasActuales
+                "El cliente %s ha alcanzado el límite máximo de tarjetas. " +
+                "Límite: %d, Actual: %d. Debe eliminar una tarjeta antes de agregar otra",
+                clienteId,
+                LIMITE_MAXIMO,
+                cantidadActual
         ));
-        this.clienteId = clienteId;
-        this.limiteMaximo = limiteMaximo;
-        this.tarjetasActuales = tarjetasActuales;
     }
 
     /**
-     * Obtiene el ID del cliente.
+     * Obtiene el límite máximo de tarjetas permitidas.
      *
-     * @return ID del cliente
+     * @return límite máximo de tarjetas
      */
-    public String getClienteId() {
-        return clienteId;
-    }
-
-    /**
-     * Obtiene el límite máximo de tarjetas.
-     *
-     * @return límite máximo
-     */
-    public int getLimiteMaximo() {
-        return limiteMaximo;
-    }
-
-    /**
-     * Obtiene la cantidad actual de tarjetas del cliente.
-     *
-     * @return cantidad de tarjetas
-     */
-    public int getTarjetasActuales() {
-        return tarjetasActuales;
+    public static int getLimiteMaximo() {
+        return LIMITE_MAXIMO;
     }
 }
-

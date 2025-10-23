@@ -1,185 +1,170 @@
 package dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor;
 
-import org.apache.commons.lang3.StringUtils;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.jmolecules.ddd.annotation.ValueObject;
 
-import java.io.Serializable;
 import java.util.Base64;
-import java.util.Objects;
 
 /**
- * Número de tarjeta de crédito encriptado.
+ * Value Object que representa un número de tarjeta de crédito.
  *
- * <p>Value object inmutable que encapsula el número de una tarjeta
- * de crédito, asegurando:
+ * <p>El número se almacena encriptado por seguridad y nunca se expone
+ * en texto plano excepto los últimos 4 dígitos para visualización.
+ *
+ * <p><strong>Seguridad:</strong>
  * <ul>
- *   <li>Validación del formato mediante el algoritmo de Luhn</li>
- *   <li>Encriptación del número (placeholder con Base64)</li>
- *   <li>Enmascaramiento para logs seguros</li>
- *   <li>Detección automática del tipo de tarjeta</li>
+ *   <li>El número completo se encripta con Base64 (en producción usar AES-256)</li>
+ *   <li>Solo se exponen los últimos 4 dígitos enmascarados</li>
+ *   <li>Se valida con el algoritmo de Luhn</li>
  * </ul>
- *
- * <p><strong>NOTA:</strong> La encriptación actual es un placeholder (Base64).
- * En producción debe reemplazarse con un algoritmo robusto (AES-256, RSA, etc.)
- * y gestión segura de claves.
  *
  * @author javacadabra
  * @version 1.0.0
  */
 @ValueObject
-public record NumeroTarjeta(String valorEncriptado) implements Serializable {
+@Getter
+@EqualsAndHashCode
+public class NumeroTarjeta {
 
     /**
-     * Constructor canónico con validación.
-     *
-     * @param valorEncriptado número de tarjeta encriptado
-     * @throws IllegalArgumentException si el valor es inválido
+     * Número de tarjeta encriptado (Base64).
      */
-    public NumeroTarjeta {
-        if (StringUtils.isBlank(valorEncriptado)) {
-            throw new IllegalArgumentException("El número de tarjeta encriptado no puede estar vacío");
+    private final String valorEncriptado;
+
+    /**
+     * Últimos 4 dígitos (para mostrar enmascarado).
+     */
+    private final String ultimosDigitos;
+
+    /**
+     * Primeros dígitos (para detectar tipo de tarjeta).
+     */
+    private final String primerosDigitos;
+
+    // ==================== CONSTRUCTORES ====================
+
+    private NumeroTarjeta(String valorEncriptado, String ultimosDigitos, String primerosDigitos) {
+        this.valorEncriptado = valorEncriptado;
+        this.ultimosDigitos = ultimosDigitos;
+        this.primerosDigitos = primerosDigitos;
+    }
+
+    // ==================== FACTORY METHODS ====================
+
+    /**
+     * Crea un NumeroTarjeta desde texto plano (para nuevas tarjetas).
+     *
+     * @param numeroPlano número de tarjeta en texto plano
+     * @return NumeroTarjeta validado y encriptado
+     * @throws IllegalArgumentException si el número no es válido
+     */
+    public static NumeroTarjeta de(String numeroPlano) {
+        validar(numeroPlano);
+
+        String numeroLimpio = numeroPlano.replaceAll("\\s|-", "");
+
+        return new NumeroTarjeta(
+                encriptar(numeroLimpio),
+                extraerUltimosDigitos(numeroLimpio),
+                extraerPrimerosDigitos(numeroLimpio)
+        );
+    }
+
+    /**
+     * Reconstruye un NumeroTarjeta desde persistencia (ya encriptado).
+     *
+     * <p>Este método se usa para reconstruir desde la base de datos,
+     * donde el número ya está almacenado encriptado.
+     *
+     * @param valorEncriptado número ya encriptado en Base64
+     * @return NumeroTarjeta reconstruido
+     * @throws IllegalArgumentException si el valor encriptado no es válido
+     */
+    public static NumeroTarjeta reconstruido(String valorEncriptado) {
+        if (valorEncriptado == null || valorEncriptado.isBlank()) {
+            throw new IllegalArgumentException("El número encriptado no puede estar vacío");
+        }
+
+        try {
+            // Desencriptar temporalmente para extraer dígitos
+            String numeroPlano = desencriptar(valorEncriptado);
+
+            return new NumeroTarjeta(
+                    valorEncriptado,
+                    extraerUltimosDigitos(numeroPlano),
+                    extraerPrimerosDigitos(numeroPlano)
+            );
+        } catch (Exception e) {
+            throw new IllegalArgumentException("El valor encriptado no es válido: " + e.getMessage());
         }
     }
 
-    /**
-     * Crea un NumeroTarjeta a partir del número en claro.
-     * Valida el formato y lo encripta antes de almacenarlo.
-     *
-     * @param numeroClaro número de tarjeta en claro (solo dígitos)
-     * @return NumeroTarjeta con el valor encriptado
-     * @throws IllegalArgumentException si el número es inválido
-     */
-    public static NumeroTarjeta crear(String numeroClaro) {
-        validarFormato(numeroClaro);
-
-        if (!validarLuhn(numeroClaro)) {
-            throw new IllegalArgumentException("El número de tarjeta no pasa la validación del algoritmo de Luhn");
-        }
-
-        String encriptado = encriptar(numeroClaro);
-        return new NumeroTarjeta(encriptado);
-    }
+    // ==================== MÉTODOS DE NEGOCIO ====================
 
     /**
-     * Crea un NumeroTarjeta desde un valor ya encriptado.
-     * Útil al recuperar datos de la base de datos.
-     *
-     * @param valorEncriptado número encriptado
-     * @return NumeroTarjeta
-     */
-    public static NumeroTarjeta desdeEncriptado(String valorEncriptado) {
-        return new NumeroTarjeta(valorEncriptado);
-    }
-
-    /**
-     * Desencripta y obtiene el número de tarjeta en claro.
-     *
-     * <p><strong>ADVERTENCIA:</strong> Usar con precaución. Solo desencriptar
-     * cuando sea absolutamente necesario y nunca loguear el valor.
-     *
-     * @return número de tarjeta desencriptado
-     */
-    public String desencriptar() {
-        return desencriptarPlaceholder(valorEncriptado);
-    }
-
-    /**
-     * Obtiene el número enmascarado para mostrar al usuario.
-     * Formato: **** **** **** 1234
+     * Obtiene el número enmascarado para mostrar (**** **** **** 1234).
      *
      * @return número enmascarado
      */
     public String obtenerNumeroEnmascarado() {
-        String numeroClaro = desencriptar();
-
-        if (numeroClaro.length() < 4) {
-            return "****";
-        }
-
-        String ultimos4 = numeroClaro.substring(numeroClaro.length() - 4);
-        int cantidadAsteriscos = numeroClaro.length() - 4;
-
-        StringBuilder enmascarado = new StringBuilder();
-        for (int i = 0; i < cantidadAsteriscos; i++) {
-            if (i > 0 && i % 4 == 0) {
-                enmascarado.append(" ");
-            }
-            enmascarado.append("*");
-        }
-
-        if (cantidadAsteriscos > 0) {
-            enmascarado.append(" ");
-        }
-
-        for (int i = 0; i < ultimos4.length(); i++) {
-            if (i > 0 && i % 4 == 0) {
-                enmascarado.append(" ");
-            }
-            enmascarado.append(ultimos4.charAt(i));
-        }
-
-        return enmascarado.toString();
+        return "**** **** **** " + ultimosDigitos;
     }
 
     /**
-     * Detecta el tipo de tarjeta a partir del número.
+     * Detecta el tipo de tarjeta según los primeros dígitos.
      *
-     * @return tipo de tarjeta detectado, o null si no se reconoce
+     * @return tipo de tarjeta detectado o OTRA si no se puede detectar
      */
     public TipoTarjeta detectarTipoTarjeta() {
-        String numeroClaro = desencriptar();
-        return TipoTarjeta.detectarTipo(numeroClaro);
+        return TipoTarjeta.detectarDesdeNumero(primerosDigitos);
     }
 
     /**
-     * Obtiene los primeros 6 dígitos (BIN) de la tarjeta.
-     * Útil para identificar el banco emisor.
+     * Desencripta el número completo (solo para uso interno).
      *
-     * @return BIN de la tarjeta
+     * @return número desencriptado
      */
-    public String obtenerBIN() {
-        String numeroClaro = desencriptar();
-        return numeroClaro.length() >= 6 ? numeroClaro.substring(0, 6) : numeroClaro;
+    public String desencriptarNumero() {
+        return desencriptar(valorEncriptado);
     }
 
-    // ============================================
-    // MÉTODOS PRIVADOS DE VALIDACIÓN
-    // ============================================
+    // ==================== VALIDACIONES ====================
 
-    private static void validarFormato(String numeroClaro) {
-        if (StringUtils.isBlank(numeroClaro)) {
-            throw new IllegalArgumentException("El número de tarjeta no puede estar vacío");
+    private static void validar(String numero) {
+        if (numero == null || numero.isBlank()) {
+            throw new IllegalArgumentException("El número de tarjeta es obligatorio");
         }
 
-        // Remover espacios y guiones
-        String numeroLimpio = numeroClaro.replaceAll("[\\s-]", "");
+        String numeroLimpio = numero.replaceAll("\\s|-", "");
 
-        if (!numeroLimpio.matches("^[0-9]+$")) {
+        if (!numeroLimpio.matches("\\d+")) {
             throw new IllegalArgumentException("El número de tarjeta solo puede contener dígitos");
         }
 
         if (numeroLimpio.length() < 13 || numeroLimpio.length() > 19) {
             throw new IllegalArgumentException(
-                    "El número de tarjeta debe tener entre 13 y 19 dígitos. Longitud actual: " + numeroLimpio.length()
+                    "El número de tarjeta debe tener entre 13 y 19 dígitos"
             );
+        }
+
+        if (!validarLuhn(numeroLimpio)) {
+            throw new IllegalArgumentException("El número de tarjeta no es válido (algoritmo de Luhn)");
         }
     }
 
     /**
-     * Valida el número de tarjeta usando el algoritmo de Luhn.
+     * Algoritmo de Luhn para validar números de tarjeta.
      *
-     * @param numeroClaro número de tarjeta en claro
-     * @return true si es válido, false en caso contrario
+     * @param numero número de tarjeta sin espacios
+     * @return true si es válido según Luhn
      */
-    private static boolean validarLuhn(String numeroClaro) {
-        String numeroLimpio = numeroClaro.replaceAll("[\\s-]", "");
-
+    private static boolean validarLuhn(String numero) {
         int suma = 0;
         boolean alternar = false;
 
-        // Iterar de derecha a izquierda
-        for (int i = numeroLimpio.length() - 1; i >= 0; i--) {
-            int digito = Character.getNumericValue(numeroLimpio.charAt(i));
+        for (int i = numero.length() - 1; i >= 0; i--) {
+            int digito = Character.getNumericValue(numero.charAt(i));
 
             if (alternar) {
                 digito *= 2;
@@ -192,63 +177,52 @@ public record NumeroTarjeta(String valorEncriptado) implements Serializable {
             alternar = !alternar;
         }
 
-        return (suma % 10 == 0);
+        return suma % 10 == 0;
     }
 
-    // ============================================
-    // PLACEHOLDER DE ENCRIPTACIÓN (Base64)
-    // TODO: Reemplazar con AES-256 o algoritmo robusto en producción
-    // ============================================
+    // ==================== MÉTODOS AUXILIARES ====================
 
-    /**
-     * Encripta el número de tarjeta usando Base64 (PLACEHOLDER).
-     *
-     * <p><strong>ADVERTENCIA:</strong> Base64 NO es encriptación real,
-     * solo es codificación. En producción debe usarse AES-256 o similar
-     * con gestión segura de claves (HSM, Key Vault, etc.).
-     *
-     * @param numeroClaro número en claro
-     * @return número "encriptado" (codificado en Base64)
-     */
-    private static String encriptar(String numeroClaro) {
-        // PLACEHOLDER: Codificación Base64
-        // TODO: Implementar encriptación real (AES-256-GCM, RSA, etc.)
-        return Base64.getEncoder().encodeToString(numeroClaro.getBytes());
+    private static String extraerUltimosDigitos(String numero) {
+        return numero.length() >= 4
+                ? numero.substring(numero.length() - 4)
+                : numero;
+    }
+
+    private static String extraerPrimerosDigitos(String numero) {
+        return numero.length() >= 6
+                ? numero.substring(0, 6)
+                : numero.substring(0, Math.min(4, numero.length()));
     }
 
     /**
-     * Desencripta el número de tarjeta desde Base64 (PLACEHOLDER).
+     * Encripta el número de tarjeta usando Base64.
      *
-     * @param valorEncriptado valor "encriptado"
-     * @return número en claro
+     * <p><strong>NOTA:</strong> En producción, usar AES-256 con clave segura
+     * almacenada en un gestor de secretos (AWS KMS, Azure Key Vault, etc.).
+     *
+     * @param numero número en texto plano
+     * @return número encriptado en Base64
      */
-    private static String desencriptarPlaceholder(String valorEncriptado) {
-        // PLACEHOLDER: Decodificación Base64
-        // TODO: Implementar desencriptación real
-        try {
-            byte[] decodedBytes = Base64.getDecoder().decode(valorEncriptado);
-            return new String(decodedBytes);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Error al desencriptar el número de tarjeta", e);
-        }
+    private static String encriptar(String numero) {
+        // ADVERTENCIA: Esta es una encriptación básica solo para demostración
+        // En producción, implementar AES-256-GCM con clave rotativa
+        return Base64.getEncoder().encodeToString(numero.getBytes());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NumeroTarjeta that = (NumeroTarjeta) o;
-        return Objects.equals(valorEncriptado, that.valorEncriptado);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(valorEncriptado);
+    /**
+     * Desencripta el número de tarjeta desde Base64.
+     *
+     * @param encriptado número encriptado
+     * @return número en texto plano
+     */
+    private static String desencriptar(String encriptado) {
+        return new String(Base64.getDecoder().decode(encriptado));
     }
 
     @Override
     public String toString() {
-        return "NumeroTarjeta{enmascarado='" + obtenerNumeroEnmascarado() + "'}";
+        return "NumeroTarjeta{" +
+               "enmascarado='" + obtenerNumeroEnmascarado() + '\'' +
+               '}';
     }
 }
-

@@ -69,21 +69,38 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-        <!-- JMolecules -->
+        <!-- ========================================== -->
+        <!-- DDD - JMolecules -->
+        <!-- ========================================== -->
+
+        <!-- JMolecules DDD - Anotaciones básicas (@AggregateRoot, @Entity, @ValueObject) -->
         <dependency>
             <groupId>org.jmolecules</groupId>
             <artifactId>jmolecules-ddd</artifactId>
+            <!-- ✅ Versión heredada del parent (1.10.0) -->
         </dependency>
 
+        <!-- JMolecules Events - Para @DomainEvent -->
+        <dependency>
+            <groupId>org.jmolecules</groupId>
+            <artifactId>jmolecules-events</artifactId>
+            <!-- ✅ Versión heredada del parent (1.10.0) -->
+        </dependency>
+
+        <!-- JMolecules Spring Integration (OPCIONAL - Integraciones automáticas con Spring) -->
         <dependency>
             <groupId>org.jmolecules.integrations</groupId>
             <artifactId>jmolecules-spring</artifactId>
+            <!-- ✅ Versión heredada del parent (0.19.0) -->
         </dependency>
 
+        <!-- JMolecules JPA Integration (OPCIONAL - Integraciones automáticas con JPA) -->
         <dependency>
             <groupId>org.jmolecules.integrations</groupId>
             <artifactId>jmolecules-jpa</artifactId>
+            <!-- ✅ Versión heredada del parent (0.19.0) -->
         </dependency>
+
 
         <!-- OpenAPI -->
         <dependency>

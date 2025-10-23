@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
  *
  * <p>Validaciones:
  * <ul>
+ *   <li>DNI con formato válido (8 dígitos + letra de control correcta)</li>
  *   <li>Nombre y apellidos no vacíos</li>
  *   <li>Email con formato válido</li>
  *   <li>Teléfono con formato válido (opcional)</li>
@@ -28,6 +29,7 @@ import java.util.regex.Pattern;
  */
 @ValueObject
 public record DatosPersonales(
+        String dni,
         String nombre,
         String apellidos,
         String email,
@@ -43,6 +45,11 @@ public record DatosPersonales(
             "^\\+?[0-9]{9,15}$"
     );
 
+    private static final Pattern DNI_PATTERN = Pattern.compile(
+            "^\\d{8}[A-Z]$"
+    );
+
+    private static final String LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
     private static final int EDAD_MINIMA = 18;
 
     /**
@@ -51,11 +58,37 @@ public record DatosPersonales(
      * @throws IllegalArgumentException si algún dato es inválido
      */
     public DatosPersonales {
+        validarDni(dni);
         validarNombre(nombre);
         validarApellidos(apellidos);
         validarEmail(email);
         validarTelefono(telefono);
         validarFechaNacimiento(fechaNacimiento);
+    }
+
+    private void validarDni(String dni) {
+        if (StringUtils.isBlank(dni)) {
+            throw new IllegalArgumentException("El DNI no puede estar vacío");
+        }
+
+        String dniNormalizado = dni.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
+
+        if (!DNI_PATTERN.matcher(dniNormalizado).matches()) {
+            throw new IllegalArgumentException(
+                    "El DNI debe tener 8 dígitos seguidos de una letra (ej: 12345678Z)"
+            );
+        }
+
+        // Validar letra de control del DNI
+        int numerosDNI = Integer.parseInt(dniNormalizado.substring(0, 8));
+        char letraEsperada = LETRAS_DNI.charAt(numerosDNI % 23);
+        char letraProporcionada = dniNormalizado.charAt(8);
+
+        if (letraProporcionada != letraEsperada) {
+            throw new IllegalArgumentException(
+                    String.format("La letra del DNI no es correcta. Debería ser %s", letraEsperada)
+            );
+        }
     }
 
     private void validarNombre(String nombre) {
@@ -153,13 +186,29 @@ public record DatosPersonales(
     }
 
     /**
+     * Obtiene el DNI enmascarado para mostrar en logs
+     * o interfaces de usuario (protección RGPD).
+     *
+     * @return DNI enmascarado (ej: "123****78Z")
+     */
+    public String obtenerDniEnmascarado() {
+        if (dni.length() < 4) {
+            return "****";
+        }
+        String dniNormalizado = dni.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
+        String inicio = dniNormalizado.substring(0, 3);
+        String fin = dniNormalizado.substring(dniNormalizado.length() - 2);
+        return inicio + "****" + fin;
+    }
+
+    /**
      * Crea una copia con un nuevo email.
      *
      * @param nuevoEmail nuevo email del cliente
      * @return nueva instancia con el email actualizado
      */
     public DatosPersonales conEmail(String nuevoEmail) {
-        return new DatosPersonales(nombre, apellidos, nuevoEmail, telefono, fechaNacimiento);
+        return new DatosPersonales(dni, nombre, apellidos, nuevoEmail, telefono, fechaNacimiento);
     }
 
     /**
@@ -169,7 +218,7 @@ public record DatosPersonales(
      * @return nueva instancia con el teléfono actualizado
      */
     public DatosPersonales conTelefono(String nuevoTelefono) {
-        return new DatosPersonales(nombre, apellidos, email, nuevoTelefono, fechaNacimiento);
+        return new DatosPersonales(dni, nombre, apellidos, email, nuevoTelefono, fechaNacimiento);
     }
 
     @Override
@@ -177,7 +226,8 @@ public record DatosPersonales(
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DatosPersonales that = (DatosPersonales) o;
-        return Objects.equals(nombre, that.nombre) &&
+        return Objects.equals(dni, that.dni) &&
+               Objects.equals(nombre, that.nombre) &&
                Objects.equals(apellidos, that.apellidos) &&
                Objects.equals(email, that.email) &&
                Objects.equals(telefono, that.telefono) &&
@@ -186,13 +236,14 @@ public record DatosPersonales(
 
     @Override
     public int hashCode() {
-        return Objects.hash(nombre, apellidos, email, telefono, fechaNacimiento);
+        return Objects.hash(dni, nombre, apellidos, email, telefono, fechaNacimiento);
     }
 
     @Override
     public String toString() {
         return "DatosPersonales{" +
-               "nombre='" + nombre + '\'' +
+               "dni='" + obtenerDniEnmascarado() + '\'' +
+               ", nombre='" + nombre + '\'' +
                ", apellidos='" + apellidos + '\'' +
                ", email='" + email + '\'' +
                ", telefono='" + (telefono != null ? "***" : "N/A") + '\'' +
@@ -200,4 +251,3 @@ public record DatosPersonales(
                '}';
     }
 }
-

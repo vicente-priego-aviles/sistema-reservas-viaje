@@ -1,142 +1,182 @@
 package dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor;
 
 import lombok.Getter;
-import org.jmolecules.ddd.annotation.ValueObject;
-
-import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Tipos de tarjetas de crédito aceptadas en el sistema.
+ * Enum que representa los tipos de tarjetas de crédito soportados.
  *
- * <p>Cada tipo de tarjeta tiene asociado:
+ * <p>Cada tipo de tarjeta tiene características específicas:
  * <ul>
- *   <li>Un patrón regex para validar el formato del número</li>
- *   <li>Una longitud esperada del número</li>
- *   <li>Una longitud esperada del CVV</li>
+ *   <li>Longitud del CVV (3 o 4 dígitos)</li>
+ *   <li>Nombre comercial de la tarjeta</li>
+ *   <li>Rango de números que identifica el tipo</li>
  * </ul>
  *
  * @author javacadabra
  * @version 1.0.0
  */
-@ValueObject
 @Getter
+@RequiredArgsConstructor
 public enum TipoTarjeta {
 
     /**
-     * Visa - Números que empiezan con 4
-     * Longitud: 13, 16 o 19 dígitos
-     * CVV: 3 dígitos
+     * Visa - CVV de 3 dígitos.
+     * Números que empiezan por 4.
      */
-    VISA(
-            "Visa",
-            "^4[0-9]{12}(?:[0-9]{3})?(?:[0-9]{3})?$",
-            new int[]{13, 16, 19},
-            3
-    ),
+    VISA("Visa", 3),
 
     /**
-     * Mastercard - Números que empiezan con 51-55 o 2221-2720
-     * Longitud: 16 dígitos
-     * CVV: 3 dígitos
+     * Mastercard - CVV de 3 dígitos.
+     * Números 51-55 o 2221-2720.
      */
-    MASTERCARD(
-            "Mastercard",
-            "^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$",
-            new int[]{16},
-            3
-    ),
+    MASTERCARD("Mastercard", 3),
 
     /**
-     * American Express - Números que empiezan con 34 o 37
-     * Longitud: 15 dígitos
-     * CVV: 4 dígitos
+     * American Express - CVV de 4 dígitos.
+     * Números que empiezan por 34 o 37.
      */
-    AMERICAN_EXPRESS(
-            "American Express",
-            "^3[47][0-9]{13}$",
-            new int[]{15},
-            4
-    ),
+    AMERICAN_EXPRESS("American Express", 4),
 
     /**
-     * Discover - Números que empiezan con 6011, 622126-622925, 644-649, o 65
-     * Longitud: 16 dígitos
-     * CVV: 3 dígitos
+     * Discover - CVV de 3 dígitos.
+     * Números que empiezan por 6011, 622126-622925, 644-649, 65.
      */
-    DISCOVER(
-            "Discover",
-            "^6(?:011|5[0-9]{2}|4[4-9][0-9]|22(?:1(?:2[6-9]|[3-9][0-9])|[2-8][0-9]{2}|9(?:[01][0-9]|2[0-5])))[0-9]{12}$",
-            new int[]{16},
-            3
-    );
+    DISCOVER("Discover", 3),
 
+    /**
+     * Diners Club - CVV de 3 dígitos.
+     * Números que empiezan por 300-305, 36, 38.
+     */
+    DINERS_CLUB("Diners Club", 3),
+
+    /**
+     * JCB - CVV de 3 dígitos.
+     * Números que empiezan por 3528-3589.
+     */
+    JCB("JCB", 3),
+
+    /**
+     * Otras tarjetas no identificadas - CVV de 3 dígitos por defecto.
+     */
+    OTRA("Otra", 3);
+
+    /**
+     * Nombre comercial de la tarjeta.
+     */
     private final String nombre;
-    private final Pattern patron;
-    private final int[] longitudesValidas;
+
+    /**
+     * Longitud del CVV (3 o 4 dígitos).
+     */
     private final int longitudCVV;
 
-    TipoTarjeta(String nombre, String regex, int[] longitudesValidas, int longitudCVV) {
-        this.nombre = nombre;
-        this.patron = Pattern.compile(regex);
-        this.longitudesValidas = longitudesValidas;
-        this.longitudCVV = longitudCVV;
-    }
-
     /**
-     * Valida si un número de tarjeta coincide con el patrón de este tipo.
+     * Detecta el tipo de tarjeta según los primeros dígitos.
      *
-     * @param numeroTarjeta número de tarjeta a validar (solo dígitos)
-     * @return true si el número es válido para este tipo, false en caso contrario
+     * @param primerosDigitos primeros 4-6 dígitos de la tarjeta
+     * @return tipo de tarjeta detectado o OTRA si no se reconoce
      */
-    public boolean validarNumero(String numeroTarjeta) {
-        if (numeroTarjeta == null || numeroTarjeta.isEmpty()) {
-            return false;
+    public static TipoTarjeta detectarDesdeNumero(String primerosDigitos) {
+        if (primerosDigitos == null || primerosDigitos.length() < 2) {
+            return OTRA;
         }
 
-        // Validar longitud
-        boolean longitudValida = false;
-        for (int longitud : longitudesValidas) {
-            if (numeroTarjeta.length() == longitud) {
-                longitudValida = true;
-                break;
+        // Visa: empieza con 4
+        if (primerosDigitos.startsWith("4")) {
+            return VISA;
+        }
+
+        // Mastercard: 51-55 o 2221-2720
+        if (primerosDigitos.startsWith("5")) {
+            try {
+                int prefijo = Integer.parseInt(primerosDigitos.substring(0, 2));
+                if (prefijo >= 51 && prefijo <= 55) {
+                    return MASTERCARD;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
             }
         }
 
-        if (!longitudValida) {
-            return false;
-        }
-
-        // Validar patrón
-        return patron.matcher(numeroTarjeta).matches();
-    }
-
-    /**
-     * Detecta el tipo de tarjeta a partir de su número.
-     *
-     * @param numeroTarjeta número de tarjeta (solo dígitos)
-     * @return tipo de tarjeta detectado, o null si no se reconoce
-     */
-    public static TipoTarjeta detectarTipo(String numeroTarjeta) {
-        if (numeroTarjeta == null || numeroTarjeta.isEmpty()) {
-            return null;
-        }
-
-        for (TipoTarjeta tipo : values()) {
-            if (tipo.validarNumero(numeroTarjeta)) {
-                return tipo;
+        if (primerosDigitos.length() >= 4) {
+            try {
+                int prefijo = Integer.parseInt(primerosDigitos.substring(0, 4));
+                if (prefijo >= 2221 && prefijo <= 2720) {
+                    return MASTERCARD;
+                }
+                // JCB: 3528-3589
+                if (prefijo >= 3528 && prefijo <= 3589) {
+                    return JCB;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
             }
         }
 
-        return null;
+        // American Express: 34 o 37
+        if (primerosDigitos.startsWith("34") || primerosDigitos.startsWith("37")) {
+            return AMERICAN_EXPRESS;
+        }
+
+        // Diners Club: 300-305, 36, 38
+        if (primerosDigitos.startsWith("36") || primerosDigitos.startsWith("38")) {
+            return DINERS_CLUB;
+        }
+
+        if (primerosDigitos.length() >= 3) {
+            try {
+                int prefijo = Integer.parseInt(primerosDigitos.substring(0, 3));
+                if (prefijo >= 300 && prefijo <= 305) {
+                    return DINERS_CLUB;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
+            }
+        }
+
+        // Discover: 6011, 622126-622925, 644-649, 65
+        if (primerosDigitos.startsWith("6011") || primerosDigitos.startsWith("65")) {
+            return DISCOVER;
+        }
+
+        if (primerosDigitos.length() >= 3) {
+            try {
+                int prefijo = Integer.parseInt(primerosDigitos.substring(0, 3));
+                if (prefijo >= 644 && prefijo <= 649) {
+                    return DISCOVER;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
+            }
+        }
+
+        if (primerosDigitos.length() >= 6) {
+            try {
+                int prefijo = Integer.parseInt(primerosDigitos.substring(0, 6));
+                if (prefijo >= 622126 && prefijo <= 622925) {
+                    return DISCOVER;
+                }
+            } catch (NumberFormatException e) {
+                // Ignorar
+            }
+        }
+
+        // No se reconoce
+        return OTRA;
     }
 
     /**
-     * Valida si un CVV tiene la longitud correcta para este tipo de tarjeta.
+     * Verifica si este tipo requiere CVV de 4 dígitos.
      *
-     * @param cvv código CVV a validar
-     * @return true si la longitud es correcta, false en caso contrario
+     * @return true si requiere 4 dígitos (solo AMEX)
      */
-    public boolean validarLongitudCVV(String cvv) {
-        return cvv != null && cvv.length() == longitudCVV;
+    public boolean requiereCVVLargo() {
+        return this == AMERICAN_EXPRESS;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

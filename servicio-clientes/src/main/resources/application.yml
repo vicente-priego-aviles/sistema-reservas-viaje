@@ -1,57 +1,213 @@
+# ============================================================================
+# CONFIGURACIÓN DEL MICROSERVICIO CLIENTE
+# Sistema de Reservas de Viaje
+# ============================================================================
+
+# ============================================================================
+# SPRING BOOT - CONFIGURACIÓN GENERAL
+# ============================================================================
 spring:
   application:
-    name: servicio-clientes
+    name: servicio-cliente
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # ============================================================================
+  # BASE DE DATOS - H2 (Desarrollo) / PostgreSQL (Producción)
+  # ============================================================================
   datasource:
-    url: jdbc:h2:mem:clientes_db
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DB_URL:jdbc:h2:mem:clientedb}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: ClienteHikariPool
 
+  # ============================================================================
+  # JPA / HIBERNATE
+  # ============================================================================
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:create-drop}
+    show-sql: ${SHOW_SQL:false}
     properties:
       hibernate:
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
         format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
+        # Auditoría JPA
+        enable_lazy_load_no_trans: false
+    open-in-view: false
 
+  # ============================================================================
+  # H2 CONSOLE (Solo desarrollo)
+  # ============================================================================
   h2:
     console:
-      enabled: true
+      enabled: ${H2_CONSOLE_ENABLED:true}
       path: /h2-console
+      settings:
+        web-allow-others: false
 
+  # ============================================================================
+  # JACKSON - Serialización JSON
+  # ============================================================================
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+    time-zone: Europe/Madrid
+
+# ============================================================================
+# SERVIDOR
+# ============================================================================
 server:
-  port: 9080
+  port: ${SERVER_PORT:9080}
   shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
 
+# ============================================================================
+# CAMUNDA PLATFORM 8 - ZEEBE
+# ============================================================================
 camunda:
   client:
+    mode: ${CAMUNDA_MODE:self-managed}
     zeebe:
-      gateway-address: ${ZEEBE_ADDRESS:localhost:26500}
-      rest-address: ${ZEEBE_REST:http://localhost:8080}
+      enabled: true
+      gateway-address: ${ZEEBE_GATEWAY_ADDRESS:localhost:26500}
+      rest-address: ${ZEEBE_REST_ADDRESS:http://localhost:8080}
       prefer-rest-over-grpc: false
-    mode: simple
+      defaults:
+        type: cliente
+        timeout: 30000
+      # Seguridad (si está habilitada en Camunda)
+      security:
+        plaintext: ${ZEEBE_PLAINTEXT:true}
     auth:
-      username: demo
-      password: demo
+      # Credenciales para desarrollo (demo/demo)
+      username: ${CAMUNDA_USERNAME:demo}
+      password: ${CAMUNDA_PASSWORD:demo}
 
+    # Configuración de workers
+    worker:
+      default-name: servicio-cliente
+      default-type: cliente
+      threads: ${WORKER_THREADS:4}
+      max-jobs-active: ${MAX_JOBS_ACTIVE:10}
+
+# ============================================================================
+# MANAGEMENT - ACTUATOR
+# ============================================================================
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus,env,loggers
+      base-path: /actuator
+
   endpoint:
     health:
-      show-details: always
+      show-details: ${HEALTH_SHOW_DETAILS:always}
+      probes:
+        enabled: true
 
-springdoc:
-  api-docs:
-    path: /api-docs
-  swagger-ui:
-    path: /swagger-ui.html
+    metrics:
+      enabled: true
 
+    prometheus:
+      enabled: true
+
+  # Métricas Micrometer
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+    tags:
+      application: ${spring.application.name}
+      environment: ${ENVIRONMENT:local}
+
+  # Health Indicators
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+    db:
+      enabled: true
+
+# ============================================================================
+# LOGGING
+# ============================================================================
 logging:
   level:
-    dev.javacadabra: DEBUG
-    io.camunda.zeebe: INFO
+    root: ${LOG_LEVEL_ROOT:INFO}
+    dev.javacadabra: ${LOG_LEVEL_APP:DEBUG}
+    org.springframework: ${LOG_LEVEL_SPRING:INFO}
+    org.hibernate: ${LOG_LEVEL_HIBERNATE:WARN}
+    io.camunda: ${LOG_LEVEL_CAMUNDA:INFO}
+    com.zaxxer.hikari: ${LOG_LEVEL_HIKARI:INFO}
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+  file:
+    name: ${LOG_FILE:logs/servicio-cliente.log}
+    max-size: 10MB
+    max-history: 30
+
+# ============================================================================
+# SPRINGDOC OPENAPI (Swagger)
+# ============================================================================
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+    path: /api-docs
+
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+
+  show-actuator: false
+
+# ============================================================================
+# INFORMACIÓN DE LA APLICACIÓN
+# ============================================================================
+info:
+  app:
+    name: ${spring.application.name}
+    description: Microservicio de gestión de clientes para el sistema de reservas de viaje
+    version: 1.0.0
+    encoding: UTF-8
+    java:
+      version: ${java.version}

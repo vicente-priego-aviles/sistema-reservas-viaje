@@ -88,8 +88,8 @@
       <bpmn:incoming>flujo-validar-a-gestion-cliente</bpmn:incoming>
       <bpmn:outgoing>flujo-gestion-cliente-a-revisar-datos</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:sequenceFlow id="flujo-error-reserva-a-notificar" sourceRef="Event_1rjxxez" targetRef="notificar-cliente-reserva-fallida" />
-    <bpmn:boundaryEvent id="Event_1rjxxez" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
+    <bpmn:sequenceFlow id="flujo-error-reserva-a-notificar" sourceRef="evento-compensar-reserva" targetRef="notificar-cliente-reserva-fallida" />
+    <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
       <bpmn:outgoing>flujo-error-reserva-a-notificar</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDefinition_1bfojac" />
     </bpmn:boundaryEvent>
@@ -170,7 +170,7 @@
           <dc:Bounds x="325" y="196" width="50" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1mp78mk_di" bpmnElement="Event_1rjxxez">
+      <bpmndi:BPMNShape id="Event_1mp78mk_di" bpmnElement="evento-compensar-reserva">
         <dc:Bounds x="772" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="806" y="203" width="88" height="14" />

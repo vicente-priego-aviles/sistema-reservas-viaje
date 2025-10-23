@@ -1,0 +1,98 @@
+# ============================================================================
+# PERFIL DE PRODUCCIÓN (prod)
+# ============================================================================
+
+# ============================================================================
+# BASE DE DATOS - POSTGRESQL
+# ============================================================================
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/clientedb}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+  h2:
+    console:
+      enabled: false
+
+# ============================================================================
+# SERVIDOR - PRODUCCIÓN
+# ============================================================================
+server:
+  port: ${SERVER_PORT:9080}
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+# ============================================================================
+# CAMUNDA - PRODUCCIÓN
+# ============================================================================
+camunda:
+  client:
+    mode: self-managed
+    zeebe:
+      gateway-address: ${ZEEBE_GATEWAY_ADDRESS}
+      rest-address: ${ZEEBE_REST_ADDRESS}
+      security:
+        plaintext: false
+    auth:
+      username: ${CAMUNDA_USERNAME}
+      password: ${CAMUNDA_PASSWORD}
+    worker:
+      threads: 8
+      max-jobs-active: 20
+
+# ============================================================================
+# LOGGING - MODO PRODUCCIÓN
+# ============================================================================
+logging:
+  level:
+    root: WARN
+    dev.javacadabra: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+    io.camunda: INFO
+
+  file:
+    name: /var/log/servicio-cliente/application.log
+    max-size: 100MB
+    max-history: 90
+
+# ============================================================================
+# ACTUATOR - PRODUCCIÓN
+# ============================================================================
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+
+  metrics:
+    tags:
+      environment: production
+
+# ============================================================================
+# SWAGGER - DESHABILITADO EN PRODUCCIÓN
+# ============================================================================
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

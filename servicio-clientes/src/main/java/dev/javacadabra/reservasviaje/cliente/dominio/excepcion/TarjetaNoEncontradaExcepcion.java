@@ -1,47 +1,41 @@
 package dev.javacadabra.reservasviaje.cliente.dominio.excepcion;
 
-import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.TarjetaId;
-
 /**
- * Excepción lanzada cuando una tarjeta no es encontrada en el sistema.
+ * Excepción lanzada cuando se intenta acceder a una tarjeta
+ * que no existe en el agregado Cliente.
  *
- * <p>Esta excepción indica que se intentó acceder a una tarjeta
- * que no existe en el repositorio o no está asociada al cliente.
+ * <p>Esto puede ocurrir cuando:
+ * <ul>
+ *   <li>Se intenta obtener una tarjeta con un ID inexistente</li>
+ *   <li>Se intenta eliminar una tarjeta que ya fue eliminada</li>
+ *   <li>Se intenta actualizar una tarjeta que no pertenece al cliente</li>
+ * </ul>
  *
  * @author javacadabra
  * @version 1.0.0
  */
 public class TarjetaNoEncontradaExcepcion extends ClienteDominioExcepcion {
 
-    private final String tarjetaId;
-
     /**
-     * Constructor con ID de la tarjeta.
+     * Constructor con el ID de la tarjeta no encontrada.
      *
-     * @param tarjetaId ID de la tarjeta no encontrada
-     */
-    public TarjetaNoEncontradaExcepcion(TarjetaId tarjetaId) {
-        super(String.format("Tarjeta no encontrada con ID: %s", tarjetaId.valor()));
-        this.tarjetaId = tarjetaId.valor();
-    }
-
-    /**
-     * Constructor con ID de la tarjeta como String.
-     *
-     * @param tarjetaId ID de la tarjeta no encontrada
+     * @param tarjetaId identificador de la tarjeta
      */
     public TarjetaNoEncontradaExcepcion(String tarjetaId) {
-        super(String.format("Tarjeta no encontrada con ID: %s", tarjetaId));
-        this.tarjetaId = tarjetaId;
+        super(String.format("La tarjeta con ID %s no fue encontrada", tarjetaId));
     }
 
     /**
-     * Obtiene el ID de la tarjeta no encontrada.
+     * Constructor con el ID de la tarjeta y el ID del cliente.
      *
-     * @return ID de la tarjeta
+     * @param tarjetaId identificador de la tarjeta
+     * @param clienteId identificador del cliente
      */
-    public String getTarjetaId() {
-        return tarjetaId;
+    public TarjetaNoEncontradaExcepcion(String tarjetaId, String clienteId) {
+        super(String.format(
+                "La tarjeta con ID %s no fue encontrada para el cliente %s",
+                tarjetaId,
+                clienteId
+        ));
     }
 }
-

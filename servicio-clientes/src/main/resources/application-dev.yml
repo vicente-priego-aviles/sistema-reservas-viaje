@@ -1,0 +1,76 @@
+# ============================================================================
+# PERFIL DE DESARROLLO (dev)
+# ============================================================================
+
+# ============================================================================
+# BASE DE DATOS - H2 EN MEMORIA
+# ============================================================================
+spring:
+  datasource:
+    url: jdbc:h2:mem:clientedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# ============================================================================
+# SERVIDOR
+# ============================================================================
+server:
+  port: 9080
+
+# ============================================================================
+# CAMUNDA - DESARROLLO LOCAL
+# ============================================================================
+camunda:
+  client:
+    mode: self-managed
+    zeebe:
+      gateway-address: localhost:26500
+      rest-address: http://localhost:8080
+    auth:
+      username: demo
+      password: demo
+
+# ============================================================================
+# LOGGING - MODO DESARROLLO
+# ============================================================================
+logging:
+  level:
+    root: INFO
+    dev.javacadabra: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    io.camunda.zeebe: DEBUG
+    com.zaxxer.hikari: DEBUG
+
+# ============================================================================
+# ACTUATOR - DESARROLLO
+# ============================================================================
+management:
+  endpoint:
+    health:
+      show-details: always
+
+# ============================================================================
+# SWAGGER - HABILITADO EN DESARROLLO
+# ============================================================================
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
