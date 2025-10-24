@@ -86,8 +86,8 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
 
         log.debug("✅ Cliente guardado exitosamente: {}", entidadGuardada.getId());
 
-        // Convertir de vuelta a dominio
-        return clienteMapper.aDominio(entidadGuardada);
+        // ✅ Convertir de vuelta a dominio pasando tarjetaMapper
+        return clienteMapper.aDominio(entidadGuardada, tarjetaMapper);
     }
 
     @Override
@@ -131,7 +131,8 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
         return repositorioSpringData.findByIdWithTarjetas(clienteId.valor())
                 .map(entidad -> {
                     log.debug("✅ Cliente encontrado: {}", clienteId);
-                    return clienteMapper.aDominio(entidad);
+                    // ✅ Pasar tarjetaMapper como segundo parámetro
+                    return clienteMapper.aDominio(entidad, tarjetaMapper);
                 });
     }
 
@@ -146,7 +147,8 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
         return repositorioSpringData.findByEmailIgnoreCase(email)
                 .map(entidad -> {
                     log.debug("✅ Cliente encontrado por email: {}", email);
-                    return clienteMapper.aDominio(entidad);
+                    // ✅ Pasar tarjetaMapper como segundo parámetro
+                    return clienteMapper.aDominio(entidad, tarjetaMapper);
                 });
     }
 
@@ -161,7 +163,8 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
         return repositorioSpringData.findByDni(dni)
                 .map(entidad -> {
                     log.debug("✅ Cliente encontrado por DNI");
-                    return clienteMapper.aDominio(entidad);
+                    // ✅ Pasar tarjetaMapper como segundo parámetro
+                    return clienteMapper.aDominio(entidad, tarjetaMapper);
                 });
     }
 
@@ -195,7 +198,8 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
 
         log.debug("✅ Se encontraron {} clientes", entidades.size());
 
-        return clienteMapper.aDominioList(entidades);
+        // ✅ Pasar tarjetaMapper como segundo parámetro
+        return clienteMapper.aDominioList(entidades, tarjetaMapper);
     }
 
     @Override
@@ -228,11 +232,44 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
     private void actualizarEntidadExistente(Cliente cliente, ClienteEntidad entidadExistente) {
         log.debug("🔄 Actualizando datos de entidad existente");
 
-        // Actualizar campos simples
-        clienteMapper.updateEntidadJPA(cliente, entidadExistente);
+        // ✅ Actualizar campos simples manualmente
+        actualizarCamposSimples(cliente, entidadExistente);
 
         // Sincronizar colección de tarjetas
         sincronizarTarjetas(cliente, entidadExistente);
+    }
+
+    /**
+     * Actualiza los campos simples de la entidad JPA desde el agregado de dominio.
+     *
+     * <p>Este método actualiza solo los campos que pueden cambiar, sin tocar
+     * el ID ni las colecciones (las tarjetas se sincronizan aparte).
+     *
+     * @param cliente agregado de dominio con datos actualizados
+     * @param entidad entidad JPA a actualizar
+     */
+    private void actualizarCamposSimples(Cliente cliente, ClienteEntidad entidad) {
+        // Datos personales
+        entidad.setDni(cliente.getDatosPersonales().dni());
+        entidad.setNombre(cliente.getDatosPersonales().nombre());
+        entidad.setApellidos(cliente.getDatosPersonales().apellidos());
+        entidad.setEmail(cliente.getDatosPersonales().email());
+        entidad.setTelefono(cliente.getDatosPersonales().telefono());
+        entidad.setFechaNacimiento(cliente.getDatosPersonales().fechaNacimiento());
+
+        // Dirección
+        entidad.setCalle(cliente.getDireccion().calle());
+        entidad.setCiudad(cliente.getDireccion().ciudad());
+        entidad.setCodigoPostal(cliente.getDireccion().codigoPostal());
+        entidad.setProvincia(cliente.getDireccion().provincia());
+        entidad.setPais(cliente.getDireccion().pais());
+
+        // Estado
+        entidad.setEstado(ClienteEntidad.EstadoClienteEnum.valueOf(cliente.getEstado().name()));
+
+        // Fechas y otros campos
+        entidad.setFechaModificacion(cliente.getFechaActualizacion());
+        entidad.setMotivoBloqueo(cliente.getMotivoBloqueo());
     }
 
     /**
