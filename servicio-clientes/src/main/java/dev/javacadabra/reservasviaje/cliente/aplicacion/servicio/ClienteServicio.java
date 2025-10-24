@@ -342,53 +342,7 @@ public class ClienteServicio implements
         return clienteMapper.aDTO(clienteDesbloqueado);
     }
 
-    @Override
-    @Transactional
-    public ClienteDTO iniciarProcesoReserva(String clienteId) {
-        log.info("🚀 Iniciando proceso de reserva para cliente: {}", clienteId);
 
-        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
-
-        cliente.iniciarProcesoReserva();
-
-        Cliente clienteActualizado = clienteRepositorio.save(cliente);
-
-        log.info("✅ Proceso de reserva iniciado para cliente: {}", clienteId);
-
-        return clienteMapper.aDTO(clienteActualizado);
-    }
-
-    @Override
-    @Transactional
-    public ClienteDTO confirmarReserva(String clienteId) {
-        log.info("✅ Confirmando reserva para cliente: {}", clienteId);
-
-        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
-
-        cliente.confirmarReserva();
-
-        Cliente clienteActualizado = clienteRepositorio.save(cliente);
-
-        log.info("✅ Reserva confirmada para cliente: {}", clienteId);
-
-        return clienteMapper.aDTO(clienteActualizado);
-    }
-
-    @Override
-    @Transactional
-    public ClienteDTO finalizarReserva(String clienteId) {
-        log.info("🏁 Finalizando reserva para cliente: {}", clienteId);
-
-        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
-
-        cliente.finalizarReserva();
-
-        Cliente clienteActualizado = clienteRepositorio.save(cliente);
-
-        log.info("✅ Reserva finalizada para cliente: {}", clienteId);
-
-        return clienteMapper.aDTO(clienteActualizado);
-    }
 
     @Override
     @Transactional
@@ -404,6 +358,189 @@ public class ClienteServicio implements
         log.info("✅ Cliente desactivado: {}", clienteId);
 
         return clienteMapper.aDTO(clienteDesactivado);
+    }
+
+    /**
+     * Inicia el proceso de reserva para un cliente (sin reservaId específico).
+     *
+     * <p><strong>NOTA:</strong> Este método es parte de la interfaz {@link GestionarEstadoClienteUseCase}
+     * y no recibe un reservaId específico. Para casos de uso de Camunda donde se necesita
+     * el reservaId, usar {@link #iniciarProcesoReservaConId(String, String)}.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @return cliente actualizado como DTO
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en estado ACTIVO
+     */
+    @Override
+    @Transactional
+    public ClienteDTO iniciarProcesoReserva(String clienteId) {
+        log.info("🚀 Iniciando proceso de reserva para cliente: {} (sin reservaId específico)", clienteId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        // Llamar al método con reservaId = null (uso genérico)
+        cliente.iniciarProcesoReserva(null);
+
+        Cliente clienteActualizado = clienteRepositorio.save(cliente);
+
+        log.info("✅ Proceso de reserva iniciado para cliente: {}", clienteId);
+
+        return clienteMapper.aDTO(clienteActualizado);
+    }
+
+    /**
+     * Confirma la reserva de un cliente (sin reservaId específico).
+     *
+     * <p><strong>NOTA:</strong> Este método es parte de la interfaz {@link GestionarEstadoClienteUseCase}
+     * y no recibe un reservaId específico. Para casos de uso de Camunda donde se necesita
+     * el reservaId, usar {@link #confirmarReservaConId(String, String)}.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @return cliente actualizado como DTO
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en EN_PROCESO_RESERVA
+     */
+    @Override
+    @Transactional
+    public ClienteDTO confirmarReserva(String clienteId) {
+        log.info("✅ Confirmando reserva para cliente: {} (sin reservaId específico)", clienteId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        // Llamar al método con reservaId = null (uso genérico)
+        cliente.confirmarReserva(null);
+
+        Cliente clienteActualizado = clienteRepositorio.save(cliente);
+
+        log.info("✅ Reserva confirmada para cliente: {}", clienteId);
+
+        return clienteMapper.aDTO(clienteActualizado);
+    }
+
+    /**
+     * Finaliza el proceso de reserva de un cliente (sin reservaId específico).
+     *
+     * <p><strong>NOTA:</strong> Este método es parte de la interfaz {@link GestionarEstadoClienteUseCase}
+     * y no recibe un reservaId específico. Para casos de uso de Camunda donde se necesita
+     * el reservaId, usar {@link #finalizarReservaConId(String, String)}.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @return cliente actualizado como DTO
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en RESERVA_CONFIRMADA
+     */
+    @Override
+    @Transactional
+    public ClienteDTO finalizarReserva(String clienteId) {
+        log.info("🏁 Finalizando reserva para cliente: {} (sin reservaId específico)", clienteId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        // Llamar al método con reservaId = null (uso genérico)
+        cliente.finalizarReserva(null);
+
+        Cliente clienteActualizado = clienteRepositorio.save(cliente);
+
+        log.info("✅ Reserva finalizada para cliente: {}", clienteId);
+
+        return clienteMapper.aDTO(clienteActualizado);
+    }
+
+    // ==================== MÉTODOS NUEVOS PARA CAMUNDA WORKERS ====================
+
+    /**
+     * Obtiene el estado actual de un cliente.
+     *
+     * <p>Este método es utilizado por workers de Camunda para consultar
+     * el estado del cliente antes de realizar transiciones.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @return estado actual del cliente como String
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     */
+    public String obtenerEstadoCliente(String clienteId) {
+        log.debug("🔍 Obteniendo estado del cliente: {}", clienteId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        String estado = cliente.getEstado().name();
+
+        log.debug("📊 Estado del cliente {}: {}", clienteId, estado);
+
+        return estado;
+    }
+
+    /**
+     * Inicia el proceso de reserva para un cliente (con reservaId).
+     *
+     * <p>Este método es utilizado por el worker de Camunda para iniciar
+     * un proceso de reserva con un ID de reserva específico.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @param reservaId ID de la reserva
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en estado ACTIVO
+     */
+    @Transactional
+    public void iniciarProcesoReservaConId(String clienteId, String reservaId) {
+        log.info("🚀 Iniciando proceso de reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        cliente.iniciarProcesoReserva(reservaId);
+
+        clienteRepositorio.save(cliente);
+
+        log.info("✅ Proceso de reserva iniciado correctamente para cliente: {}", clienteId);
+    }
+
+    /**
+     * Confirma la reserva de un cliente tras un pago exitoso (con reservaId).
+     *
+     * <p>Este método es utilizado por el worker de Camunda para confirmar
+     * una reserva específica tras completarse el pago.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @param reservaId ID de la reserva
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en EN_PROCESO_RESERVA
+     */
+    @Transactional
+    public void confirmarReservaConId(String clienteId, String reservaId) {
+        log.info("✅ Confirmando reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        cliente.confirmarReserva(reservaId);
+
+        clienteRepositorio.save(cliente);
+
+        log.info("✅ Reserva confirmada correctamente para cliente: {}", clienteId);
+    }
+
+    /**
+     * Finaliza el proceso de reserva, devolviendo al cliente a estado ACTIVO (con reservaId).
+     *
+     * <p>Este método es utilizado por el worker de Camunda para finalizar
+     * una reserva específica y retornar el cliente a estado ACTIVO.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @param reservaId ID de la reserva
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en RESERVA_CONFIRMADA
+     */
+    @Transactional
+    public void finalizarReservaConId(String clienteId, String reservaId) {
+        log.info("🏁 Finalizando reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        cliente.finalizarReserva(reservaId);
+
+        clienteRepositorio.save(cliente);
+
+        log.info("✅ Reserva finalizada correctamente para cliente: {}", clienteId);
     }
 
     // ==================== MÉTODOS PRIVADOS DE UTILIDAD ====================

@@ -309,12 +309,13 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
     /**
      * Inicia el proceso de reserva de un viaje.
      *
+     * @param reservaId ID de la reserva que se está iniciando
      * @throws ClienteBloqueadoExcepcion si el cliente está bloqueado
      * @throws ClienteInactivoExcepcion si el cliente está inactivo
      * @throws IllegalStateException si el cliente no está en estado ACTIVO
      */
-    public void iniciarProcesoReserva() {
-        log.debug("🔍 Iniciando proceso de reserva para cliente: {}", clienteId);
+    public void iniciarProcesoReserva(String reservaId) {
+        log.debug("🔍 Iniciando proceso de reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
 
         validarEstadoParaOperacion("iniciar proceso de reserva");
 
@@ -325,19 +326,30 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
             );
         }
 
+        EstadoCliente estadoAnterior = this.estado;
         this.estado = EstadoCliente.EN_PROCESO_RESERVA;
         this.fechaActualizacion = LocalDateTime.now();
 
-        log.info("🚀 Proceso de reserva iniciado para cliente: {}", clienteId);
+        // Publicar evento de dominio
+        registerEvent(new ProcesoReservaIniciadoEvento(
+                clienteId.valor(),
+                reservaId,
+                estadoAnterior.name(),
+                EstadoCliente.EN_PROCESO_RESERVA.name(),
+                LocalDateTime.now()
+        ));
+
+        log.info("🚀 Proceso de reserva iniciado para cliente: {} - Reserva: {}", clienteId, reservaId);
     }
 
     /**
      * Confirma la reserva tras un pago exitoso.
      *
+     * @param reservaId ID de la reserva confirmada
      * @throws IllegalStateException si el cliente no está en EN_PROCESO_RESERVA
      */
-    public void confirmarReserva() {
-        log.debug("🔍 Confirmando reserva para cliente: {}", clienteId);
+    public void confirmarReserva(String reservaId) {
+        log.debug("🔍 Confirmando reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
 
         if (estado != EstadoCliente.EN_PROCESO_RESERVA) {
             throw new IllegalStateException(
@@ -346,19 +358,30 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
             );
         }
 
+        EstadoCliente estadoAnterior = this.estado;
         this.estado = EstadoCliente.RESERVA_CONFIRMADA;
         this.fechaActualizacion = LocalDateTime.now();
 
-        log.info("✅ Reserva confirmada para cliente: {}", clienteId);
+        // Publicar evento de dominio
+        registerEvent(new ReservaConfirmadaEvento(
+                clienteId.valor(),
+                reservaId,
+                estadoAnterior.name(),
+                EstadoCliente.RESERVA_CONFIRMADA.name(),
+                LocalDateTime.now()
+        ));
+
+        log.info("✅ Reserva confirmada para cliente: {} - Reserva: {}", clienteId, reservaId);
     }
 
     /**
      * Finaliza el proceso de reserva, devolviendo al cliente a estado ACTIVO.
      *
+     * @param reservaId ID de la reserva finalizada
      * @throws IllegalStateException si el cliente no está en RESERVA_CONFIRMADA
      */
-    public void finalizarReserva() {
-        log.debug("🔍 Finalizando reserva para cliente: {}", clienteId);
+    public void finalizarReserva(String reservaId) {
+        log.debug("🔍 Finalizando reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
 
         if (estado != EstadoCliente.RESERVA_CONFIRMADA) {
             throw new IllegalStateException(
@@ -367,10 +390,20 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
             );
         }
 
+        EstadoCliente estadoAnterior = this.estado;
         this.estado = EstadoCliente.ACTIVO;
         this.fechaActualizacion = LocalDateTime.now();
 
-        log.info("🏁 Reserva finalizada para cliente: {}", clienteId);
+        // Publicar evento de dominio
+        registerEvent(new ReservaFinalizadaEvento(
+                clienteId.valor(),
+                reservaId,
+                estadoAnterior.name(),
+                EstadoCliente.ACTIVO.name(),
+                LocalDateTime.now()
+        ));
+
+        log.info("🏁 Reserva finalizada para cliente: {} - Reserva: {}", clienteId, reservaId);
     }
 
     /**
