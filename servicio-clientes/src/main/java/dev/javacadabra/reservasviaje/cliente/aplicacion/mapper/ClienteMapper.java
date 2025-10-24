@@ -61,10 +61,7 @@ public interface ClienteMapper {
     @Mapping(target = "clienteId", source = "clienteId", qualifiedByName = "clienteIdToString")
     @Mapping(target = "nombreCompleto", expression = "java(cliente.getDatosPersonales().obtenerNombreCompleto())")
     @Mapping(target = "email", source = "datosPersonales.email")
-    @Mapping(target = "telefono", source = "datosPersonales.telefono")
     @Mapping(target = "estado", source = "estado", qualifiedByName = "estadoToString")
-    @Mapping(target = "ciudad", source = "direccion.ciudad")
-    @Mapping(target = "pais", source = "direccion.pais")
     @Mapping(target = "cantidadTarjetas", expression = "java(cliente.getCantidadTarjetas())")
     ClienteResumenDTO aResumenDTO(Cliente cliente);
 

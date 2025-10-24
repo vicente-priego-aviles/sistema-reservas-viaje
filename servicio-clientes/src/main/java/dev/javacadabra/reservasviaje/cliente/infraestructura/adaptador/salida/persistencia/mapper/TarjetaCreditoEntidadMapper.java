@@ -5,6 +5,7 @@ import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.*;
 import dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.salida.persistencia.entidad.TarjetaCreditoEntidad;
 import org.mapstruct.*;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public interface TarjetaCreditoEntidadMapper {
                 stringToNumeroTarjeta(entidad.getNumeroEncriptado()),
                 YearMonth.of(entidad.getAnioExpiracion(), entidad.getMesExpiracion()),
                 enumToTipo(entidad.getTipoTarjeta()),
-                entidad.getFechaCreacion() != null ? entidad.getFechaCreacion() : java.time.LocalDate.now(),
+                (entidad.getFechaCreacion() != null ? entidad.getFechaCreacion() : LocalDateTime.now()),
                 entidad.getValidada() != null ? entidad.getValidada() : false,
                 entidad.getMotivoRechazo()
         );

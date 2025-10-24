@@ -5,6 +5,7 @@ import lombok.*;
 import org.jmolecules.ddd.annotation.Entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 
 /**
@@ -72,7 +73,7 @@ public class TarjetaCredito {
     /**
      * Fecha de creación del registro.
      */
-    private LocalDate fechaCreacion;
+    private LocalDateTime fechaCreacion;
 
     /**
      * Indica si la tarjeta fue validada externamente.
@@ -126,7 +127,7 @@ public class TarjetaCredito {
                 .fechaExpiracion(fechaExpiracion)
                 .cvv(cvv)
                 .tipoTarjeta(tipo)
-                .fechaCreacion(LocalDate.now())
+                .fechaCreacion(LocalDateTime.now())
                 .validada(false)
                 .motivoRechazo(null)
                 .build();
@@ -151,7 +152,7 @@ public class TarjetaCredito {
             NumeroTarjeta numeroTarjeta,
             YearMonth fechaExpiracion,
             TipoTarjeta tipoTarjeta,
-            LocalDate fechaCreacion,
+            LocalDateTime fechaCreacion,
             boolean validada,
             String motivoRechazo
     ) {

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @DomainEvent
 public record ReservaFinalizadaEvento(
-        Long clienteId,
+        String clienteId,
         String reservaId,
         String estadoAnterior,
         String estadoNuevo,
