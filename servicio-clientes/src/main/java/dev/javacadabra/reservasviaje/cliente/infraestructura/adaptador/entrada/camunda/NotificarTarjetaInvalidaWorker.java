@@ -88,7 +88,7 @@ public class NotificarTarjetaInvalidaWorker {
      * @return mapa con variables de salida
      * @throws ZeebeBpmnError si ocurre un error durante el procesamiento
      */
-    @JobWorker(type = "notifyInvalidCreditCard", autoComplete = true)
+    @JobWorker(type = "notificar-tarjeta-invalida", autoComplete = true)
     public Map<String, Object> notificarTarjetaInvalida(ActivatedJob job) {
         log.info("💳 Iniciando notificación de tarjeta inválida - Job: {}", job.getKey());
 
