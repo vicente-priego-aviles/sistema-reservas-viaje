@@ -6,7 +6,7 @@ import dev.javacadabra.reservasviaje.coche.dominio.modelo.objetovalor.ReservaCoc
 import java.util.Optional;
 
 /**
- * Puerto de salida para el repositorio de reservas de coches.
+ * Puerto de salida para el repositorio de Pagos de coches.
  * Define las operaciones de persistencia necesarias desde el dominio.
  *
  * <p>Siguiendo arquitectura hexagonal, esta interfaz pertenece a la capa

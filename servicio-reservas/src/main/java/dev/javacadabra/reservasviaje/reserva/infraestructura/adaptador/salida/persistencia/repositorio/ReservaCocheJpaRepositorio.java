@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Repositorio JPA para operaciones de persistencia de reservas de coche.
+ * Repositorio JPA para operaciones de persistencia de Pagos de coche.
  */
 @Repository
 public interface ReservaCocheJpaRepositorio extends JpaRepository<ReservaCocheEntidad, Long> {

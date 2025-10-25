@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 /**
  * Agregado raíz que representa una reserva de hotel.
- * Gestiona toda la lógica de negocio relacionada con reservas de hoteles.
+ * Gestiona toda la lógica de negocio relacionada con Pagos de hoteles.
  */
 @AggregateRoot
 @Getter

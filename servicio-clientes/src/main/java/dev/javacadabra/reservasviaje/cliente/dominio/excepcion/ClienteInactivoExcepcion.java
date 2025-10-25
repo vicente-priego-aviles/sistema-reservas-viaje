@@ -6,7 +6,7 @@ package dev.javacadabra.reservasviaje.cliente.dominio.excepcion;
  *
  * <p>Un cliente inactivo no puede:
  * <ul>
- *   <li>Realizar reservas de viajes</li>
+ *   <li>Realizar Pagos de viajes</li>
  *   <li>Actualizar sus datos personales</li>
  *   <li>Agregar o eliminar tarjetas de crédito</li>
  * </ul>

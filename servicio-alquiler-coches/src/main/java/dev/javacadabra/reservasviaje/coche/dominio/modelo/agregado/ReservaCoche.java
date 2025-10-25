@@ -57,7 +57,7 @@ public class ReservaCoche {
 
     public void cancelar() {
         if (this.estado != EstadoReservaCoche.RESERVADA) {
-            throw new IllegalStateException("Solo se pueden cancelar reservas confirmadas");
+            throw new IllegalStateException("Solo se pueden cancelar Pagos confirmadas");
         }
 
         this.estado = EstadoReservaCoche.CANCELADA;

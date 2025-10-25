@@ -28,7 +28,7 @@ import java.util.List;
  * @param tarjetas lista de tarjetas de crédito del cliente
  * @param cantidadTarjetas cantidad total de tarjetas
  * @param tieneTarjetasValidas indica si tiene al menos una tarjeta válida
- * @param puedeRealizarReservas indica si puede realizar reservas
+ * @param puedeRealizarPagos indica si puede realizar Pagos
  * @param estaActivo indica si el cliente está en estado ACTIVO
  * @param estaBloqueado indica si el cliente está bloqueado
  * @param estaEnProcesoReserva indica si tiene una reserva en proceso
@@ -48,7 +48,7 @@ public record ClienteDTO(
         List<TarjetaCreditoDTO> tarjetas,
         int cantidadTarjetas,
         boolean tieneTarjetasValidas,
-        boolean puedeRealizarReservas,
+        boolean puedeRealizarPagos,
         boolean estaActivo,
         boolean estaBloqueado,
         boolean estaEnProcesoReserva,

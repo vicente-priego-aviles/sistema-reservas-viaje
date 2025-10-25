@@ -50,7 +50,7 @@ public class ReservaVuelo {
 
     public void cancelar() {
         if (this.estado != EstadoReservaVuelo.RESERVADA) {
-            throw new IllegalStateException("Solo se pueden cancelar reservas confirmadas");
+            throw new IllegalStateException("Solo se pueden cancelar Vuelos confirmadas");
         }
 
         this.estado = EstadoReservaVuelo.CANCELADA;

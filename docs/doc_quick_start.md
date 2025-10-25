@@ -1,4 +1,4 @@
-# 🚀 Quick Start - Sistema de Reservas de Viaje
+# 🚀 Quick Start - Sistema de Pagos de Viaje
 
 Esta guía te ayudará a tener el sistema funcionando en **menos de 5 minutos**.
 
@@ -34,8 +34,8 @@ git --version
 ### Paso 1: Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
-cd sistema-reservas-viaje
+git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
+cd sistema-Pagos-viaje
 ```
 
 ### Paso 2: Levantar el Sistema
@@ -68,7 +68,7 @@ Abre tu navegador y verifica los siguientes endpoints:
 - 🏨 **Hoteles**: http://localhost:9082/actuator/health
 - 🚗 **Coches**: http://localhost:9083/actuator/health
 - 💳 **Pagos**: http://localhost:9084/actuator/health
-- 🎯 **Reservas**: http://localhost:9090/actuator/health
+- 🎯 **Pagos**: http://localhost:9090/actuator/health
 
 **Todos deberían devolver**: `{"status":"UP"}`
 
@@ -101,7 +101,7 @@ Monto: 1500
 
 ```bash
 # Iniciar proceso de reserva
-curl -X POST http://localhost:9090/api/reservas/iniciar \
+curl -X POST http://localhost:9090/api/Pagos/iniciar \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -138,7 +138,7 @@ docker-compose logs -f servicio-vuelos
 docker-compose logs -f servicio-pagos
 
 # Ver últimas 100 líneas
-docker-compose logs --tail=100 servicio-reservas
+docker-compose logs --tail=100 servicio-Pagos
 ```
 
 ---
@@ -182,7 +182,7 @@ Cada microservicio tiene su propia documentación OpenAPI:
 - 🏨 **Hoteles**: http://localhost:9082/swagger-ui.html
 - 🚗 **Coches**: http://localhost:9083/swagger-ui.html
 - 💳 **Pagos**: http://localhost:9084/swagger-ui.html
-- 🎯 **Reservas**: http://localhost:9090/swagger-ui.html
+- 🎯 **Pagos**: http://localhost:9090/swagger-ui.html
 
 ### Ejemplos de Peticiones
 
@@ -201,7 +201,7 @@ curl http://localhost:9081/api/vuelos?origen=Madrid&destino=Barcelona
 #### Verificar Estado de Reserva
 
 ```bash
-curl http://localhost:9090/api/reservas/{reservaId}/estado
+curl http://localhost:9090/api/Pagos/{reservaId}/estado
 ```
 
 ---
@@ -253,10 +253,10 @@ docker-compose -f docker-compose-camunda.yml restart
 docker-compose -f docker-compose-camunda.yml ps
 
 # Verificar logs del microservicio
-docker-compose logs servicio-reservas | grep "zeebe"
+docker-compose logs servicio-Pagos | grep "zeebe"
 
 # Reintentar conexión
-docker-compose restart servicio-reservas
+docker-compose restart servicio-Pagos
 ```
 
 ### Problema: Base de datos H2 corrupta
@@ -283,8 +283,8 @@ Ahora que tienes el sistema funcionando:
 ## 🆘 ¿Necesitas Ayuda?
 
 - 📖 Consulta la [documentación completa](../README_2.md)
-- 🐛 Reporta issues en [GitHub](https://github.com/tu-usuario/sistema-reservas-viaje/issues)
-- 💬 Pregunta en [Discussions](https://github.com/tu-usuario/sistema-reservas-viaje/discussions)
+- 🐛 Reporta issues en [GitHub](https://github.com/tu-usuario/sistema-Pagos-viaje/issues)
+- 💬 Pregunta en [Discussions](https://github.com/tu-usuario/sistema-Pagos-viaje/discussions)
 
 ---
 

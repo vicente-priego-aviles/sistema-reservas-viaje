@@ -6,7 +6,7 @@ import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.ReservaI
 import java.util.Optional;
 
 /**
- * Puerto de salida para operaciones de persistencia de reservas de coche.
+ * Puerto de salida para operaciones de persistencia de Pagos de coche.
  * Define el contrato que debe implementar el adaptador de persistencia.
  */
 public interface ReservaCochePuerto {

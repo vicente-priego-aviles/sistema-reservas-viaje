@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ConfirmarReservaServicio implements ConfirmarReservaPuertoEntrada {
+public class ConfirmarPagoservicio implements ConfirmarReservaPuertoEntrada {
 
     private final PagoRepositorioPuertoSalida repositorio;
 

@@ -12,7 +12,7 @@ y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/
 ### 🔄 En Desarrollo (rama: feature/vaadin-ui)
 
 #### Añadido
-- Dashboard principal con estadísticas de reservas
+- Dashboard principal con estadísticas de Pagos
 - Formulario wizard para nueva reserva
 - Vista de gestión de clientes
 
@@ -26,7 +26,7 @@ y este proyecto se adhiere a [Versionado Semántico](https://semver.org/lang/es/
 
 ### 🎉 Release Inicial - MVP
 
-Primera versión funcional del Sistema de Reservas de Viaje con arquitectura de microservicios y Camunda Platform 8.
+Primera versión funcional del Sistema de Pagos de Viaje con arquitectura de microservicios y Camunda Platform 8.
 
 #### ✨ Añadido
 
@@ -43,22 +43,22 @@ Primera versión funcional del Sistema de Reservas de Viaje con arquitectura de 
   - Gestión de estados del cliente
   - API REST con OpenAPI
 - **servicio-vuelos** (Puerto 9081)
-  - Reservas de vuelos
+  - Pagos de vuelos
   - Cancelaciones con compensación
   - Job Workers para Camunda
 - **servicio-hoteles** (Puerto 9082)
-  - Reservas de hoteles
+  - Pagos de hoteles
   - Cancelaciones con compensación
   - Integración con Zeebe
 - **servicio-alquiler-coches** (Puerto 9083)
-  - Reservas de vehículos
+  - Pagos de vehículos
   - Cancelaciones con compensación
   - Workers de Camunda
 - **servicio-pagos** (Puerto 9084)
   - Procesamiento de pagos
-  - Confirmación de reservas
+  - Confirmación de Pagos
   - Manejo de errores de pago
-- **servicio-reservas** (Puerto 9090)
+- **servicio-Pagos** (Puerto 9090)
   - Coordinador BPMN principal
   - Despliegue de procesos
   - Orquestación de workflows
@@ -70,7 +70,7 @@ Primera versión funcional del Sistema de Reservas de Viaje con arquitectura de 
   - Validación de tarjeta
   - Actualización de estado
 - Subproceso: Proceso de Reserva
-  - Reservas paralelas (Gateway paralelo)
+  - Pagos paralelas (Gateway paralelo)
   - Boundary events de compensación
   - User tasks de revisión
   - Subproceso de actualización de tarjeta (no interrumpible)
@@ -163,7 +163,7 @@ Primera versión funcional del Sistema de Reservas de Viaje con arquitectura de 
 - 9082: servicio-hoteles
 - 9083: servicio-alquiler-coches
 - 9084: servicio-pagos
-- 9090: servicio-reservas
+- 9090: servicio-Pagos
 - 8080: Camunda Operate
 - 8081: Camunda Tasklist
 - 26500: Zeebe gRPC
@@ -222,9 +222,9 @@ dev.javacadabra.reservasviaje.<dominio>/
 
 ## Enlaces
 
-- [Repositorio](https://github.com/tu-usuario/sistema-reservas-viaje)
-- [Issues](https://github.com/tu-usuario/sistema-reservas-viaje/issues)
-- [Pull Requests](https://github.com/tu-usuario/sistema-reservas-viaje/pulls)
+- [Repositorio](https://github.com/tu-usuario/sistema-Pagos-viaje)
+- [Issues](https://github.com/tu-usuario/sistema-Pagos-viaje/issues)
+- [Pull Requests](https://github.com/tu-usuario/sistema-Pagos-viaje/pulls)
 
 ---
 

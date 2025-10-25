@@ -1,11 +1,11 @@
-# 🎟️ Servicio de Reservas - Sistema de Reservas de Viaje
+# 🎟️ Servicio de Pagos - Sistema de Pagos de Viaje
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Camunda](https://img.shields.io/badge/Camunda-8.8.0-blue.svg)](https://camunda.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vicente-priego-aviles/sistema-Pagos-viaje/blob/main/LICENSE)
 
-> Microservicio de gestión de reservas (vuelos, hoteles y coches) implementado con **Arquitectura Hexagonal**, **Domain-Driven Design (DDD)** y orquestado por **Camunda Platform 8**.
+> Microservicio de gestión de Pagos (vuelos, hoteles y coches) implementado con **Arquitectura Hexagonal**, **Domain-Driven Design (DDD)** y orquestado por **Camunda Platform 8**.
 
 ---
 
@@ -32,7 +32,7 @@
 
 ## 🎯 Descripción General
 
-El **Servicio de Reservas** es un microservicio independiente que forma parte de un sistema distribuido de gestión de viajes. Su responsabilidad principal es gestionar la creación, modificación y cancelación de reservas de:
+El **Servicio de Pagos** es un microservicio independiente que forma parte de un sistema distribuido de gestión de viajes. Su responsabilidad principal es gestionar la creación, modificación y cancelación de Pagos de:
 
 - ✈️ **Vuelos**
 - 🏨 **Hoteles**
@@ -145,7 +145,7 @@ El diseño del dominio sigue los principios de **DDD** utilizando **JMolecules**
 ## 📁 Estructura del Proyecto
 
 ```
-servicio-reservas/
+servicio-Pagos/
 ├── src/
 │   ├── main/
 │   │   ├── java/dev/javacadabra/reservasviaje/reserva/
@@ -216,7 +216,7 @@ servicio-reservas/
 │   │   │   │   │   └── CancelacionNoPermitidaException.java
 │   │   │   │   │
 │   │   │   │   └── servicio/                  # @DomainService
-│   │   │   │       └── ValidadorReservaServicio.java
+│   │   │   │       └── ValidadorPagoservicio.java
 │   │   │   │
 │   │   │   └── infraestructura/               # 🟡 CAPA DE INFRAESTRUCTURA
 │   │   │       │
@@ -291,13 +291,13 @@ Implementado para gestionar transacciones distribuidas con compensaciones:
 ┌─────────────────────────────────────────────────────────┐
 │                    PROCESO PRINCIPAL                    │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │
-│  │   Validar   │→ │   Cliente   │→ │   Reservas  │→   │
+│  │   Validar   │→ │   Cliente   │→ │   Pagos  │→   │
 │  │   Datos     │  │             │  │             │    │
 │  └─────────────┘  └─────────────┘  └─────────────┘    │
 │                                           │             │
 │                                           ▼             │
 │  ┌──────────────────────────────────────────────────┐  │
-│  │        SUBPROCESO DE RESERVAS (PARALELO)        │  │
+│  │        SUBPROCESO DE Pagos (PARALELO)        │  │
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐      │  │
 │  │  │  Vuelo   │  │  Hotel   │  │  Coche   │      │  │
 │  │  └──────────┘  └──────────┘  └──────────┘      │  │
@@ -318,7 +318,7 @@ Implementado para gestionar transacciones distribuidas con compensaciones:
 ```
 
 **Características:**
-- ✅ Reservas ejecutadas en **paralelo** para mayor eficiencia
+- ✅ Pagos ejecutadas en **paralelo** para mayor eficiencia
 - ✅ **Compensaciones automáticas** si alguna reserva falla
 - ✅ **Consistencia eventual** garantizada
 - ✅ Manejo robusto de errores con `BpmnError`
@@ -481,8 +481,8 @@ public class ReservaVueloServicio {
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/vicente-priego-aviles/sistema-reservas-viaje.git
-cd sistema-reservas-viaje/servicio-reservas
+git clone https://github.com/vicente-priego-aviles/sistema-Pagos-viaje.git
+cd sistema-Pagos-viaje/servicio-Pagos
 ```
 
 ### 2. Levantar Infraestructura de Camunda
@@ -514,7 +514,7 @@ mvn spring-boot:run
 O directamente con Java:
 
 ```bash
-java -jar target/servicio-reservas-1.0.0.jar
+java -jar target/servicio-Pagos-1.0.0.jar
 ```
 
 ### 5. Verificar que el Servicio está Funcionando
@@ -541,11 +541,11 @@ server:
 # Configuración de Spring
 spring:
   application:
-    name: servicio-reservas
+    name: servicio-Pagos
   
   # Base de datos H2 (desarrollo)
   datasource:
-    url: jdbc:h2:mem:reservasdb
+    url: jdbc:h2:mem:Pagosdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -572,7 +572,7 @@ camunda:
       gateway-address: localhost:26500
       rest-address: http://localhost:8080
       prefer-rest-over-grpc: false
-    mode: simple
+    mode: self-managed
     auth:
       username: demo
       password: demo
@@ -599,7 +599,7 @@ logging:
 
 ```bash
 # Base de datos
-DB_URL=jdbc:postgresql://localhost:5432/reservas
+DB_URL=jdbc:postgresql://localhost:5432/Pagos
 DB_USERNAME=postgres
 DB_PASSWORD=secret
 
@@ -618,7 +618,7 @@ SERVER_PORT=9080
 
 ### Reserva de Vuelo
 
-**POST** `/api/reservas/vuelo`
+**POST** `/api/Pagos/vuelo`
 
 ```json
 {
@@ -669,7 +669,7 @@ SERVER_PORT=9080
 
 ### Reserva de Hotel
 
-**POST** `/api/reservas/hotel`
+**POST** `/api/Pagos/hotel`
 
 ```json
 {
@@ -690,7 +690,7 @@ SERVER_PORT=9080
 
 ### Reserva de Coche
 
-**POST** `/api/reservas/coche`
+**POST** `/api/Pagos/coche`
 
 ```json
 {
@@ -710,13 +710,13 @@ SERVER_PORT=9080
 
 ### Consultar Reserva
 
-**GET** `/api/reservas/{tipo}/{id}`
+**GET** `/api/Pagos/{tipo}/{id}`
 
 Donde `{tipo}` puede ser: `vuelo`, `hotel`, o `coche`
 
 ### Cancelar Reserva
 
-**DELETE** `/api/reservas/{tipo}/{id}`
+**DELETE** `/api/Pagos/{tipo}/{id}`
 
 **Body:**
 ```json
@@ -744,7 +744,7 @@ El proceso completo incluye:
 5. **Proceso de Pago** (Call Activity → subproceso-pago)
 6. **Confirmación Final**
 
-### Subproceso de Reservas (Ejecución Paralela)
+### Subproceso de Pagos (Ejecución Paralela)
 
 ```
      ┌────────────────────────────────────────┐

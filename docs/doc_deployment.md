@@ -8,8 +8,8 @@
 ### Namespace
 
 ```bash
-kubectl create namespace reservas-viaje
-kubectl config set-context --current --namespace=reservas-viaje
+kubectl create namespace Pagos-viaje
+kubectl config set-context --current --namespace=Pagos-viaje
 ```
 
 ### Deploy Camunda
@@ -19,7 +19,7 @@ helm repo add camunda https://helm.camunda.io
 helm repo update
 
 helm install camunda camunda/camunda-platform \
-  --namespace reservas-viaje \
+  --namespace Pagos-viaje \
   --set global.ingress.enabled=true \
   --set global.ingress.host=camunda.ejemplo.com
 ```
@@ -44,12 +44,12 @@ spec:
     spec:
       containers:
       - name: servicio-clientes
-        image: reservas/servicio-clientes:1.0.0
+        image: Pagos/servicio-clientes:1.0.0
         ports:
         - containerPort: 9080
         env:
         - name: ZEEBE_ADDRESS
-          value: "camunda-zeebe-gateway:26500"
+          value: "zeebe-gateway:26500"
         - name: SPRING_PROFILES_ACTIVE
           value: "prod"
         resources:

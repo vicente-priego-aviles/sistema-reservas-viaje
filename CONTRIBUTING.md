@@ -1,6 +1,6 @@
 # 🤝 Guía de Contribución
 
-¡Gracias por tu interés en contribuir al Sistema de Reservas de Viaje! Este documento proporciona pautas para contribuir al proyecto.
+¡Gracias por tu interés en contribuir al Sistema de Pagos de Viaje! Este documento proporciona pautas para contribuir al proyecto.
 
 ---
 
@@ -74,11 +74,11 @@ Para sugerir una mejora:
 # Fork el repositorio en GitHub
 
 # Clona tu fork
-git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
-cd sistema-reservas-viaje
+git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
+cd sistema-Pagos-viaje
 
 # Añade el repositorio original como remote
-git remote add upstream https://github.com/original-usuario/sistema-reservas-viaje.git
+git remote add upstream https://github.com/original-usuario/sistema-Pagos-viaje.git
 ```
 
 ### 2. Crea una Rama
@@ -238,7 +238,7 @@ Usa logs con iconos para claridad:
 
 ```java
 @Slf4j
-public class ReservaServicio {
+public class Pagoservicio {
     
     public void crearReserva(ReservaDTO reservaDTO) {
         log.info("🔍 Iniciando creación de reserva: {}", reservaDTO.getId());
@@ -370,7 +370,7 @@ Seguimos [Conventional Commits](https://www.conventionalcommits.org/es/).
 git commit -m "feat(clientes): añadir validación de email"
 
 # Bug fix
-git commit -m "fix(reservas): corregir compensación de vuelos"
+git commit -m "fix(Pagos): corregir compensación de vuelos"
 
 # Documentación
 git commit -m "docs(readme): actualizar guía de instalación"
@@ -379,7 +379,7 @@ git commit -m "docs(readme): actualizar guía de instalación"
 git commit -m "refactor(pagos): extraer lógica de validación"
 
 # Breaking change
-git commit -m "feat(api)!: cambiar estructura de respuesta de reservas
+git commit -m "feat(api)!: cambiar estructura de respuesta de Pagos
 
 BREAKING CHANGE: El campo 'id' ahora es 'reservaId'"
 ```
@@ -587,7 +587,7 @@ git checkout -b feat/mi-feature-metrics
 
 ## 🙏 Agradecimientos
 
-¡Gracias por contribuir al Sistema de Reservas de Viaje! Tu tiempo y esfuerzo son muy apreciados.
+¡Gracias por contribuir al Sistema de Pagos de Viaje! Tu tiempo y esfuerzo son muy apreciados.
 
 ---
 

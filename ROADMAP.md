@@ -1,4 +1,4 @@
-# 🗺️ Roadmap del Proyecto - Sistema de Reservas de Viaje
+# 🗺️ Roadmap del Proyecto - Sistema de Pagos de Viaje
 
 Este documento describe el plan de desarrollo del proyecto a través de diferentes versiones, organizadas en ramas de Git.
 
@@ -40,18 +40,18 @@ Establecer la arquitectura base del sistema con todos los componentes fundamenta
   - Validación de tarjetas de crédito
   - Gestión de estados
 - ✅ **servicio-vuelos** (Puerto 9081)
-  - Reservas de vuelos
+  - Pagos de vuelos
   - Cancelaciones con compensación
 - ✅ **servicio-hoteles** (Puerto 9082)
-  - Reservas de hoteles
+  - Pagos de hoteles
   - Cancelaciones con compensación
 - ✅ **servicio-alquiler-coches** (Puerto 9083)
-  - Reservas de vehículos
+  - Pagos de vehículos
   - Cancelaciones con compensación
 - ✅ **servicio-pagos** (Puerto 9084)
   - Procesamiento de pagos
-  - Confirmación de reservas
-- ✅ **servicio-reservas** (Puerto 9090)
+  - Confirmación de Pagos
+- ✅ **servicio-Pagos** (Puerto 9090)
   - Coordinador BPMN
   - Orquestación de procesos
 
@@ -120,7 +120,7 @@ Esta versión establece las bases sólidas del proyecto con:
 
 ### 🎯 Objetivos
 
-Proporcionar una interfaz de usuario moderna y reactiva para interactuar con el sistema de reservas, reemplazando los formularios básicos de Camunda.
+Proporcionar una interfaz de usuario moderna y reactiva para interactuar con el sistema de Pagos, reemplazando los formularios básicos de Camunda.
 
 ### 🔄 Características en Desarrollo
 
@@ -132,7 +132,7 @@ Proporcionar una interfaz de usuario moderna y reactiva para interactuar con el 
 
 #### Pantallas y Vistas
 - 🔄 Dashboard principal
-  - Vista general de reservas
+  - Vista general de Pagos
   - Estadísticas en tiempo real
   - Gráficos de estado de procesos
 - 🔄 Formulario de nueva reserva
@@ -142,7 +142,7 @@ Proporcionar una interfaz de usuario moderna y reactiva para interactuar con el 
 - 🔄 Gestión de clientes
   - CRUD de clientes
   - Validación de tarjetas
-  - Historial de reservas
+  - Historial de Pagos
 - 🔄 Monitoreo de procesos
   - Lista de instancias de proceso
   - Estado actual de cada reserva
@@ -191,7 +191,7 @@ Implementar observabilidad completa del sistema para producción con métricas, 
 
 #### Métricas
 - 📋 Micrometer + Prometheus
-  - Métricas de negocio (reservas, pagos, compensaciones)
+  - Métricas de negocio (Pagos, pagos, compensaciones)
   - Métricas técnicas (latencia, throughput, errores)
   - Métricas de JVM
   - Métricas de Camunda/Zeebe
@@ -267,7 +267,7 @@ Implementar seguridad robusta con autenticación, autorización y encriptación 
 #### Autorización
 - 📋 Roles y permisos (RBAC)
   - Administrador
-  - Agente de reservas
+  - Agente de Pagos
   - Cliente
 - 📋 Control de acceso a APIs
 - 📋 Control de acceso a User Tasks
@@ -317,7 +317,7 @@ Migrar de H2 a bases de datos adecuadas para producción con soporte de alta dis
 - 📋 PostgreSQL para microservicios transaccionales
   - servicio-clientes
   - servicio-pagos
-  - servicio-reservas
+  - servicio-Pagos
 - 📋 MongoDB para microservicios de catálogo
   - servicio-vuelos
   - servicio-hoteles
@@ -407,7 +407,7 @@ Para cada versión, se medirán las siguientes métricas:
 - ✅ Zero downtime deployments
 
 ### Negocio
-- ✅ Tasa de éxito de reservas > 95%
+- ✅ Tasa de éxito de Pagos > 95%
 - ✅ Tiempo de proceso completo < 5 minutos
 - ✅ Tasa de compensaciones < 5%
 

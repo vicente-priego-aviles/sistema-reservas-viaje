@@ -17,7 +17,7 @@ import java.util.Map;
  * Worker de Camunda para activar un cliente.
  *
  * <p>Este worker cambia el estado del cliente de PENDIENTE_VALIDACION a ACTIVO,
- * permitiéndole realizar reservas en el sistema.
+ * permitiéndole realizar Pagos en el sistema.
  *
  * <p><strong>Job Type:</strong> {@code activar-cliente}
  *
@@ -30,7 +30,7 @@ import java.util.Map;
  * <ul>
  *   <li>clienteActivado (Boolean): true si se activó exitosamente</li>
  *   <li>estadoCliente (String): Estado actualizado del cliente (ACTIVO)</li>
- *   <li>puedeRealizarReservas (Boolean): true si puede hacer reservas</li>
+ *   <li>puedeRealizarPagos (Boolean): true si puede hacer Pagos</li>
  * </ul>
  *
  * <p><strong>Errores BPMN que puede lanzar:</strong>
@@ -73,7 +73,7 @@ public class ActivarClienteWorker {
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("clienteActivado", true);
             resultado.put("estadoCliente", clienteActivado.estado());
-            resultado.put("puedeRealizarReservas", clienteActivado.puedeRealizarReservas());
+            resultado.put("puedeRealizarPagos", clienteActivado.puedeRealizarPagos());
             resultado.put("fechaActivacion", java.time.LocalDateTime.now().toString());
 
             log.info("✅ Cliente activado exitosamente: {} - Estado: {}",

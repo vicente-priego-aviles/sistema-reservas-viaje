@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 /**
  * Agregado raíz que representa una reserva de coche de alquiler.
- * Gestiona toda la lógica de negocio relacionada con reservas de coches.
+ * Gestiona toda la lógica de negocio relacionada con Pagos de coches.
  */
 @AggregateRoot
 @Getter

@@ -16,7 +16,7 @@
 
     <artifactId>servicio-clientes</artifactId>
     <name>Servicio de Clientes</name>
-    <description>Microservicio de gestión de clientes para el sistema de reservas de viaje</description>
+    <description>Microservicio de gestión de clientes para el sistema de Pagos de viaje</description>
     <packaging>jar</packaging>
 
     <!-- ============================================ -->

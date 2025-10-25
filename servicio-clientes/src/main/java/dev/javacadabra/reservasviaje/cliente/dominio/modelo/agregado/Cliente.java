@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Agregado Root Cliente - Representa un cliente del sistema de reservas de viajes.
+ * Agregado Root Cliente - Representa un cliente del sistema de Pagos de viajes.
  *
  * <p>Este agregado encapsula toda la información y comportamiento relacionado
  * con un cliente, incluyendo sus datos personales, dirección, estado y tarjetas
@@ -27,7 +27,7 @@ import java.util.List;
  *   <li>Un cliente puede tener máximo 3 tarjetas de crédito</li>
  *   <li>El email debe ser único en el sistema (validado en capa aplicación)</li>
  *   <li>El DNI debe ser único en el sistema (validado en capa aplicación)</li>
- *   <li>Solo se pueden hacer reservas si el estado es ACTIVO o EN_PROCESO_RESERVA</li>
+ *   <li>Solo se pueden hacer Pagos si el estado es ACTIVO o EN_PROCESO_RESERVA</li>
  *   <li>Un cliente bloqueado o inactivo no puede realizar operaciones</li>
  * </ul>
  *
@@ -109,7 +109,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
      *
      * <p>El cliente se crea con al menos una tarjeta de crédito válida
      * y en estado PENDIENTE_VALIDACION, lo que requiere que valide su
-     * email y teléfono antes de poder realizar reservas.
+     * email y teléfono antes de poder realizar Pagos.
      *
      * @param datosPersonales datos personales del cliente
      * @param direccion dirección postal del cliente
@@ -202,7 +202,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
      * Activa el cliente tras completar el proceso de validación.
      *
      * <p>El cliente pasa de PENDIENTE_VALIDACION a ACTIVO, lo que le
-     * permite realizar reservas de viajes.
+     * permite realizar Pagos de viajes.
      *
      * @throws IllegalStateException si el cliente no está en estado PENDIENTE_VALIDACION
      */
@@ -647,12 +647,12 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
     // ============================================
 
     /**
-     * Verifica si el cliente puede realizar reservas.
+     * Verifica si el cliente puede realizar Pagos.
      *
-     * @return true si puede realizar reservas, false en caso contrario
+     * @return true si puede realizar Pagos, false en caso contrario
      */
-    public boolean puedeRealizarReservas() {
-        return estado.puedeRealizarReservas() && tieneTarjetasValidas();
+    public boolean puedeRealizarPagos() {
+        return estado.puedeRealizarPagos() && tieneTarjetasValidas();
     }
 
     /**

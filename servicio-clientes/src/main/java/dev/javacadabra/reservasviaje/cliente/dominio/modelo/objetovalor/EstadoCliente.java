@@ -29,13 +29,13 @@ public enum EstadoCliente {
 
     /**
      * Cliente recién registrado, pendiente de validar email y teléfono.
-     * No puede realizar reservas hasta completar la validación.
+     * No puede realizar Pagos hasta completar la validación.
      */
     PENDIENTE_VALIDACION("Pendiente de Validación"),
 
     /**
      * Cliente activo y validado. Puede realizar todas las operaciones
-     * normales del sistema, incluyendo reservas de viajes.
+     * normales del sistema, incluyendo Pagos de viajes.
      */
     ACTIVO("Activo"),
 
@@ -53,7 +53,7 @@ public enum EstadoCliente {
 
     /**
      * Cliente bloqueado por problemas de seguridad, tarjeta inválida
-     * o detección de actividad sospechosa. No puede realizar reservas.
+     * o detección de actividad sospechosa. No puede realizar Pagos.
      * Requiere intervención manual para reactivar.
      */
     BLOQUEADO("Bloqueado"),
@@ -71,11 +71,11 @@ public enum EstadoCliente {
     }
 
     /**
-     * Verifica si el cliente puede realizar reservas en este estado.
+     * Verifica si el cliente puede realizar Pagos en este estado.
      *
-     * @return true si puede realizar reservas, false en caso contrario
+     * @return true si puede realizar Pagos, false en caso contrario
      */
-    public boolean puedeRealizarReservas() {
+    public boolean puedeRealizarPagos() {
         return this == ACTIVO || this == EN_PROCESO_RESERVA;
     }
 

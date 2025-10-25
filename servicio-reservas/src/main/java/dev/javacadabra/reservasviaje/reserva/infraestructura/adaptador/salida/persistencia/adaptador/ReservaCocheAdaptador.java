@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * Adaptador de persistencia para reservas de coche.
+ * Adaptador de persistencia para Pagos de coche.
  * Implementa el puerto de salida ReservaCochePuerto.
  * Traduce entre el dominio y la infraestructura JPA.
  */

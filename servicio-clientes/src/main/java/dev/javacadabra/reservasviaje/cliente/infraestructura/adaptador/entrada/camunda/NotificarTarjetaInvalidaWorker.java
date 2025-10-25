@@ -48,7 +48,7 @@ import java.util.Map;
  *   <li>{@code timestampNotificacion} (String) - Timestamp ISO-8601</li>
  *   <li>{@code urgencia} (String) - Nivel de urgencia: ALTA, MEDIA, BAJA</li>
  *   <li>{@code requiereActualizacion} (Boolean) - Si requiere actualizar tarjeta</li>
- *   <li>{@code bloquearReservas} (Boolean) - Si debe bloquear nuevas reservas</li>
+ *   <li>{@code bloquearPagos} (Boolean) - Si debe bloquear nuevas Pagos</li>
  * </ul>
  *
  * <p><strong>Errores BPMN que puede lanzar:</strong>
@@ -73,7 +73,7 @@ public class NotificarTarjetaInvalidaWorker {
     private static final int UMBRAL_INTENTOS_ALTO = 3;
     private static final int UMBRAL_INTENTOS_CRITICO = 5;
 
-    // Motivos que requieren bloqueo de reservas
+    // Motivos que requieren bloqueo de Pagos
     private static final String[] MOTIVOS_BLOQUEO = {
             "FRAUDE",
             "LISTA_NEGRA",
@@ -110,11 +110,11 @@ public class NotificarTarjetaInvalidaWorker {
             // 2. Determinar urgencia según motivo e intentos
             String urgencia = determinarUrgencia(motivoInvalidez, intentosPago);
 
-            // 3. Determinar si debe bloquear nuevas reservas
-            boolean bloquearReservas = debeBloquearReservas(motivoInvalidez, intentosPago);
+            // 3. Determinar si debe bloquear nuevas Pagos
+            boolean bloquearPagos = debeBloquearPagos(motivoInvalidez, intentosPago);
 
-            if (bloquearReservas) {
-                log.error("❌ Se recomienda bloquear reservas para el cliente: {}", clienteId);
+            if (bloquearPagos) {
+                log.error("❌ Se recomienda bloquear Pagos para el cliente: {}", clienteId);
             }
 
             // 4. Generar mensaje personalizado
@@ -123,7 +123,7 @@ public class NotificarTarjetaInvalidaWorker {
                     numeroEnmascarado,
                     motivoInvalidez,
                     intentosPago,
-                    bloquearReservas
+                    bloquearPagos
             );
 
             // 5. Determinar tipo de notificación
@@ -142,7 +142,7 @@ public class NotificarTarjetaInvalidaWorker {
             resultado.put("timestampNotificacion", timestampNotificacion);
             resultado.put("urgencia", urgencia);
             resultado.put("requiereActualizacion", true);
-            resultado.put("bloquearReservas", bloquearReservas);
+            resultado.put("bloquearPagos", bloquearPagos);
 
             // Variables adicionales para sistema de mensajería
             if (StringUtils.isNotBlank(emailCliente)) {
@@ -300,9 +300,9 @@ public class NotificarTarjetaInvalidaWorker {
     }
 
     /**
-     * Determina si se deben bloquear nuevas reservas.
+     * Determina si se deben bloquear nuevas Pagos.
      */
-    private boolean debeBloquearReservas(String motivoInvalidez, Integer intentosPago) {
+    private boolean debeBloquearPagos(String motivoInvalidez, Integer intentosPago) {
         String motivoUpper = motivoInvalidez.toUpperCase();
 
         // Bloquear por motivos de seguridad
@@ -328,7 +328,7 @@ public class NotificarTarjetaInvalidaWorker {
             String numeroEnmascarado,
             String motivoInvalidez,
             Integer intentosPago,
-            boolean bloquearReservas
+            boolean bloquearPagos
     ) {
         StringBuilder mensaje = new StringBuilder();
 
@@ -340,7 +340,7 @@ public class NotificarTarjetaInvalidaWorker {
         }
 
         // Mensaje principal según severidad
-        if (bloquearReservas) {
+        if (bloquearPagos) {
             mensaje.append("Le informamos que hemos detectado un problema crítico con su método de pago");
         } else {
             mensaje.append("Le informamos que su método de pago requiere actualización");
@@ -363,9 +363,9 @@ public class NotificarTarjetaInvalidaWorker {
         }
 
         // Acciones requeridas
-        if (bloquearReservas) {
+        if (bloquearPagos) {
             mensaje.append("⚠️ IMPORTANTE: Por seguridad, hemos suspendido temporalmente su capacidad ")
-                    .append("de realizar nuevas reservas hasta que actualice su información de pago.\n\n");
+                    .append("de realizar nuevas Pagos hasta que actualice su información de pago.\n\n");
         }
 
         mensaje.append("Por favor, actualice su información de pago lo antes posible:\n\n");

@@ -31,7 +31,7 @@ camunda:
       gateway-address: ${ZEEBE_ADDRESS:localhost:26500}
       rest-address: ${ZEEBE_REST:http://localhost:8080}
       prefer-rest-over-grpc: false
-    mode: simple
+    mode: self-managed
     auth:
       username: demo
       password: demo

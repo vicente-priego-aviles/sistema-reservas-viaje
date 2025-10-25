@@ -1,11 +1,11 @@
-# 🌍 Sistema de Reservas de Viaje
+# 🌍 Sistema de Pagos de Viaje
 
 [![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?style=flat-square&logo=spring)](https://spring.io/projects/spring-boot)
 [![Camunda](https://img.shields.io/badge/Camunda-8.7-blue?style=flat-square&logo=camunda)](https://camunda.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-> Sistema empresarial de reservas de viajes construido con **arquitectura de microservicios**, **Camunda Platform 8** como orquestador BPMN, **arquitectura hexagonal**, y **Domain-Driven Design (DDD)**.
+> Sistema empresarial de Pagos de viajes construido con **arquitectura de microservicios**, **Camunda Platform 8** como orquestador BPMN, **arquitectura hexagonal**, y **Domain-Driven Design (DDD)**.
 
 ---
 
@@ -32,10 +32,10 @@
 
 ## 🎯 Descripción del Proyecto
 
-Este sistema permite gestionar reservas completas de viajes, incluyendo:
+Este sistema permite gestionar Pagos completas de viajes, incluyendo:
 
-- ✈️ **Reservas de vuelos**
-- 🏨 **Reservas de hoteles**
+- ✈️ **Pagos de vuelos**
+- 🏨 **Pagos de hoteles**
 - 🚗 **Alquiler de vehículos**
 - 💳 **Procesamiento de pagos**
 - 👥 **Gestión de clientes**
@@ -49,7 +49,7 @@ El sistema implementa un **patrón Saga** con compensaciones automáticas, asegu
 - 🎯 **Arquitectura Hexagonal** - Separación clara entre dominio, aplicación e infraestructura
 - 🧩 **Domain-Driven Design** - Modelado explícito con JMolecules
 - 🔄 **Orquestación BPMN** - Camunda Platform 8 como motor de workflows
-- ⚡ **Procesamiento Paralelo** - Reservas simultáneas de vuelo, hotel y coche
+- ⚡ **Procesamiento Paralelo** - Pagos simultáneas de vuelo, hotel y coche
 - 🔁 **Patrón Saga** - Compensaciones automáticas en caso de error
 - 📊 **Observabilidad** - Health checks, métricas y logs estructurados
 - 🐳 **Containerización** - Docker y Docker Compose listos para producción
@@ -93,11 +93,11 @@ El sistema está compuesto por **6 microservicios independientes**:
 | Puerto | Microservicio | Responsabilidad | Agregado DDD |
 |--------|--------------|-----------------|--------------|
 | **9080** | 👥 **servicio-clientes** | Gestión de clientes, validación de tarjetas, estados | `Cliente` |
-| **9081** | ✈️ **servicio-vuelos** | Reservas y cancelaciones de vuelos | `ReservaVuelo` |
-| **9082** | 🏨 **servicio-hoteles** | Reservas y cancelaciones de hoteles | `ReservaHotel` |
-| **9083** | 🚗 **servicio-alquiler-coches** | Reservas y cancelaciones de vehículos | `ReservaAlquilerCoche` |
+| **9081** | ✈️ **servicio-vuelos** | Pagos y cancelaciones de vuelos | `ReservaVuelo` |
+| **9082** | 🏨 **servicio-hoteles** | Pagos y cancelaciones de hoteles | `ReservaHotel` |
+| **9083** | 🚗 **servicio-alquiler-coches** | Pagos y cancelaciones de vehículos | `ReservaAlquilerCoche` |
 | **9084** | 💳 **servicio-pagos** | Procesamiento de pagos, confirmaciones | `Pago` |
-| **9090** | 🎯 **servicio-reservas** | Coordinador BPMN (Agregado Raíz) | `ReservaViaje` |
+| **9090** | 🎯 **servicio-Pagos** | Coordinador BPMN (Agregado Raíz) | `ReservaViaje` |
 
 **Infraestructura Camunda Platform 8:**
 
@@ -168,7 +168,7 @@ Valida la existencia del cliente y la validez de su tarjeta de crédito.
 
 #### 🎟️ Subproceso: Proceso de Reserva
 
-Ejecuta reservas **paralelas** de vuelo, hotel y coche con soporte para compensaciones.
+Ejecuta Pagos **paralelas** de vuelo, hotel y coche con soporte para compensaciones.
 
 <!--
 📸 Insertar imagen aquí:
@@ -176,7 +176,7 @@ Ejecuta reservas **paralelas** de vuelo, hotel y coche con soporte para compensa
 -->
 
 **Características:**
-- ⚡ Reservas paralelas (Gateway paralelo)
+- ⚡ Pagos paralelas (Gateway paralelo)
 - 🔁 Compensaciones automáticas en caso de error
 - 👤 User Tasks para revisión manual
 - 📝 Subproceso de actualización de tarjeta (no interrumpible)
@@ -194,7 +194,7 @@ Procesa el pago y confirma la reserva completa.
 1. Procesar pago
 2. Confirmar reserva completa
 3. Actualizar estado del cliente
-4. En caso de error → Compensar reservas
+4. En caso de error → Compensar Pagos
 
 ---
 
@@ -217,8 +217,8 @@ Antes de comenzar, asegúrate de tener instalado:
 ### 1️⃣ Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
-cd sistema-reservas-viaje
+git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
+cd sistema-Pagos-viaje
 ```
 
 ### 2️⃣ Levantar el Sistema Completo
@@ -249,7 +249,7 @@ Una vez iniciado, verifica que todo esté funcionando:
 - 🏨 Hoteles: [http://localhost:9082/actuator/health](http://localhost:9082/actuator/health)
 - 🚗 Coches: [http://localhost:9083/actuator/health](http://localhost:9083/actuator/health)
 - 💳 Pagos: [http://localhost:9084/actuator/health](http://localhost:9084/actuator/health)
-- 🎯 Reservas: [http://localhost:9090/actuator/health](http://localhost:9090/actuator/health)
+- 🎯 Pagos: [http://localhost:9090/actuator/health](http://localhost:9090/actuator/health)
 
 **Documentación API (OpenAPI/Swagger):**
 - 👥 Clientes: [http://localhost:9080/swagger-ui.html](http://localhost:9080/swagger-ui.html)
@@ -273,7 +273,7 @@ Una vez iniciado, verifica que todo esté funcionando:
 
 ```bash
 # Iniciar proceso de reserva
-curl -X POST http://localhost:9090/api/reservas/iniciar \
+curl -X POST http://localhost:9090/api/Pagos/iniciar \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -307,7 +307,7 @@ Ver más detalles en [📖 Casos de Uso](docs/casos-uso.md)
 ## 📁 Estructura del Proyecto
 
 ```
-sistema-reservas-viaje/
+sistema-Pagos-viaje/
 ├── 📄 README.md                           # Este archivo
 ├── 📋 ROADMAP.md                          # Plan de versiones
 ├── 📝 CHANGELOG.md                        # Historial de cambios
@@ -350,7 +350,7 @@ sistema-reservas-viaje/
 ├── 🏨 servicio-hoteles/                   # Microservicio de Hoteles
 ├── 🚗 servicio-alquiler-coches/           # Microservicio de Coches
 ├── 💳 servicio-pagos/                     # Microservicio de Pagos
-├── 🎯 servicio-reservas/                  # Coordinador BPMN
+├── 🎯 servicio-Pagos/                  # Coordinador BPMN
 │
 ├── 🔧 start.sh                            # Script de inicio
 └── 📦 pom.xml                             # Parent POM

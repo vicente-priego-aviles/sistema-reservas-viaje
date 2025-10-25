@@ -7,12 +7,12 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 /**
- * Aplicación principal del Servicio de Reservas.
+ * Aplicación principal del Servicio de Pagos.
  * 
  * <p>Este microservicio gestiona:
  * <ul>
- *   <li>CRUD de Reservas</li>
- *   <li>Validación de Reservas</li>
+ *   <li>CRUD de Pagos</li>
+ *   <li>Validación de Pagos</li>
  *   <li>Validación de ...</li>
  *   <li>Gestión de ...</li>
  * </ul>
@@ -35,12 +35,12 @@ public class ServicioReservasApplication {
     public void onApplicationReady() {
         log.info("");
         log.info("============================================");
-        log.info("🚀 Servicio de Reservas INICIADO");
+        log.info("\uD83C\uDF9F\uFE0F Servicio de Reservas INICIADO");
         log.info("============================================");
-        log.info("📊 Puerto: 9080");
+        log.info("📊 Puerto: 9090");
         log.info("📖 Swagger UI: http://localhost:9090/swagger-ui.html");
-        log.info("🔍 H2 Console: http://localhost:9080/h2-console");
-        log.info("💚 Health: http://localhost:9080/actuator/health");
+        log.info("🔍 H2 Console: http://localhost:9090/h2-console");
+        log.info("💚 Health: http://localhost:9090/actuator/health");
         log.info("============================================");
         log.info("");
     }

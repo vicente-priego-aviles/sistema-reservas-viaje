@@ -15,12 +15,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>servicio-reservas</artifactId>
+    <artifactId>servicio-Pagos</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Servicio de Reservas</name>
-    <description>Microservicio de gestión de reservas de viajes (Vuelos, Hoteles, Coches) con Camunda Platform 8</description>
+    <name>Servicio de Pagos</name>
+    <description>Microservicio de gestión de Pagos de viajes (Vuelos, Hoteles, Coches) con Camunda Platform 8</description>
 
     <dependencies>
         <!-- ========================================== -->
@@ -177,7 +177,7 @@
     </dependencies>
 
     <build>
-        <finalName>servicio-reservas</finalName>
+        <finalName>servicio-Pagos</finalName>
 
         <plugins>
             <!-- Spring Boot Maven Plugin -->

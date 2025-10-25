@@ -35,7 +35,7 @@ public class ServicioClientesApplication {
     public void onApplicationReady() {
         log.info("");
         log.info("============================================");
-        log.info("🚀 Servicio de Clientes INICIADO");
+        log.info("\uD83D\uDC64 Servicio de Clientes INICIADO");
         log.info("============================================");
         log.info("📊 Puerto: 9080");
         log.info("📖 Swagger UI: http://localhost:9080/swagger-ui.html");

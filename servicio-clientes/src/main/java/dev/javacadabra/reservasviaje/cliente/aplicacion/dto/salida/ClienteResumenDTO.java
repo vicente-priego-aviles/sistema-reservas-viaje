@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
  * @param ciudadResidencia ciudad de residencia
  * @param paisResidencia país de residencia
  * @param cantidadTarjetas cantidad de tarjetas registradas
- * @param puedeRealizarReservas indica si puede realizar reservas
+ * @param puedeRealizarPagos indica si puede realizar Pagos
  * @param fechaCreacion fecha de creación del cliente
  *
  * @author javacadabra
@@ -44,7 +44,7 @@ public record ClienteResumenDTO(
         String ciudadResidencia,
         String paisResidencia,
         int cantidadTarjetas,
-        boolean puedeRealizarReservas,
+        boolean puedeRealizarPagos,
         LocalDateTime fechaCreacion
 ) implements Serializable {
 }

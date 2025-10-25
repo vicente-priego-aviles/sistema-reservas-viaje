@@ -142,10 +142,10 @@ public class ValidarClienteWorker {
             );
         }
 
-        // Validación 4: Cliente debe estar en estado que permita reservas
-        if (!cliente.puedeRealizarReservas()) {
+        // Validación 4: Cliente debe estar en estado que permita Pagos
+        if (!cliente.puedeRealizarPagos()) {
             return ResultadoValidacion.rechazado(
-                    "El cliente no puede realizar reservas en su estado actual: " + cliente.estado()
+                    "El cliente no puede realizar Pagos en su estado actual: " + cliente.estado()
             );
         }
 

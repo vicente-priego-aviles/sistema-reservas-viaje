@@ -61,7 +61,7 @@ camunda:
       gateway-address: ${ZEEBE_ADDRESS:localhost:26500}
       rest-address: ${ZEEBE_REST:http://localhost:8080}
       prefer-rest-over-grpc: false
-    mode: simple
+    mode: self-managed
     auth:
       username: demo
       password: demo
@@ -208,7 +208,7 @@ pago:
       - AMEX
 ```
 
-#### servicio-reservas (9090)
+#### servicio-Pagos (9090)
 
 ```yaml
 server:
@@ -216,7 +216,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:reservas_db
+    url: jdbc:h2:mem:Pagos_db
 
 # Configuración del coordinador
 reserva:
@@ -250,7 +250,7 @@ services:
     volumes:
       - zeebe-data:/usr/local/zeebe/data
     networks:
-      - camunda-network
+      - sistema-Pagos-viaje_camunda-platform
 
   operate:
     image: camunda/operate:8.7.0
@@ -266,7 +266,7 @@ services:
       - zeebe
       - elasticsearch
     networks:
-      - camunda-network
+      - sistema-Pagos-viaje_camunda-platform
 
   tasklist:
     image: camunda/tasklist:8.7.0
@@ -282,7 +282,7 @@ services:
       - zeebe
       - elasticsearch
     networks:
-      - camunda-network
+      - sistema-Pagos-viaje_camunda-platform
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
@@ -296,14 +296,14 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
-      - camunda-network
+      - sistema-Pagos-viaje_camunda-platform
 
 volumes:
   zeebe-data:
   elasticsearch-data:
 
 networks:
-  camunda-network:
+  camunda-platform:
     driver: bridge
 ```
 
@@ -360,7 +360,7 @@ spring:
 
 camunda:
   client:
-    mode: simple
+    mode: self-managed
     zeebe:
       gateway-address: localhost:26500
 
@@ -443,10 +443,10 @@ VUELOS_PORT=9081
 HOTELES_PORT=9082
 COCHES_PORT=9083
 PAGOS_PORT=9084
-RESERVAS_PORT=9090
+Pagos_PORT=9090
 
 # Base de Datos (Producción)
-DATABASE_URL=jdbc:postgresql://localhost:5432/reservas
+DATABASE_URL=jdbc:postgresql://localhost:5432/Pagos
 DATABASE_USER=admin
 DATABASE_PASSWORD=secure_password
 
@@ -466,9 +466,9 @@ export CLIENTES_DB_URL=jdbc:h2:mem:clientes_db
 export CLIENTES_LOG_LEVEL=DEBUG
 ```
 
-#### Servicio Reservas
+#### Servicio Pagos
 ```bash
-export RESERVAS_PORT=9090
+export Pagos_PORT=9090
 export ZEEBE_ADDRESS=localhost:26500
 export BPMN_AUTO_DEPLOY=true
 ```
@@ -593,7 +593,7 @@ services:
 networks:
   app-network:
     external: true
-    name: camunda-network
+    name: camunda-platform
 ```
 
 ### Dockerfile (Común)

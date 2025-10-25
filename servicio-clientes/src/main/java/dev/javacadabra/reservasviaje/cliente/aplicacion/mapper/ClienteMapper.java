@@ -38,7 +38,7 @@ public interface ClienteMapper {
      */
     @Mapping(target = "clienteId", source = "clienteId", qualifiedByName = "clienteIdToString")
     @Mapping(target = "estado", source = "estado", qualifiedByName = "estadoToString")
-    @Mapping(target = "puedeRealizarReservas", expression = "java(cliente.puedeRealizarReservas())")
+    @Mapping(target = "puedeRealizarPagos", expression = "java(cliente.puedeRealizarPagos())")
     @Mapping(target = "tieneTarjetasValidas", expression = "java(cliente.tieneTarjetasValidas())")
     @Mapping(target = "cantidadTarjetas", expression = "java(cliente.getCantidadTarjetas())")
     @Mapping(target = "estaBloqueado", expression = "java(cliente.estaBloqueado())")

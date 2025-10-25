@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Repositorio JPA para operaciones de persistencia de reservas de vuelo.
+ * Repositorio JPA para operaciones de persistencia de Pagos de vuelo.
  */
 @Repository
 public interface ReservaVueloJpaRepositorio extends JpaRepository<ReservaVueloEntidad, Long> {

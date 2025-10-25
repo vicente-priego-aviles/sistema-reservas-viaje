@@ -1,6 +1,6 @@
 # 🏗️ Arquitectura del Sistema
 
-Este documento describe en detalle la arquitectura del Sistema de Reservas de Viaje, las decisiones de diseño tomadas y los patrones implementados.
+Este documento describe en detalle la arquitectura del Sistema de Pagos de Viaje, las decisiones de diseño tomadas y los patrones implementados.
 
 ---
 
@@ -57,7 +57,7 @@ El sistema implementa una arquitectura moderna basada en microservicios orquesta
 - Validación de clientes
 - Validación de tarjetas de crédito
 - Gestión de estados (ACTIVO, EN_PROCESO_RESERVA, RESERVA_CONFIRMADA)
-- Historial de reservas por cliente
+- Historial de Pagos por cliente
 
 **Agregado DDD**: `Cliente`
 
@@ -76,12 +76,12 @@ El sistema implementa una arquitectura moderna basada en microservicios orquesta
 
 #### 2. ✈️ Servicio de Vuelos (Puerto 9081)
 
-**Responsabilidad**: Gestión de reservas de vuelos
+**Responsabilidad**: Gestión de Pagos de vuelos
 
 **Funcionalidades**:
 - Búsqueda de vuelos disponibles
 - Reserva de vuelos
-- Cancelación de reservas (compensación)
+- Cancelación de Pagos (compensación)
 - Gestión de inventario de asientos
 - Precios dinámicos
 
@@ -100,12 +100,12 @@ El sistema implementa una arquitectura moderna basada en microservicios orquesta
 
 #### 3. 🏨 Servicio de Hoteles (Puerto 9082)
 
-**Responsabilidad**: Gestión de reservas de hoteles
+**Responsabilidad**: Gestión de Pagos de hoteles
 
 **Funcionalidades**:
 - Búsqueda de hoteles disponibles
 - Reserva de habitaciones
-- Cancelación de reservas (compensación)
+- Cancelación de Pagos (compensación)
 - Gestión de disponibilidad
 - Gestión de amenidades
 
@@ -129,7 +129,7 @@ El sistema implementa una arquitectura moderna basada en microservicios orquesta
 **Funcionalidades**:
 - Catálogo de vehículos
 - Reserva de vehículos
-- Cancelación de reservas (compensación)
+- Cancelación de Pagos (compensación)
 - Gestión de disponibilidad por ubicación
 - Cálculo de precios por días
 
@@ -173,13 +173,13 @@ El sistema implementa una arquitectura moderna basada en microservicios orquesta
 
 ---
 
-#### 6. 🎯 Servicio de Reservas (Puerto 9090)
+#### 6. 🎯 Servicio de Pagos (Puerto 9090)
 
 **Responsabilidad**: Coordinador principal - Orquestador BPMN
 
 **Funcionalidades**:
 - Despliegue de procesos BPMN
-- Coordinación de reservas
+- Coordinación de Pagos
 - Gestión del ciclo de vida completo
 - Correlación de mensajes
 - Gestión de compensaciones
@@ -629,7 +629,7 @@ Fin (Fallido con compensación)
     <bpmn:errorEventDefinition />
   </bpmn:startEvent>
   
-  <!-- Compensar todas las reservas -->
+  <!-- Compensar todas las Pagos -->
   <bpmn:intermediateThrowEvent id="compensar-vuelo-event">
     <bpmn:compensateEventDefinition />
   </bpmn:intermediateThrowEvent>
@@ -664,7 +664,7 @@ camunda:
       gateway-address: localhost:26500
       rest-address: http://localhost:8080
       prefer-rest-over-grpc: false
-    mode: simple
+    mode: self-managed
     auth:
       username: demo
       password: demo
@@ -742,8 +742,8 @@ public Map<String, Object> procesarPago(ActivatedJob job) {
 
 ```
 [Cliente] 
-   ↓ POST /api/reservas
-[servicio-reservas]
+   ↓ POST /api/Pagos
+[servicio-Pagos]
    ↓ Inicia proceso BPMN
 [Zeebe]
    ↓ Job: obtener-datos-cliente
@@ -761,7 +761,7 @@ public Map<String, Object> procesarPago(ActivatedJob job) {
    ↓ Confirma pago
 [Zeebe]
    ↓ Completa proceso
-[servicio-reservas]
+[servicio-Pagos]
    ↓ Notifica cliente
 [Cliente]
 ```

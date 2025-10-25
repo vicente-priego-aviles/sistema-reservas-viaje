@@ -31,6 +31,8 @@ camunda:
       gateway-address: ${ZEEBE_ADDRESS:localhost:26500}
       rest-address: ${ZEEBE_REST:http://localhost:8080}
       prefer-rest-over-grpc: false
+      deployment:
+        enabled: true  # ⬅️ Habilitar despliegue automático
     mode: self-managed
     auth:
       username: demo

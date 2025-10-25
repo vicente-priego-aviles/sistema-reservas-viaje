@@ -58,10 +58,3 @@ public class ReservaCocheEntidad {
     private LocalDateTime fechaReserva;
     private LocalDateTime fechaCancelacion;
 }
-
-enum EstadoReservaCocheEnum {
-    PENDIENTE,
-    CONFIRMADA,
-    CANCELADA,
-    COMPLETADA
-}

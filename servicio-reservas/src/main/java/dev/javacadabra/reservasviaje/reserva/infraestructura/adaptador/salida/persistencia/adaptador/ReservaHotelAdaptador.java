@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * Adaptador de persistencia para reservas de hotel.
+ * Adaptador de persistencia para Pagos de hotel.
  * Implementa el puerto de salida ReservaHotelPuerto.
  * Traduce entre el dominio y la infraestructura JPA.
  */

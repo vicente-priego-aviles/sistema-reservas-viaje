@@ -1,6 +1,6 @@
-# 🎯 Sistema de Reservas de Viaje con Camunda Platform 8
+# 🎯 Sistema de Pagos de Viaje con Camunda Platform 8
 
-Sistema de microservicios orquestado por **Camunda Platform 8.7** que implementa un flujo completo de reservas de viaje incluyendo vuelos, hoteles y coches, con procesamiento de pagos y gestión de clientes.
+Sistema de microservicios orquestado por **Camunda Platform 8.7** que implementa un flujo completo de Pagos de viaje incluyendo vuelos, hoteles y coches, con procesamiento de pagos y gestión de clientes.
 
 ## 📋 Tabla de Contenidos
 
@@ -36,7 +36,7 @@ Sistema de microservicios orquestado por **Camunda Platform 8.7** que implementa
                                │ HTTP POST
                                ↓
                     ┌─────────────────────┐
-                    │ servicio-reservas   │
+                    │ servicio-Pagos   │
                     │   (Orquestador)     │
                     │   Puerto: 9090      │
                     └──────────┬──────────┘
@@ -127,7 +127,7 @@ Microservicios:
   - 9082   (servicio-hoteles)
   - 9083   (servicio-coches)
   - 9084   (servicio-pagos)
-  - 9090   (servicio-reservas - API Principal)
+  - 9090   (servicio-Pagos - API Principal)
 ```
 
 ---
@@ -138,7 +138,7 @@ Microservicios:
 
 ```bash
 git clone <repository-url>
-cd sistema-reservas-viaje
+cd sistema-Pagos-viaje
 ```
 
 ### 2. Dar Permisos a Scripts
@@ -181,7 +181,7 @@ curl http://localhost:9090/actuator/health
 O manualmente:
 
 ```bash
-curl -X POST http://localhost:9090/api/reservas \
+curl -X POST http://localhost:9090/api/Pagos \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -197,14 +197,14 @@ curl -X POST http://localhost:9090/api/reservas \
 
 - **Camunda Operate**: http://localhost:8080 (demo/demo)
 - **Camunda Tasklist**: http://localhost:8081 (demo/demo)
-- **Swagger Reservas**: http://localhost:9090/swagger-ui.html
+- **Swagger Pagos**: http://localhost:9090/swagger-ui.html
 
 ---
 
 ## 📁 Estructura del Proyecto
 
 ```
-sistema-reservas-viaje/
+sistema-Pagos-viaje/
 ├── bpmn/                              # Procesos BPMN
 │   ├── proceso-principal.bpmn
 │   ├── subproceso-gestion-cliente.bpmn
@@ -224,7 +224,7 @@ sistema-reservas-viaje/
 ├── servicio-coches/                   # Puerto 9083
 ├── servicio-pagos/                    # Puerto 9084
 │
-├── servicio-reservas/                 # Puerto 9090 (Orquestador)
+├── servicio-Pagos/                 # Puerto 9090 (Orquestador)
 │   └── Despliega procesos BPMN automáticamente
 │
 ├── docker-compose-camunda.yml         # Infraestructura Camunda
@@ -242,17 +242,17 @@ sistema-reservas-viaje/
 
 ## 🔧 Servicios
 
-### servicio-reservas (9090) - Orquestador Principal
+### servicio-Pagos (9090) - Orquestador Principal
 
 **Responsabilidad**: 
-- Exponer API REST para iniciar reservas
+- Exponer API REST para iniciar Pagos
 - Desplegar procesos BPMN automáticamente
 - Gestionar el agregado `ReservaViaje`
 
 **Endpoints**:
 ```
-POST /api/reservas          - Iniciar nueva reserva
-GET  /api/reservas/{id}     - Consultar estado de reserva
+POST /api/Pagos          - Iniciar nueva reserva
+GET  /api/Pagos/{id}     - Consultar estado de reserva
 ```
 
 **NO tiene workers** - Solo coordina el flujo BPMN
@@ -322,7 +322,7 @@ GET  /api/reservas/{id}     - Consultar estado de reserva
 
 **Responsabilidad**:
 - Procesamiento de pagos
-- Confirmación de reservas
+- Confirmación de Pagos
 - Reversión de pagos
 - Marcado de advertencias
 
@@ -375,10 +375,10 @@ GET  /api/reservas/{id}     - Consultar estado de reserva
 ### Subproceso: Proceso de Reserva
 
 **ID**: `subproceso-proceso-reserva`  
-**Descripción**: Reservas paralelas con compensaciones automáticas
+**Descripción**: Pagos paralelas con compensaciones automáticas
 
 **Características**:
-- ⚡ Reservas paralelas (vuelo, hotel, coche)
+- ⚡ Pagos paralelas (vuelo, hotel, coche)
 - 👤 3 User Tasks de revisión
 - 🔁 Compensaciones automáticas en caso de error
 - 📝 Eventos no interrumpibles (actualización de tarjeta)
@@ -433,7 +433,7 @@ Gateway Join
 
 ### Endpoint Principal: Iniciar Reserva
 
-**URL**: `POST http://localhost:9090/api/reservas`
+**URL**: `POST http://localhost:9090/api/Pagos`
 
 **Request Body**:
 ```json
@@ -468,7 +468,7 @@ Gateway Join
 
 ### Endpoint: Consultar Reserva
 
-**URL**: `GET http://localhost:9090/api/reservas/{reservaId}`
+**URL**: `GET http://localhost:9090/api/Pagos/{reservaId}`
 
 **Response**:
 ```json
@@ -499,7 +499,7 @@ Gateway Join
 
 Cada servicio expone su documentación Swagger:
 
-- **Reservas**: http://localhost:9090/swagger-ui.html
+- **Pagos**: http://localhost:9090/swagger-ui.html
 - **Clientes**: http://localhost:9080/swagger-ui.html
 - **Vuelos**: http://localhost:9081/swagger-ui.html
 - **Hoteles**: http://localhost:9082/swagger-ui.html
@@ -522,7 +522,7 @@ Cada servicio expone su documentación Swagger:
 #### 1. Happy Path (Reserva Exitosa)
 
 ```bash
-curl -X POST http://localhost:9090/api/reservas \
+curl -X POST http://localhost:9090/api/Pagos \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -537,7 +537,7 @@ curl -X POST http://localhost:9090/api/reservas \
 **Resultado Esperado**:
 - ✅ Reserva creada con `reservaId` y `processInstanceKey`
 - ✅ User Task "Revisar Datos" aparece en Tasklist
-- ✅ 3 reservas (vuelo, hotel, coche) se procesan en paralelo
+- ✅ 3 Pagos (vuelo, hotel, coche) se procesan en paralelo
 - ✅ 3 User Tasks de revisión aparecen en Tasklist
 - ✅ Pago procesado correctamente
 - ✅ Estado final: `CONFIRMADA`
@@ -547,7 +547,7 @@ curl -X POST http://localhost:9090/api/reservas \
 #### 2. Error: Monto Alto (> 10000)
 
 ```bash
-curl -X POST http://localhost:9090/api/reservas \
+curl -X POST http://localhost:9090/api/Pagos \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -561,7 +561,7 @@ curl -X POST http://localhost:9090/api/reservas \
 
 **Resultado Esperado**:
 - ✅ Validación y cliente OK
-- ✅ Reservas completadas
+- ✅ Pagos completadas
 - ❌ Error en `procesar-pago` (monto excede límite)
 - ❌ Compensaciones ejecutadas automáticamente
 - ❌ Estado final: Error en pago
@@ -571,7 +571,7 @@ curl -X POST http://localhost:9090/api/reservas \
 #### 3. Error: Datos Inválidos
 
 ```bash
-curl -X POST http://localhost:9090/api/reservas \
+curl -X POST http://localhost:9090/api/Pagos \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "",
@@ -646,7 +646,7 @@ curl -X POST http://localhost:9090/api/reservas \
 ./logs.sh hoteles
 ./logs.sh coches
 ./logs.sh pagos
-./logs.sh reservas
+./logs.sh Pagos
 
 # Logs de Camunda
 ./logs.sh zeebe
@@ -656,8 +656,8 @@ curl -X POST http://localhost:9090/api/reservas \
 
 O con docker:
 ```bash
-docker logs -f servicio-reservas
-docker logs -f camunda-zeebe
+docker logs -f servicio-Pagos
+docker logs -f zeebe
 ```
 
 ---
@@ -689,7 +689,7 @@ JDBC URL: jdbc:h2:mem:clientes_db   (9080)
           jdbc:h2:mem:hoteles_db    (9082)
           jdbc:h2:mem:coches_db     (9083)
           jdbc:h2:mem:pagos_db      (9084)
-          jdbc:h2:mem:reservas_db   (9090)
+          jdbc:h2:mem:Pagos_db   (9090)
 
 Usuario: sa
 Password: (vacío)
@@ -721,7 +721,7 @@ kill -9 <PID>
 **Solución**:
 ```bash
 # Ver logs de Zeebe
-docker logs camunda-zeebe
+docker logs zeebe
 
 # Reiniciar Camunda
 docker-compose -f docker-compose-camunda.yml restart
@@ -739,12 +739,12 @@ docker-compose -f docker-compose-camunda.yml down -v
 
 **Solución**:
 ```bash
-# Los procesos BPMN se despliegan automáticamente al iniciar servicio-reservas
-# Verificar logs del servicio-reservas
-docker logs servicio-reservas | grep "Desplegando"
+# Los procesos BPMN se despliegan automáticamente al iniciar servicio-Pagos
+# Verificar logs del servicio-Pagos
+docker logs servicio-Pagos | grep "Desplegando"
 
 # Si no están desplegados, reiniciar el servicio
-docker-compose restart servicio-reservas
+docker-compose restart servicio-Pagos
 ```
 
 ---
@@ -759,7 +759,7 @@ docker-compose restart servicio-reservas
 docker logs servicio-clientes | grep "Zeebe"
 
 # Verificar conectividad
-docker exec servicio-clientes ping camunda-zeebe
+docker exec servicio-clientes ping zeebe
 
 # Reiniciar el servicio problemático
 docker-compose restart servicio-clientes
@@ -819,7 +819,7 @@ make logs
 
 # Ver logs de un servicio
 make logs-clientes
-make logs-reservas
+make logs-Pagos
 
 # Limpiar sistema (elimina volúmenes)
 make clean
@@ -958,4 +958,4 @@ Este proyecto es un ejemplo educativo de implementación de microservicios con C
 
 Si tienes preguntas o encuentras problemas, por favor abre un issue en el repositorio.
 
-**¡Felices Reservas de Viaje!** ✈️🏨🚗
+**¡Felices Pagos de Viaje!** ✈️🏨🚗

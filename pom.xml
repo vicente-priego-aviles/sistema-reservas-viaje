@@ -10,8 +10,8 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>Sistema de Reservas de Viaje - Parent</name>
-    <description>Sistema de reservas de viaje con microservicios y Camunda Platform 8</description>
+    <name>Sistema de Pagos de Viaje - Parent</name>
+    <description>Sistema de Pagos de viaje con microservicios y Camunda Platform 8</description>
 
     <modules>
         <module>servicio-clientes</module>
@@ -19,7 +19,7 @@
         <module>servicio-hoteles</module>
         <module>servicio-alquiler-coches</module>
         <module>servicio-pagos</module>
-        <module>servicio-reservas</module>
+        <module>servicio-Pagos</module>
     </modules>
 
     <properties>

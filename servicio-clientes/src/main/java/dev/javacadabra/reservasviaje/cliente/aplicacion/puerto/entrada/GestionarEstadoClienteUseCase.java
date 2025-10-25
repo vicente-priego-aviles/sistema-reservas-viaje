@@ -38,7 +38,7 @@ public interface GestionarEstadoClienteUseCase {
      * Activa un cliente tras completar el proceso de validación.
      *
      * <p>El cliente pasa de PENDIENTE_VALIDACION a ACTIVO, lo que le
-     * permite realizar reservas de viajes.
+     * permite realizar Pagos de viajes.
      *
      * @param clienteId identificador del cliente
      * @return cliente activado

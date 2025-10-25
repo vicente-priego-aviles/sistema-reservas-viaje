@@ -6,6 +6,7 @@ import org.jmolecules.ddd.annotation.ValueObject;
 public enum EstadoReservaCoche {
     PENDIENTE,
     RESERVADA,
+    CONFIRMADA,
     CANCELADA,
     COMPLETADA
 }

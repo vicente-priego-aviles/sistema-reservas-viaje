@@ -38,7 +38,7 @@ import java.util.Map;
  *   <li>emailCliente (String): Email del cliente</li>
  *   <li>nombreCompleto (String): Nombre completo del cliente</li>
  *   <li>estaBloqueado (Boolean): true si el cliente está bloqueado</li>
- *   <li>puedeRealizarReservas (Boolean): true si puede realizar reservas</li>
+ *   <li>puedeRealizarPagos (Boolean): true si puede realizar Pagos</li>
  *   <li>tieneTarjetasValidas (Boolean): true si tiene tarjetas válidas</li>
  * </ul>
  *
@@ -106,7 +106,7 @@ public class ObtenerDatosClienteWorker {
 
                 log.info("📤 Datos del cliente preparados - Tarjetas: {} - Puede reservar: {}",
                         cliente.cantidadTarjetas(),
-                        cliente.puedeRealizarReservas());
+                        cliente.puedeRealizarPagos());
 
                 return output;
 
@@ -197,7 +197,7 @@ public class ObtenerDatosClienteWorker {
         // Estado del cliente
         output.put("estadoCliente", cliente.estado());
         output.put("estaBloqueado", cliente.estaBloqueado());
-        output.put("puedeRealizarReservas", cliente.puedeRealizarReservas());
+        output.put("puedeRealizarPagos", cliente.puedeRealizarPagos());
 
         // Información de tarjetas
         output.put("cantidadTarjetas", cliente.cantidadTarjetas());

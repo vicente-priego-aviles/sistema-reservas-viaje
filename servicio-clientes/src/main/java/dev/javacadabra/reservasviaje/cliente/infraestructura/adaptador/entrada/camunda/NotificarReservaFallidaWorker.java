@@ -321,7 +321,7 @@ public class NotificarReservaFallidaWorker {
         // Despedida
         mensaje.append("Disculpe las molestias ocasionadas.\n\n");
         mensaje.append("Atentamente,\n");
-        mensaje.append("Equipo de Reservas de Viaje");
+        mensaje.append("Equipo de Pagos de Viaje");
 
         return mensaje.toString();
     }

@@ -19,8 +19,8 @@ import java.util.Map;
  * Escucha el task type "reservar-coche" del proceso BPMN y ejecuta la lógica
  * de negocio delegando en el servicio de aplicación correspondiente.
  *
- * <p>Este worker forma parte del subproceso de reservas y se ejecuta en paralelo
- * con las reservas de vuelo y hotel.</p>
+ * <p>Este worker forma parte del subproceso de Pagos y se ejecuta en paralelo
+ * con las Pagos de vuelo y hotel.</p>
  *
  * @see ReservarCocheCasoUso
  */

@@ -13,7 +13,7 @@ Guía detallada de cada microservicio del sistema.
 | Hoteles | 9082 | hoteles_db | 2 | 6 |
 | Alquiler Coches | 9083 | coches_db | 2 | 6 |
 | Pagos | 9084 | pagos_db | 4 | 5 |
-| Reservas | 9090 | reservas_db | 0 | 7 |
+| Pagos | 9090 | Pagos_db | 0 | 7 |
 
 ---
 
@@ -36,7 +36,7 @@ public class Cliente {
     private Email email;
     private TarjetaCredito tarjetaCredito;
     private EstadoCliente estado;
-    private List<ReservaId> historicoReservas;
+    private List<ReservaId> historicoPagos;
 }
 
 @ValueObject
@@ -109,7 +109,7 @@ Revierte estado en caso de error
 
 ### Responsabilidades
 - Catálogo de vuelos
-- Reservas de vuelos
+- Pagos de vuelos
 - Cancelaciones (compensación)
 - Gestión de asientos
 
@@ -175,7 +175,7 @@ Compensación - cancela reserva
 
 ### Responsabilidades
 - Catálogo de hoteles
-- Reservas de habitaciones
+- Pagos de habitaciones
 - Cancelaciones
 - Políticas de cancelación
 
@@ -195,7 +195,7 @@ Reservar habitación
 
 ### Responsabilidades
 - Catálogo de vehículos
-- Reservas de coches
+- Pagos de coches
 - Cancelaciones
 - Validación de licencia
 
@@ -266,13 +266,13 @@ public Map<String, Object> procesar(ActivatedJob job) {
 
 ---
 
-## 🎯 servicio-reservas (9090)
+## 🎯 servicio-Pagos (9090)
 
 ### Responsabilidades
 - Coordinador principal
 - Despliegue de procesos BPMN
 - Orquestación
-- API Gateway para reservas
+- API Gateway para Pagos
 
 ### Configuración Especial
 
@@ -290,13 +290,13 @@ public class CamundaConfig {
 
 ### API REST
 
-#### POST /api/reservas/iniciar
+#### POST /api/Pagos/iniciar
 Iniciar proceso de reserva
 
-#### GET /api/reservas/{id}
+#### GET /api/Pagos/{id}
 Consultar estado de reserva
 
-#### POST /api/reservas/{id}/cancelar
+#### POST /api/Pagos/{id}/cancelar
 Cancelar reserva (publica mensaje)
 
 ---
@@ -307,8 +307,8 @@ Cancelar reserva (publica mensaje)
 
 ```
 [Cliente] 
-  → POST /api/reservas 
-    → [servicio-reservas]
+  → POST /api/Pagos 
+    → [servicio-Pagos]
       → Inicia proceso BPMN
         → [Zeebe]
           → Job: obtener-datos-cliente

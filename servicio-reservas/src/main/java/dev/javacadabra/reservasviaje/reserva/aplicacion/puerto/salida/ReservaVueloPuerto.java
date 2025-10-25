@@ -6,7 +6,7 @@ import dev.javacadabra.reservasviaje.reserva.dominio.modelo.objetovalor.ReservaI
 import java.util.Optional;
 
 /**
- * Puerto de salida para operaciones de persistencia de reservas de vuelo.
+ * Puerto de salida para operaciones de persistencia de Pagos de vuelo.
  * Define el contrato que debe implementar el adaptador de persistencia.
  */
 public interface ReservaVueloPuerto {

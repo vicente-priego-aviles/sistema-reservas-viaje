@@ -48,3 +48,7 @@ Thumbs.db
 .env
 *.pem
 *.key
+
+# Camunda Secrets
+.env
+connector-secrets.txt

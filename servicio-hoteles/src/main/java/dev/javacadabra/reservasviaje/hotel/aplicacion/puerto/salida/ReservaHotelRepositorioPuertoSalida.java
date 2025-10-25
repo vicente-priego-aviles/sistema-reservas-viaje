@@ -6,7 +6,7 @@ import dev.javacadabra.reservasviaje.hotel.dominio.modelo.objetovalor.ReservaHot
 import java.util.Optional;
 
 /**
- * Puerto de salida para operaciones de persistencia de reservas de hotel.
+ * Puerto de salida para operaciones de persistencia de Hoteles de hotel.
  *
  * <p>Define el contrato que debe implementar el adaptador de persistencia.
  * Siguiendo arquitectura hexagonal, el dominio NO depende de la implementación

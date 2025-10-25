@@ -259,7 +259,7 @@ class ReservaE2ETest {
             .contentType(ContentType.JSON)
             .body(request)
         .when()
-            .post(BASE_URL + "/api/reservas/iniciar")
+            .post(BASE_URL + "/api/Pagos/iniciar")
         .then()
             .statusCode(201)
             .extract().response();
@@ -276,7 +276,7 @@ class ReservaE2ETest {
         
         given()
         .when()
-            .get(BASE_URL + "/api/reservas/" + reservaId)
+            .get(BASE_URL + "/api/Pagos/" + reservaId)
         .then()
             .statusCode(200)
             .body("estado", equalTo("EN_PROCESO"));
@@ -331,7 +331,7 @@ class ArchitectureTest {
 class PerformanceTest {
     
     @Test
-    void testConcurrentReservas() throws InterruptedException {
+    void testConcurrentPagos() throws InterruptedException {
         int numThreads = 10;
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
         

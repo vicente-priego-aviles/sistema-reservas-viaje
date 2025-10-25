@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * Escucha el task type "reservar-vuelo" del proceso BPMN y ejecuta la lógica
  * de negocio delegando en el servicio de aplicación correspondiente.
  *
- * <p>Este worker forma parte del subproceso de reservas y se ejecuta en paralelo
- * con las reservas de hotel y coche.</p>
+ * <p>Este worker forma parte del subproceso de Pagos y se ejecuta en paralelo
+ * con las Pagos de hotel y coche.</p>
  *
  * @see ReservarVueloCasoUso
  */

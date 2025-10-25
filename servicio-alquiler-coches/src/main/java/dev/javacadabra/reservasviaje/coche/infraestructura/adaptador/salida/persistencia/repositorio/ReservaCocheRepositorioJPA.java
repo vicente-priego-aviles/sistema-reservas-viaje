@@ -36,7 +36,7 @@ public interface ReservaCocheRepositorioJPA extends JpaRepository<ReservaCocheEn
     boolean existsByReservaViajeId(String reservaViajeId);
 
     /**
-     * Busca reservas por matrícula del vehículo.
+     * Busca Pagos por matrícula del vehículo.
      * Útil para verificar disponibilidad o historial.
      *
      * @param matricula la matrícula del vehículo

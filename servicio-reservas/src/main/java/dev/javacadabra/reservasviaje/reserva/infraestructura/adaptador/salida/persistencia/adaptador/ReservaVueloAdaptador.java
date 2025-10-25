@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * Adaptador de persistencia para reservas de vuelo.
+ * Adaptador de persistencia para Pagos de vuelo.
  * Implementa el puerto de salida ReservaVueloPuerto.
  * Traduce entre el dominio y la infraestructura JPA.
  */

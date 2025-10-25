@@ -10,7 +10,7 @@ Documentación completa de todos los procesos BPMN del sistema.
 |---------|---------|-------------|
 | Principal | proceso-principal.bpmn | Flujo completo de reserva |
 | Gestión Cliente | subproceso-gestion-cliente.bpmn | Validación de cliente |
-| Proceso Reserva | subproceso-proceso-reserva.bpmn | Reservas paralelas |
+| Proceso Reserva | subproceso-proceso-reserva.bpmn | Pagos paralelas |
 | Proceso Pago | subproceso-pago.bpmn | Procesamiento de pago |
 
 ---
@@ -146,7 +146,7 @@ Fin
 
 ### Características
 
-- ⚡ **Reservas Paralelas**: Vuelo, Hotel y Coche se reservan simultáneamente
+- ⚡ **Pagos Paralelas**: Vuelo, Hotel y Coche se reservan simultáneamente
 - 🔁 **Compensaciones**: Cada reserva tiene su cancelación asociada
 - 👤 **User Tasks**: Revisión manual de cada reserva
 - 📝 **Eventos No Interrumpibles**: Actualización de tarjeta en paralelo
@@ -226,7 +226,7 @@ Fin
 
 ### Subproceso de Error
 
-Cuando ocurre un error durante las reservas:
+Cuando ocurre un error durante las Pagos:
 
 ```
 Error detectado
@@ -428,7 +428,7 @@ zeebeClient.newPublishMessageCommand()
 = substring(email, 1, index of(email, "@"))
 
 # Listas
-= count(reservas)
+= count(Pagos)
 = sum(montos)
 = contains(["ES", "FR"], pais)
 

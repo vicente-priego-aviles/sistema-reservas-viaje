@@ -61,7 +61,7 @@ public class FinalizarReservaWorker {
             resultado.put("reservaFinalizada", true);
             resultado.put("estadoCliente", clienteActualizado.estado());
             resultado.put("fechaFinalizacion", java.time.LocalDateTime.now().toString());
-            resultado.put("puedeRealizarReservas", clienteActualizado.puedeRealizarReservas());
+            resultado.put("puedeRealizarPagos", clienteActualizado.puedeRealizarPagos());
 
             log.info("✅ Reserva finalizada para cliente: {} - Reserva: {}", clienteId, reservaId);
 

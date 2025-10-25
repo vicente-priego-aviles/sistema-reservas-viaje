@@ -59,7 +59,7 @@ Cliente con datos válidos realiza una reserva completa exitosamente.
 ### Ejecutar con cURL
 
 ```bash
-curl -X POST http://localhost:9090/api/reservas/iniciar \
+curl -X POST http://localhost:9090/api/Pagos/iniciar \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -178,7 +178,7 @@ Cliente existe pero su tarjeta de crédito no pasa la validación.
 ## 🔄 Caso 4: Error en Pago con Compensación
 
 ### Descripción
-Las reservas se completan correctamente pero el pago falla, disparando compensaciones de todas las reservas.
+Las Pagos se completan correctamente pero el pago falla, disparando compensaciones de todas las Pagos.
 
 ### Datos de Entrada
 
@@ -300,7 +300,7 @@ Durante el proceso de reserva, el cliente actualiza su información de tarjeta d
 ### Paso 1: Iniciar Reserva
 
 ```bash
-curl -X POST http://localhost:9090/api/reservas/iniciar \
+curl -X POST http://localhost:9090/api/Pagos/iniciar \
   -H "Content-Type: application/json" \
   -d '{
     "clienteId": "CLI-001",
@@ -382,7 +382,7 @@ echo "🧪 Ejecutando suite de casos de uso..."
 
 # Caso 1: Éxito
 echo "✅ Test 1: Reserva exitosa"
-curl -X POST http://localhost:9090/api/reservas/iniciar \
+curl -X POST http://localhost:9090/api/Pagos/iniciar \
   -H "Content-Type: application/json" \
   -d '{"clienteId":"CLI-001","origen":"Madrid","destino":"Barcelona","fechaInicio":"2025-12-01","fechaFin":"2025-12-05","monto":1500}' \
   -w "\nStatus: %{http_code}\n"
@@ -391,7 +391,7 @@ sleep 2
 
 # Caso 2: Cliente no encontrado
 echo "❌ Test 2: Cliente no encontrado"
-curl -X POST http://localhost:9090/api/reservas/iniciar \
+curl -X POST http://localhost:9090/api/Pagos/iniciar \
   -H "Content-Type: application/json" \
   -d '{"clienteId":"CLI-999","origen":"Madrid","destino":"Barcelona","fechaInicio":"2025-12-01","fechaFin":"2025-12-05","monto":1500}' \
   -w "\nStatus: %{http_code}\n"

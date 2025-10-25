@@ -53,7 +53,7 @@ public class ReservaHotel {
 
     public void cancelar() {
         if (this.estado != EstadoReservaHotel.RESERVADA) {
-            throw new IllegalStateException("Solo se pueden cancelar reservas confirmadas");
+            throw new IllegalStateException("Solo se pueden cancelar Hoteles confirmadas");
         }
 
         this.estado = EstadoReservaHotel.CANCELADA;
