@@ -4,7 +4,7 @@
 # ============================================
 
 networks:
-  sistema-Pagos-viaje_camunda-platform:
+  sistema-reservas-viaje_camunda-platform:
     external: true  # ⬅️ Busca la red existente
 
 services:
@@ -16,7 +16,7 @@ services:
     build:
       context: ./servicio-clientes
       dockerfile: Dockerfile
-    image: Pagos/servicio-clientes:latest
+    image: reservas/servicio-clientes:latest
     container_name: servicio-clientes
     hostname: servicio-clientes
     ports:
@@ -26,7 +26,7 @@ services:
       - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
       - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -36,7 +36,7 @@ services:
     build:
       context: ./servicio-vuelos
       dockerfile: Dockerfile
-    image: Pagos/servicio-vuelos:latest
+    image: reservas/servicio-vuelos:latest
     container_name: servicio-vuelos
     hostname: servicio-vuelos
     ports:
@@ -46,7 +46,7 @@ services:
       - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
       - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -56,7 +56,7 @@ services:
     build:
       context: ./servicio-hoteles
       dockerfile: Dockerfile
-    image: Pagos/servicio-hoteles:latest
+    image: sistema-reservas/servicio-hoteles:latest
     container_name: servicio-hoteles
     hostname: servicio-hoteles
     ports:
@@ -66,7 +66,7 @@ services:
       - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
       - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -76,7 +76,7 @@ services:
     build:
       context: ./servicio-alquiler-coches
       dockerfile: Dockerfile
-    image: Pagos/servicio-alquiler-coches:latest
+    image: sistema-reservas/servicio-alquiler-coches:latest
     container_name: servicio-alquiler-coches
     hostname: servicio-alquiler-coches
     ports:
@@ -86,7 +86,7 @@ services:
       - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
       - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -96,7 +96,7 @@ services:
     build:
       context: ./servicio-pagos
       dockerfile: Dockerfile
-    image: Pagos/servicio-pagos:latest
+    image: sistema-reservas/servicio-pagos:latest
     container_name: servicio-pagos
     hostname: servicio-pagos
     ports:
@@ -106,19 +106,19 @@ services:
       - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
       - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
   # SERVICIO Pagos - Puerto 9090 (Orquestador)
   # ==========================================
-  servicio-Pagos:
+  servicio-reservas:
     build:
-      context: ./servicio-Pagos
+      context: ./servicio-reservas
       dockerfile: Dockerfile
-    image: Pagos/servicio-Pagos:latest
-    container_name: servicio-Pagos
-    hostname: servicio-Pagos
+    image: sistema-reservas/servicio-reservas:latest
+    container_name: servicio-reservas
+    hostname: servicio-reservas
     ports:
       - "9090:9090"
     environment:
@@ -128,5 +128,5 @@ services:
     volumes:
       - ./bpmn:/app/bpmn:ro
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped

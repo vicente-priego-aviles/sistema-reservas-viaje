@@ -74,11 +74,11 @@ Para sugerir una mejora:
 # Fork el repositorio en GitHub
 
 # Clona tu fork
-git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
-cd sistema-Pagos-viaje
+git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
+cd sistema-reservas-viaje
 
 # Añade el repositorio original como remote
-git remote add upstream https://github.com/original-usuario/sistema-Pagos-viaje.git
+git remote add upstream https://github.com/original-usuario/sistema-reservas-viaje.git
 ```
 
 ### 2. Crea una Rama

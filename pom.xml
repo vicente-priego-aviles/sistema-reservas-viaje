@@ -19,7 +19,7 @@
         <module>servicio-hoteles</module>
         <module>servicio-alquiler-coches</module>
         <module>servicio-pagos</module>
-        <module>servicio-Pagos</module>
+        <module>servicio-reservas</module>
     </modules>
 
     <properties>

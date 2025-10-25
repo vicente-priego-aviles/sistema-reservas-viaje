@@ -743,7 +743,7 @@ public Map<String, Object> procesarPago(ActivatedJob job) {
 ```
 [Cliente] 
    ↓ POST /api/Pagos
-[servicio-Pagos]
+[servicio-reservas]
    ↓ Inicia proceso BPMN
 [Zeebe]
    ↓ Job: obtener-datos-cliente
@@ -761,7 +761,7 @@ public Map<String, Object> procesarPago(ActivatedJob job) {
    ↓ Confirma pago
 [Zeebe]
    ↓ Completa proceso
-[servicio-Pagos]
+[servicio-reservas]
    ↓ Notifica cliente
 [Cliente]
 ```

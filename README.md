@@ -36,7 +36,7 @@ Sistema de microservicios orquestado por **Camunda Platform 8.7** que implementa
                                │ HTTP POST
                                ↓
                     ┌─────────────────────┐
-                    │ servicio-Pagos   │
+                    │ servicio-reservas   │
                     │   (Orquestador)     │
                     │   Puerto: 9090      │
                     └──────────┬──────────┘
@@ -127,7 +127,7 @@ Microservicios:
   - 9082   (servicio-hoteles)
   - 9083   (servicio-coches)
   - 9084   (servicio-pagos)
-  - 9090   (servicio-Pagos - API Principal)
+  - 9090   (servicio-reservas - API Principal)
 ```
 
 ---
@@ -138,7 +138,7 @@ Microservicios:
 
 ```bash
 git clone <repository-url>
-cd sistema-Pagos-viaje
+cd sistema-reservas-viaje
 ```
 
 ### 2. Dar Permisos a Scripts
@@ -204,7 +204,7 @@ curl -X POST http://localhost:9090/api/Pagos \
 ## 📁 Estructura del Proyecto
 
 ```
-sistema-Pagos-viaje/
+sistema-reservas-viaje/
 ├── bpmn/                              # Procesos BPMN
 │   ├── proceso-principal.bpmn
 │   ├── subproceso-gestion-cliente.bpmn
@@ -224,7 +224,7 @@ sistema-Pagos-viaje/
 ├── servicio-coches/                   # Puerto 9083
 ├── servicio-pagos/                    # Puerto 9084
 │
-├── servicio-Pagos/                 # Puerto 9090 (Orquestador)
+├── servicio-reservas/                 # Puerto 9090 (Orquestador)
 │   └── Despliega procesos BPMN automáticamente
 │
 ├── docker-compose-camunda.yml         # Infraestructura Camunda
@@ -242,7 +242,7 @@ sistema-Pagos-viaje/
 
 ## 🔧 Servicios
 
-### servicio-Pagos (9090) - Orquestador Principal
+### servicio-reservas (9090) - Orquestador Principal
 
 **Responsabilidad**: 
 - Exponer API REST para iniciar Pagos
@@ -656,7 +656,7 @@ curl -X POST http://localhost:9090/api/Pagos \
 
 O con docker:
 ```bash
-docker logs -f servicio-Pagos
+docker logs -f servicio-reservas
 docker logs -f zeebe
 ```
 
@@ -739,12 +739,12 @@ docker-compose -f docker-compose-camunda.yml down -v
 
 **Solución**:
 ```bash
-# Los procesos BPMN se despliegan automáticamente al iniciar servicio-Pagos
-# Verificar logs del servicio-Pagos
-docker logs servicio-Pagos | grep "Desplegando"
+# Los procesos BPMN se despliegan automáticamente al iniciar servicio-reservas
+# Verificar logs del servicio-reservas
+docker logs servicio-reservas | grep "Desplegando"
 
 # Si no están desplegados, reiniciar el servicio
-docker-compose restart servicio-Pagos
+docker-compose restart servicio-reservas
 ```
 
 ---

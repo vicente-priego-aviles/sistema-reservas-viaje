@@ -44,7 +44,7 @@ spec:
     spec:
       containers:
       - name: servicio-clientes
-        image: Pagos/servicio-clientes:1.0.0
+        image: reservas/servicio-clientes:1.0.0
         ports:
         - containerPort: 9080
         env:

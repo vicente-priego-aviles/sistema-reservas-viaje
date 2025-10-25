@@ -3,7 +3,7 @@
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Camunda](https://img.shields.io/badge/Camunda-8.8.0-blue.svg)](https://camunda.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vicente-priego-aviles/sistema-Pagos-viaje/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/blob/main/LICENSE)
 
 > Microservicio de gestión de Pagos (vuelos, hoteles y coches) implementado con **Arquitectura Hexagonal**, **Domain-Driven Design (DDD)** y orquestado por **Camunda Platform 8**.
 
@@ -145,7 +145,7 @@ El diseño del dominio sigue los principios de **DDD** utilizando **JMolecules**
 ## 📁 Estructura del Proyecto
 
 ```
-servicio-Pagos/
+servicio-reservas/
 ├── src/
 │   ├── main/
 │   │   ├── java/dev/javacadabra/reservasviaje/reserva/
@@ -481,8 +481,8 @@ public class ReservaVueloServicio {
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/vicente-priego-aviles/sistema-Pagos-viaje.git
-cd sistema-Pagos-viaje/servicio-Pagos
+git clone https://github.com/vicente-priego-aviles/sistema-reservas-viaje.git
+cd sistema-reservas-viaje/servicio-reservas
 ```
 
 ### 2. Levantar Infraestructura de Camunda
@@ -514,7 +514,7 @@ mvn spring-boot:run
 O directamente con Java:
 
 ```bash
-java -jar target/servicio-Pagos-1.0.0.jar
+java -jar target/servicio-reservas-1.0.0.jar
 ```
 
 ### 5. Verificar que el Servicio está Funcionando
@@ -541,7 +541,7 @@ server:
 # Configuración de Spring
 spring:
   application:
-    name: servicio-Pagos
+    name: servicio-reservas
   
   # Base de datos H2 (desarrollo)
   datasource:

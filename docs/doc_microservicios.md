@@ -266,7 +266,7 @@ public Map<String, Object> procesar(ActivatedJob job) {
 
 ---
 
-## 🎯 servicio-Pagos (9090)
+## 🎯 servicio-reservas (9090)
 
 ### Responsabilidades
 - Coordinador principal
@@ -308,7 +308,7 @@ Cancelar reserva (publica mensaje)
 ```
 [Cliente] 
   → POST /api/Pagos 
-    → [servicio-Pagos]
+    → [servicio-reservas]
       → Inicia proceso BPMN
         → [Zeebe]
           → Job: obtener-datos-cliente

@@ -38,7 +38,7 @@ services:
     volumes:
       - zeebe:/usr/local/zeebe/data
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     depends_on:
       - elasticsearch
 
@@ -62,7 +62,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     depends_on:
       - zeebe
       - elasticsearch
@@ -88,7 +88,7 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     depends_on:
       - zeebe
       - elasticsearch
@@ -116,7 +116,7 @@ services:
       start_period: 30s
     env_file: connector-secrets.txt
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
     depends_on:
       - zeebe
       - operate
@@ -147,7 +147,7 @@ services:
     volumes:
       - elastic:/usr/share/elasticsearch/data
     networks:
-      - sistema-Pagos-viaje_camunda-platform
+      - sistema-reservas-viaje_camunda-platform
 
 volumes:
   zeebe:

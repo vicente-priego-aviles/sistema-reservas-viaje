@@ -51,7 +51,7 @@ Establecer la arquitectura base del sistema con todos los componentes fundamenta
 - ✅ **servicio-pagos** (Puerto 9084)
   - Procesamiento de pagos
   - Confirmación de Pagos
-- ✅ **servicio-Pagos** (Puerto 9090)
+- ✅ **servicio-reservas** (Puerto 9090)
   - Coordinador BPMN
   - Orquestación de procesos
 
@@ -317,7 +317,7 @@ Migrar de H2 a bases de datos adecuadas para producción con soporte de alta dis
 - 📋 PostgreSQL para microservicios transaccionales
   - servicio-clientes
   - servicio-pagos
-  - servicio-Pagos
+  - servicio-reservas
 - 📋 MongoDB para microservicios de catálogo
   - servicio-vuelos
   - servicio-hoteles

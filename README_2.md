@@ -97,7 +97,7 @@ El sistema está compuesto por **6 microservicios independientes**:
 | **9082** | 🏨 **servicio-hoteles** | Pagos y cancelaciones de hoteles | `ReservaHotel` |
 | **9083** | 🚗 **servicio-alquiler-coches** | Pagos y cancelaciones de vehículos | `ReservaAlquilerCoche` |
 | **9084** | 💳 **servicio-pagos** | Procesamiento de pagos, confirmaciones | `Pago` |
-| **9090** | 🎯 **servicio-Pagos** | Coordinador BPMN (Agregado Raíz) | `ReservaViaje` |
+| **9090** | 🎯 **servicio-reservas** | Coordinador BPMN (Agregado Raíz) | `ReservaViaje` |
 
 **Infraestructura Camunda Platform 8:**
 
@@ -217,8 +217,8 @@ Antes de comenzar, asegúrate de tener instalado:
 ### 1️⃣ Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
-cd sistema-Pagos-viaje
+git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
+cd sistema-reservas-viaje
 ```
 
 ### 2️⃣ Levantar el Sistema Completo
@@ -307,7 +307,7 @@ Ver más detalles en [📖 Casos de Uso](docs/casos-uso.md)
 ## 📁 Estructura del Proyecto
 
 ```
-sistema-Pagos-viaje/
+sistema-reservas-viaje/
 ├── 📄 README.md                           # Este archivo
 ├── 📋 ROADMAP.md                          # Plan de versiones
 ├── 📝 CHANGELOG.md                        # Historial de cambios
@@ -350,7 +350,7 @@ sistema-Pagos-viaje/
 ├── 🏨 servicio-hoteles/                   # Microservicio de Hoteles
 ├── 🚗 servicio-alquiler-coches/           # Microservicio de Coches
 ├── 💳 servicio-pagos/                     # Microservicio de Pagos
-├── 🎯 servicio-Pagos/                  # Coordinador BPMN
+├── 🎯 servicio-reservas/                  # Coordinador BPMN
 │
 ├── 🔧 start.sh                            # Script de inicio
 └── 📦 pom.xml                             # Parent POM

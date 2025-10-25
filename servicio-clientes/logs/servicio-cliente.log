@@ -1,4 +1,4 @@
-2025-10-24 18:02:50 [main] INFO  d.j.r.c.ServicioClientesApplication - Starting ServicioClientesApplication using Java 21.0.7 with PID 23678 (/home/vicente/IdeaProjects/sistema-Pagos-viaje/servicio-clientes/target/classes started by vicente in /home/vicente/IdeaProjects/sistema-Pagos-viaje/servicio-clientes)
+2025-10-24 18:02:50 [main] INFO  d.j.r.c.ServicioClientesApplication - Starting ServicioClientesApplication using Java 21.0.7 with PID 23678 (/home/vicente/IdeaProjects/sistema-reservas-viaje/servicio-clientes/target/classes started by vicente in /home/vicente/IdeaProjects/sistema-reservas-viaje/servicio-clientes)
 2025-10-24 18:02:50 [main] DEBUG d.j.r.c.ServicioClientesApplication - Running with Spring Boot v3.5.6, Spring v6.2.11
 2025-10-24 18:02:50 [main] INFO  d.j.r.c.ServicioClientesApplication - The following 1 profile is active: "dev"
 2025-10-24 18:02:50 [main] WARN  i.c.c.s.p.CamundaClientPropertiesPostProcessor - Legacy property 'camunda.client.zeebe.defaults.type' found, setting to 'camunda.client.worker.defaults.type'. Please update your setup to use the latest property

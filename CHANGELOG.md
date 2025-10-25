@@ -58,7 +58,7 @@ Primera versión funcional del Sistema de Pagos de Viaje con arquitectura de mic
   - Procesamiento de pagos
   - Confirmación de Pagos
   - Manejo de errores de pago
-- **servicio-Pagos** (Puerto 9090)
+- **servicio-reservas** (Puerto 9090)
   - Coordinador BPMN principal
   - Despliegue de procesos
   - Orquestación de workflows
@@ -163,7 +163,7 @@ Primera versión funcional del Sistema de Pagos de Viaje con arquitectura de mic
 - 9082: servicio-hoteles
 - 9083: servicio-alquiler-coches
 - 9084: servicio-pagos
-- 9090: servicio-Pagos
+- 9090: servicio-reservas
 - 8080: Camunda Operate
 - 8081: Camunda Tasklist
 - 26500: Zeebe gRPC
@@ -222,9 +222,9 @@ dev.javacadabra.reservasviaje.<dominio>/
 
 ## Enlaces
 
-- [Repositorio](https://github.com/tu-usuario/sistema-Pagos-viaje)
-- [Issues](https://github.com/tu-usuario/sistema-Pagos-viaje/issues)
-- [Pull Requests](https://github.com/tu-usuario/sistema-Pagos-viaje/pulls)
+- [Repositorio](https://github.com/tu-usuario/sistema-reservas-viaje)
+- [Issues](https://github.com/tu-usuario/sistema-reservas-viaje/issues)
+- [Pull Requests](https://github.com/tu-usuario/sistema-reservas-viaje/pulls)
 
 ---
 

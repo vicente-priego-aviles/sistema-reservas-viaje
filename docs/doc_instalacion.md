@@ -151,8 +151,8 @@ Descargar desde [git-scm.com](https://git-scm.com/)
 
 ```bash
 # Clonar
-git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
-cd sistema-Pagos-viaje
+git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
+cd sistema-reservas-viaje
 
 # Verificar estructura
 ls -la
@@ -195,13 +195,13 @@ echo $?  # Debe retornar 0
 [INFO] ------------------------------------------------------------------------
 [INFO] Reactor Summary:
 [INFO] 
-[INFO] sistema-Pagos-viaje-parent ...................... SUCCESS [  0.123 s]
+[INFO] sistema-reservas-viaje-parent ...................... SUCCESS [  0.123 s]
 [INFO] servicio-clientes .................................. SUCCESS [ 12.456 s]
 [INFO] servicio-vuelos .................................... SUCCESS [ 10.234 s]
 [INFO] servicio-hoteles ................................... SUCCESS [  9.876 s]
 [INFO] servicio-alquiler-coches ........................... SUCCESS [  8.654 s]
 [INFO] servicio-pagos ..................................... SUCCESS [ 11.234 s]
-[INFO] servicio-Pagos .................................. SUCCESS [ 13.567 s]
+[INFO] servicio-reservas .................................. SUCCESS [ 13.567 s]
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
@@ -362,7 +362,7 @@ servicio-vuelos               Up 1 minute
 servicio-hoteles              Up 1 minute
 servicio-alquiler-coches      Up 1 minute
 servicio-pagos                Up 1 minute
-servicio-Pagos             Up 1 minute
+servicio-reservas             Up 1 minute
 ```
 
 ### 2. Health Checks
@@ -427,7 +427,7 @@ chmod +x verify.sh
 
 ```bash
 # Verificar logs del coordinador
-docker-compose logs servicio-Pagos | grep -i "zeebe"
+docker-compose logs servicio-reservas | grep -i "zeebe"
 
 # Debería mostrar:
 # ✅ Connected to Zeebe at localhost:26500
@@ -525,13 +525,13 @@ docker-compose -f docker-compose-camunda.yml ps zeebe
 
 # Verificar red Docker
 docker network ls
-docker network inspect sistema-Pagos-viaje_default
+docker network inspect sistema-reservas-viaje_default
 
 # Verificar configuración
-cat servicio-Pagos/src/main/resources/application.yml | grep zeebe
+cat servicio-reservas/src/main/resources/application.yml | grep zeebe
 
 # Reintentar conexión
-docker-compose restart servicio-Pagos
+docker-compose restart servicio-reservas
 ```
 
 ### Problema: Compilación Maven falla

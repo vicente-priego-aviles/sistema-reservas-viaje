@@ -34,8 +34,8 @@ git --version
 ### Paso 1: Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/sistema-Pagos-viaje.git
-cd sistema-Pagos-viaje
+git clone https://github.com/tu-usuario/sistema-reservas-viaje.git
+cd sistema-reservas-viaje
 ```
 
 ### Paso 2: Levantar el Sistema
@@ -138,7 +138,7 @@ docker-compose logs -f servicio-vuelos
 docker-compose logs -f servicio-pagos
 
 # Ver últimas 100 líneas
-docker-compose logs --tail=100 servicio-Pagos
+docker-compose logs --tail=100 servicio-reservas
 ```
 
 ---
@@ -253,10 +253,10 @@ docker-compose -f docker-compose-camunda.yml restart
 docker-compose -f docker-compose-camunda.yml ps
 
 # Verificar logs del microservicio
-docker-compose logs servicio-Pagos | grep "zeebe"
+docker-compose logs servicio-reservas | grep "zeebe"
 
 # Reintentar conexión
-docker-compose restart servicio-Pagos
+docker-compose restart servicio-reservas
 ```
 
 ### Problema: Base de datos H2 corrupta
@@ -283,8 +283,8 @@ Ahora que tienes el sistema funcionando:
 ## 🆘 ¿Necesitas Ayuda?
 
 - 📖 Consulta la [documentación completa](../README_2.md)
-- 🐛 Reporta issues en [GitHub](https://github.com/tu-usuario/sistema-Pagos-viaje/issues)
-- 💬 Pregunta en [Discussions](https://github.com/tu-usuario/sistema-Pagos-viaje/discussions)
+- 🐛 Reporta issues en [GitHub](https://github.com/tu-usuario/sistema-reservas-viaje/issues)
+- 💬 Pregunta en [Discussions](https://github.com/tu-usuario/sistema-reservas-viaje/discussions)
 
 ---
 
