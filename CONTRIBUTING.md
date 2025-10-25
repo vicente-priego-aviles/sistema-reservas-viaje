@@ -238,7 +238,7 @@ Usa logs con iconos para claridad:
 
 ```java
 @Slf4j
-public class Pagoservicio {
+public class ReservaServicio {
     
     public void crearReserva(ReservaDTO reservaDTO) {
         log.info("🔍 Iniciando creación de reserva: {}", reservaDTO.getId());

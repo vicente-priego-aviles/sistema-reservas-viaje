@@ -216,7 +216,7 @@ servicio-reservas/
 │   │   │   │   │   └── CancelacionNoPermitidaException.java
 │   │   │   │   │
 │   │   │   │   └── servicio/                  # @DomainService
-│   │   │   │       └── ValidadorPagoservicio.java
+│   │   │   │       └── ValidadorReservaServicio.java
 │   │   │   │
 │   │   │   └── infraestructura/               # 🟡 CAPA DE INFRAESTRUCTURA
 │   │   │       │

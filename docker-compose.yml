@@ -56,7 +56,7 @@ services:
     build:
       context: ./servicio-hoteles
       dockerfile: Dockerfile
-    image: sistema-reservas/servicio-hoteles:latest
+    image: reservas/servicio-hoteles:latest
     container_name: servicio-hoteles
     hostname: servicio-hoteles
     ports:
@@ -76,7 +76,7 @@ services:
     build:
       context: ./servicio-alquiler-coches
       dockerfile: Dockerfile
-    image: sistema-reservas/servicio-alquiler-coches:latest
+    image: reservas/servicio-alquiler-coches:latest
     container_name: servicio-alquiler-coches
     hostname: servicio-alquiler-coches
     ports:
@@ -96,7 +96,7 @@ services:
     build:
       context: ./servicio-pagos
       dockerfile: Dockerfile
-    image: sistema-reservas/servicio-pagos:latest
+    image: reservas/servicio-pagos:latest
     container_name: servicio-pagos
     hostname: servicio-pagos
     ports:
@@ -116,7 +116,7 @@ services:
     build:
       context: ./servicio-reservas
       dockerfile: Dockerfile
-    image: sistema-reservas/servicio-reservas:latest
+    image: reservas/servicio-reservas:latest
     container_name: servicio-reservas
     hostname: servicio-reservas
     ports:
