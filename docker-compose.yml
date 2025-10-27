@@ -1,12 +1,7 @@
 # ============================================
 # docker-compose.yml
-# Microservicios del Sistema de Pagos
+# Microservicios del Sistema de Reservas de Viajes
 # ============================================
-
-networks:
-  sistema-reservas-viaje_camunda-platform:
-    external: true  # ⬅️ Busca la red existente
-
 services:
 
   # ==========================================
@@ -22,11 +17,10 @@ services:
     ports:
       - "9080:9080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
-      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+      - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - sistema-reservas-viaje_sistema-reserva
     restart: unless-stopped
 
   # ==========================================
@@ -42,11 +36,10 @@ services:
     ports:
       - "9081:9081"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
-      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+      - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - sistema-reservas-viaje_sistema-reserva
     restart: unless-stopped
 
   # ==========================================
@@ -62,11 +55,10 @@ services:
     ports:
       - "9082:9082"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
-      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+      - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - sistema-reservas-viaje_sistema-reserva
     restart: unless-stopped
 
   # ==========================================
@@ -82,11 +74,10 @@ services:
     ports:
       - "9083:9083"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
-      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+      - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - sistema-reservas-viaje_sistema-reserva
     restart: unless-stopped
 
   # ==========================================
@@ -102,11 +93,10 @@ services:
     ports:
       - "9084:9084"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
-      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+      - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - sistema-reservas-viaje_sistema-reserva
     restart: unless-stopped
 
   # ==========================================
@@ -122,11 +112,15 @@ services:
     ports:
       - "9090:9090"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - ZEEBE_CLIENT_BROKER_GATEWAY-ADDRESS=zeebe:26500
-      - ZEEBE_CLIENT_SECURITY_PLAINTEXT=true
+      - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     volumes:
       - ./bpmn:/app/bpmn:ro
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - sistema-reservas-viaje_sistema-reserva
     restart: unless-stopped
+
+
+networks:
+  sistema-reservas-viaje_camunda-platform:
+    external: true  # ⬅️ Busca la red existente

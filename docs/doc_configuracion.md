@@ -250,7 +250,7 @@ services:
     volumes:
       - zeebe-data:/usr/local/zeebe/data
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - camunda-platform
 
   operate:
     image: camunda/operate:8.7.0
@@ -266,7 +266,7 @@ services:
       - zeebe
       - elasticsearch
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - camunda-platform
 
   tasklist:
     image: camunda/tasklist:8.7.0
@@ -282,7 +282,7 @@ services:
       - zeebe
       - elasticsearch
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - camunda-platform
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
@@ -296,7 +296,7 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
-      - sistema-reservas-viaje_camunda-platform
+       - camunda-platform
 
 volumes:
   zeebe-data:

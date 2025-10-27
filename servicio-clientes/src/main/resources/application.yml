@@ -92,29 +92,16 @@ server:
 # ============================================================================
 camunda:
   client:
-    mode: ${CAMUNDA_MODE:self-managed}
+    mode: self-managed
     zeebe:
-      enabled: true
-      gateway-address: ${ZEEBE_GATEWAY_ADDRESS:localhost:26500}
-      rest-address: ${ZEEBE_REST_ADDRESS:http://localhost:8080}
+      gateway-address: ${ZEEBE_ADDRESS:zeebe:26500}
+      rest-address: ${ZEEBE_REST:http://zeebe:8080}
       prefer-rest-over-grpc: false
-      defaults:
-        type: cliente
-        timeout: 30000
-      # Seguridad (si está habilitada en Camunda)
-      security:
-        plaintext: ${ZEEBE_PLAINTEXT:true}
+      deployment:
+        enabled: true  # ⬅️ Habilitar despliegue automático de BPMN al iniciar
     auth:
-      # Credenciales para desarrollo (demo/demo)
-      username: ${CAMUNDA_USERNAME:demo}
-      password: ${CAMUNDA_PASSWORD:demo}
-
-    # Configuración de workers
-    worker:
-      default-name: servicio-cliente
-      default-type: cliente
-      threads: ${WORKER_THREADS:4}
-      max-jobs-active: ${MAX_JOBS_ACTIVE:10}
+      username: demo
+      password: demo
 
 # ============================================================================
 # MANAGEMENT - ACTUATOR
