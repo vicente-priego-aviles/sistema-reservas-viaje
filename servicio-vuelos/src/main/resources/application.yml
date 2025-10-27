@@ -29,14 +29,13 @@ camunda:
   client:
     mode: self-managed
     zeebe:
-      gateway-address: ${ZEEBE_ADDRESS:zeebe:26500}
-      rest-address: ${ZEEBE_REST:http://zeebe:8080}
-      prefer-rest-over-grpc: false
-      deployment:
-        enabled: true  # ⬅️ Habilitar despliegue automático de BPMN al iniciar
+      gateway-address: zeebe:26500
+      rest-address: http://zeebe:8080
     auth:
       username: demo
       password: demo
+    deployment:
+      enabled: true  # opcional, si quieres desplegar BPMN al iniciar
 
 management:
   endpoints:

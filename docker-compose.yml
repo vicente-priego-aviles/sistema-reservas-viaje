@@ -20,7 +20,7 @@ services:
       - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
       - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-       - sistema-reservas-viaje_sistema-reserva
+       - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -39,7 +39,7 @@ services:
       - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
       - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-       - sistema-reservas-viaje_sistema-reserva
+       - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -58,7 +58,7 @@ services:
       - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
       - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-       - sistema-reservas-viaje_sistema-reserva
+       - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -77,7 +77,7 @@ services:
       - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
       - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-       - sistema-reservas-viaje_sistema-reserva
+       - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -96,7 +96,7 @@ services:
       - CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS=zeebe:26500
       - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
     networks:
-       - sistema-reservas-viaje_sistema-reserva
+       - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
 
   # ==========================================
@@ -117,9 +117,8 @@ services:
     volumes:
       - ./bpmn:/app/bpmn:ro
     networks:
-       - sistema-reservas-viaje_sistema-reserva
+       - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
-
 
 networks:
   sistema-reservas-viaje_camunda-platform:

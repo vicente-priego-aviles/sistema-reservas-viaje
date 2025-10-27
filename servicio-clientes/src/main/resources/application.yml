@@ -10,8 +10,8 @@ spring:
   application:
     name: servicio-cliente
 
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+  #profiles:
+    #active: ${SPRING_PROFILES_ACTIVE:dev}
 
   # ============================================================================
   # BASE DE DATOS - H2 (Desarrollo) / PostgreSQL (Producción)
@@ -96,12 +96,13 @@ camunda:
     zeebe:
       gateway-address: ${ZEEBE_ADDRESS:zeebe:26500}
       rest-address: ${ZEEBE_REST:http://zeebe:8080}
-      prefer-rest-over-grpc: false
-      deployment:
-        enabled: true  # ⬅️ Habilitar despliegue automático de BPMN al iniciar
+      #gateway-address: zeebe:26500
+      #rest-address: http://zeebe:8080
     auth:
       username: demo
       password: demo
+    deployment:
+      enabled: true  # opcional, si quieres desplegar BPMN al iniciar
 
 # ============================================================================
 # MANAGEMENT - ACTUATOR

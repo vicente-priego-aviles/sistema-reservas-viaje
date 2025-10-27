@@ -36,7 +36,7 @@ import java.time.YearMonth;
         name = "tarjetas_credito",
         indexes = {
                 @Index(name = "idx_tarjeta_cliente", columnList = "cliente_id"),
-                @Index(name = "idx_tarjeta_estado", columnList = "validada, fecha_expiracion")
+                @Index(name = "idx_tarjeta_estado", columnList = "validada, anio_expiracion, mes_expiracion")
         }
 )
 @EntityListeners(AuditingEntityListener.class)
