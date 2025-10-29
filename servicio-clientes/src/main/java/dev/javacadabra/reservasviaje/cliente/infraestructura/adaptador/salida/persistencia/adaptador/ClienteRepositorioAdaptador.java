@@ -250,12 +250,12 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
      */
     private void actualizarCamposSimples(Cliente cliente, ClienteEntidad entidad) {
         // Datos personales
-        entidad.setDni(cliente.getDatosPersonales().dni());
-        entidad.setNombre(cliente.getDatosPersonales().nombre());
-        entidad.setApellidos(cliente.getDatosPersonales().apellidos());
-        entidad.setEmail(cliente.getDatosPersonales().email());
-        entidad.setTelefono(cliente.getDatosPersonales().telefono());
-        entidad.setFechaNacimiento(cliente.getDatosPersonales().fechaNacimiento());
+        entidad.setDni(cliente.getDatosPersonales().getDni());
+        entidad.setNombre(cliente.getDatosPersonales().getNombre());
+        entidad.setApellidos(cliente.getDatosPersonales().getApellidos());
+        entidad.setEmail(cliente.getDatosPersonales().getEmail());
+        entidad.setTelefono(cliente.getDatosPersonales().getTelefono());
+        entidad.setFechaNacimiento(cliente.getDatosPersonales().getFechaNacimiento());
 
         // Dirección
         entidad.setCalle(cliente.getDireccion().calle());

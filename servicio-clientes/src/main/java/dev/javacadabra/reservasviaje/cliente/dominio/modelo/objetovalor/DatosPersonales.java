@@ -184,11 +184,7 @@ public class DatosPersonales implements Serializable {
         }
     }
 
-    /**
-     * Constructor privado usado internamente por el Builder.
-     * Lombok lo necesita para construir la instancia.
-     */
-    private DatosPersonales(
+    public DatosPersonales(
             String dni,
             String nombre,
             String apellidos,

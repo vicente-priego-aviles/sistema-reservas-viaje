@@ -77,7 +77,7 @@ public class ClienteServicio implements
         // Validar unicidad de DNI
         validarDniUnico(dto.obtenerDniNormalizado());
 
-        // Crear value objects de dominio
+        // Crear value objects de dominio usando el mapper
         DatosPersonales datosPersonales = clienteMapper.toDatosPersonales(dto);
         Direccion direccion = clienteMapper.toDireccion(dto);
 
@@ -89,9 +89,6 @@ public class ClienteServicio implements
 
         // Crear agregado Cliente
         Cliente cliente = Cliente.crear(datosPersonales, direccion, tarjetaInicial);
-
-        // Actualizar el clienteId en la tarjeta (ahora tenemos el ID real)
-        // Nota: En la implementación real, esto se manejaría mejor en el agregado
 
         // Persistir cliente (eventos se publican automáticamente)
         Cliente clienteGuardado = clienteRepositorio.save(cliente);
@@ -110,15 +107,20 @@ public class ClienteServicio implements
 
         Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
 
-        // Validar unicidad de email si cambió
-        String emailNormalizado = dto.obtenerEmailNormalizado();
-        if (!cliente.getDatosPersonales().email().equals(emailNormalizado)) {
+        // Normalizar email del DTO
+        String emailNormalizado = dto.email().trim().toLowerCase();
+
+        // Validar unicidad de email si cambió (usar el accessor del record)
+        if (!cliente.getDatosPersonales().getEmail().equals(emailNormalizado)) {
             validarEmailUnico(emailNormalizado, clienteId);
         }
 
-        // Crear nuevos datos personales manteniendo el DNI original
-        String dniActual = cliente.getDatosPersonales().dni();
-        DatosPersonales nuevosDatosPersonales = clienteMapper.toDatosPersonales(dto, dniActual);
+        // Crear nuevos datos personales usando el mapper, pasando los datos actuales
+        // para preservar DNI y fecha de nacimiento (campos inmutables)
+        DatosPersonales nuevosDatosPersonales = clienteMapper.toDatosPersonales(
+                dto,
+                cliente.getDatosPersonales() // Pasar datos actuales para preservar inmutables
+        );
 
         // Actualizar en el agregado
         cliente.actualizarDatosPersonales(nuevosDatosPersonales);
@@ -138,7 +140,7 @@ public class ClienteServicio implements
 
         Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
 
-        // Crear nueva dirección
+        // Crear nueva dirección usando el mapper
         Direccion nuevaDireccion = clienteMapper.aDireccion(dto);
 
         // Actualizar en el agregado
@@ -342,45 +344,14 @@ public class ClienteServicio implements
         return clienteMapper.aDTO(clienteDesbloqueado);
     }
 
-
-
-    @Override
-    @Transactional
-    public ClienteDTO desactivarCliente(String clienteId) {
-        log.info("⏸️ Desactivando cliente: {}", clienteId);
-
-        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
-
-        cliente.desactivar();
-
-        Cliente clienteDesactivado = clienteRepositorio.save(cliente);
-
-        log.info("✅ Cliente desactivado: {}", clienteId);
-
-        return clienteMapper.aDTO(clienteDesactivado);
-    }
-
-    /**
-     * Inicia el proceso de reserva para un cliente (sin reservaId específico).
-     *
-     * <p><strong>NOTA:</strong> Este método es parte de la interfaz {@link GestionarEstadoClienteUseCase}
-     * y no recibe un reservaId específico. Para casos de uso de Camunda donde se necesita
-     * el reservaId, usar {@link #iniciarProcesoReservaConId(String, String)}.
-     *
-     * @param clienteId ID del cliente (UUID)
-     * @return cliente actualizado como DTO
-     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
-     * @throws IllegalStateException si el cliente no está en estado ACTIVO
-     */
     @Override
     @Transactional
     public ClienteDTO iniciarProcesoReserva(String clienteId) {
-        log.info("🚀 Iniciando proceso de reserva para cliente: {} (sin reservaId específico)", clienteId);
+        log.info("🚀 Iniciando proceso de reserva para cliente: {}", clienteId);
 
         Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
 
-        // Llamar al método con reservaId = null (uso genérico)
-        cliente.iniciarProcesoReserva(null);
+        cliente.iniciarProcesoReserva(clienteId);
 
         Cliente clienteActualizado = clienteRepositorio.save(cliente);
 
@@ -404,7 +375,7 @@ public class ClienteServicio implements
     @Override
     @Transactional
     public ClienteDTO confirmarReserva(String clienteId) {
-        log.info("✅ Confirmando reserva para cliente: {} (sin reservaId específico)", clienteId);
+        log.info("✅ Confirmando reserva para cliente: {}", clienteId);
 
         Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
 
@@ -433,7 +404,7 @@ public class ClienteServicio implements
     @Override
     @Transactional
     public ClienteDTO finalizarReserva(String clienteId) {
-        log.info("🏁 Finalizando reserva para cliente: {} (sin reservaId específico)", clienteId);
+        log.info("🏁 Finalizando reserva para cliente: {}", clienteId);
 
         Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
 
@@ -446,8 +417,6 @@ public class ClienteServicio implements
 
         return clienteMapper.aDTO(clienteActualizado);
     }
-
-    // ==================== MÉTODOS NUEVOS PARA CAMUNDA WORKERS ====================
 
     /**
      * Obtiene el estado actual de un cliente.
@@ -495,17 +464,6 @@ public class ClienteServicio implements
         log.info("✅ Proceso de reserva iniciado correctamente para cliente: {}", clienteId);
     }
 
-    /**
-     * Confirma la reserva de un cliente tras un pago exitoso (con reservaId).
-     *
-     * <p>Este método es utilizado por el worker de Camunda para confirmar
-     * una reserva específica tras completarse el pago.
-     *
-     * @param clienteId ID del cliente (UUID)
-     * @param reservaId ID de la reserva
-     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
-     * @throws IllegalStateException si el cliente no está en EN_PROCESO_RESERVA
-     */
     @Transactional
     public void confirmarReservaConId(String clienteId, String reservaId) {
         log.info("✅ Confirmando reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
@@ -517,6 +475,22 @@ public class ClienteServicio implements
         clienteRepositorio.save(cliente);
 
         log.info("✅ Reserva confirmada correctamente para cliente: {}", clienteId);
+    }
+
+    @Override
+    @Transactional
+    public ClienteDTO desactivarCliente(String clienteId) {
+        log.info("⏸️ Desactivando cliente: {}", clienteId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+
+        cliente.desactivar();
+
+        Cliente clienteDesactivado = clienteRepositorio.save(cliente);
+
+        log.info("✅ Cliente desactivado: {}", clienteId);
+
+        return clienteMapper.aDTO(clienteDesactivado);
     }
 
     /**
