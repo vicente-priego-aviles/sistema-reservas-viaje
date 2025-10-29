@@ -1,12 +1,13 @@
 package dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -28,14 +29,12 @@ import java.util.regex.Pattern;
  * @version 1.0.0
  */
 @ValueObject
-public record DatosPersonales(
-        String dni,
-        String nombre,
-        String apellidos,
-        String email,
-        String telefono,
-        LocalDate fechaNacimiento
-) implements Serializable {
+@Getter
+@EqualsAndHashCode
+@ToString(exclude = {"dni", "telefono"})
+@Builder(toBuilder = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class DatosPersonales implements Serializable {
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
@@ -52,110 +51,157 @@ public record DatosPersonales(
     private static final String LETRAS_DNI = "TRWAGMYFPDXBNJZSQVHLCKE";
     private static final int EDAD_MINIMA = 18;
 
+    String dni;
+    String nombre;
+    String apellidos;
+    String email;
+    String telefono;
+    LocalDate fechaNacimiento;
+
     /**
-     * Constructor canónico con validaciones.
-     *
-     * @throws IllegalArgumentException si algún dato es inválido
+     * Clase Builder personalizada con validaciones.
+     * Lombok genera automáticamente el builder base, pero lo personalizamos
+     * para agregar validaciones en el método build().
      */
-    public DatosPersonales {
-        validarDni(dni);
-        validarNombre(nombre);
-        validarApellidos(apellidos);
-        validarEmail(email);
-        validarTelefono(telefono);
-        validarFechaNacimiento(fechaNacimiento);
-    }
+    public static class DatosPersonalesBuilder {
 
-    private void validarDni(String dni) {
-        if (StringUtils.isBlank(dni)) {
-            throw new IllegalArgumentException("El DNI no puede estar vacío");
-        }
+        /**
+         * Construye y valida la instancia de DatosPersonales.
+         *
+         * @return instancia validada de DatosPersonales
+         * @throws IllegalArgumentException si algún dato es inválido
+         */
+        public DatosPersonales build() {
+            // Validar antes de construir
+            validarDni(this.dni);
+            validarNombre(this.nombre);
+            validarApellidos(this.apellidos);
+            validarEmail(this.email);
+            validarTelefono(this.telefono);
+            validarFechaNacimiento(this.fechaNacimiento);
 
-        String dniNormalizado = dni.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
-
-        if (!DNI_PATTERN.matcher(dniNormalizado).matches()) {
-            throw new IllegalArgumentException(
-                    "El DNI debe tener 8 dígitos seguidos de una letra (ej: 12345678Z)"
+            // Construir usando el método interno generado por Lombok
+            return new DatosPersonales(
+                    this.dni,
+                    this.nombre,
+                    this.apellidos,
+                    this.email,
+                    this.telefono,
+                    this.fechaNacimiento
             );
         }
 
-        // Validar letra de control del DNI
-        int numerosDNI = Integer.parseInt(dniNormalizado.substring(0, 8));
-        char letraEsperada = LETRAS_DNI.charAt(numerosDNI % 23);
-        char letraProporcionada = dniNormalizado.charAt(8);
+        private void validarDni(String dni) {
+            if (StringUtils.isBlank(dni)) {
+                throw new IllegalArgumentException("El DNI no puede estar vacío");
+            }
 
-        if (letraProporcionada != letraEsperada) {
-            throw new IllegalArgumentException(
-                    String.format("La letra del DNI no es correcta. Debería ser %s", letraEsperada)
-            );
-        }
-    }
+            String dniNormalizado = dni.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
 
-    private void validarNombre(String nombre) {
-        if (StringUtils.isBlank(nombre)) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío");
-        }
-        if (nombre.length() < 2) {
-            throw new IllegalArgumentException("El nombre debe tener al menos 2 caracteres");
-        }
-        if (nombre.length() > 100) {
-            throw new IllegalArgumentException("El nombre no puede exceder 100 caracteres");
-        }
-    }
+            if (!DNI_PATTERN.matcher(dniNormalizado).matches()) {
+                throw new IllegalArgumentException(
+                        "El DNI debe tener 8 dígitos seguidos de una letra (ej: 12345678Z)"
+                );
+            }
 
-    private void validarApellidos(String apellidos) {
-        if (StringUtils.isBlank(apellidos)) {
-            throw new IllegalArgumentException("Los apellidos no pueden estar vacíos");
-        }
-        if (apellidos.length() < 2) {
-            throw new IllegalArgumentException("Los apellidos deben tener al menos 2 caracteres");
-        }
-        if (apellidos.length() > 100) {
-            throw new IllegalArgumentException("Los apellidos no pueden exceder 100 caracteres");
-        }
-    }
+            // Validar letra de control del DNI
+            int numerosDNI = Integer.parseInt(dniNormalizado.substring(0, 8));
+            char letraEsperada = LETRAS_DNI.charAt(numerosDNI % 23);
+            char letraProporcionada = dniNormalizado.charAt(8);
 
-    private void validarEmail(String email) {
-        if (StringUtils.isBlank(email)) {
-            throw new IllegalArgumentException("El email no puede estar vacío");
+            if (letraProporcionada != letraEsperada) {
+                throw new IllegalArgumentException(
+                        String.format("La letra del DNI no es correcta. Debería ser %s", letraEsperada)
+                );
+            }
         }
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new IllegalArgumentException("El email no tiene un formato válido: " + email);
-        }
-        if (email.length() > 255) {
-            throw new IllegalArgumentException("El email no puede exceder 255 caracteres");
-        }
-    }
 
-    private void validarTelefono(String telefono) {
-        // El teléfono es opcional
-        if (StringUtils.isNotBlank(telefono)) {
-            if (!TELEFONO_PATTERN.matcher(telefono).matches()) {
-                throw new IllegalArgumentException("El teléfono no tiene un formato válido: " + telefono);
+        private void validarNombre(String nombre) {
+            if (StringUtils.isBlank(nombre)) {
+                throw new IllegalArgumentException("El nombre no puede estar vacío");
+            }
+            if (nombre.length() < 2) {
+                throw new IllegalArgumentException("El nombre debe tener al menos 2 caracteres");
+            }
+            if (nombre.length() > 100) {
+                throw new IllegalArgumentException("El nombre no puede exceder 100 caracteres");
+            }
+        }
+
+        private void validarApellidos(String apellidos) {
+            if (StringUtils.isBlank(apellidos)) {
+                throw new IllegalArgumentException("Los apellidos no pueden estar vacíos");
+            }
+            if (apellidos.length() < 2) {
+                throw new IllegalArgumentException("Los apellidos deben tener al menos 2 caracteres");
+            }
+            if (apellidos.length() > 100) {
+                throw new IllegalArgumentException("Los apellidos no pueden exceder 100 caracteres");
+            }
+        }
+
+        private void validarEmail(String email) {
+            if (StringUtils.isBlank(email)) {
+                throw new IllegalArgumentException("El email no puede estar vacío");
+            }
+            if (!EMAIL_PATTERN.matcher(email).matches()) {
+                throw new IllegalArgumentException("El email no tiene un formato válido: " + email);
+            }
+            if (email.length() > 255) {
+                throw new IllegalArgumentException("El email no puede exceder 255 caracteres");
+            }
+        }
+
+        private void validarTelefono(String telefono) {
+            // El teléfono es opcional
+            if (StringUtils.isNotBlank(telefono)) {
+                if (!TELEFONO_PATTERN.matcher(telefono).matches()) {
+                    throw new IllegalArgumentException("El teléfono no tiene un formato válido: " + telefono);
+                }
+            }
+        }
+
+        private void validarFechaNacimiento(LocalDate fechaNacimiento) {
+            if (fechaNacimiento == null) {
+                throw new IllegalArgumentException("La fecha de nacimiento no puede ser nula");
+            }
+
+            if (fechaNacimiento.isAfter(LocalDate.now())) {
+                throw new IllegalArgumentException("La fecha de nacimiento no puede ser futura");
+            }
+
+            int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
+            if (edad < EDAD_MINIMA) {
+                throw new IllegalArgumentException(
+                        String.format("El cliente debe ser mayor de %d años. Edad actual: %d", EDAD_MINIMA, edad)
+                );
+            }
+
+            // Validar que no sea excesivamente antigua (más de 120 años)
+            if (edad > 120) {
+                throw new IllegalArgumentException("La fecha de nacimiento no es realista (más de 120 años)");
             }
         }
     }
 
-    private void validarFechaNacimiento(LocalDate fechaNacimiento) {
-        if (fechaNacimiento == null) {
-            throw new IllegalArgumentException("La fecha de nacimiento no puede ser nula");
-        }
+    /**
+     * Constructor privado usado internamente por el Builder.
+     * Lombok lo necesita para construir la instancia.
+     */
+    private DatosPersonales(
+            String dni,
+            String nombre,
+            String apellidos,
+            String email,
+            String telefono,
+            LocalDate fechaNacimiento) {
 
-        if (fechaNacimiento.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("La fecha de nacimiento no puede ser futura");
-        }
-
-        int edad = Period.between(fechaNacimiento, LocalDate.now()).getYears();
-        if (edad < EDAD_MINIMA) {
-            throw new IllegalArgumentException(
-                    String.format("El cliente debe ser mayor de %d años. Edad actual: %d", EDAD_MINIMA, edad)
-            );
-        }
-
-        // Validar que no sea excesivamente antigua (más de 120 años)
-        if (edad > 120) {
-            throw new IllegalArgumentException("La fecha de nacimiento no es realista (más de 120 años)");
-        }
+        this.dni = dni;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.email = email;
+        this.telefono = telefono;
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     /**
@@ -192,10 +238,13 @@ public record DatosPersonales(
      * @return DNI enmascarado (ej: "123****78Z")
      */
     public String obtenerDniEnmascarado() {
-        if (dni.length() < 4) {
+        if (dni == null || dni.length() < 4) {
             return "****";
         }
         String dniNormalizado = dni.trim().toUpperCase().replaceAll("[^A-Z0-9]", "");
+        if (dniNormalizado.length() < 4) {
+            return "****";
+        }
         String inicio = dniNormalizado.substring(0, 3);
         String fin = dniNormalizado.substring(dniNormalizado.length() - 2);
         return inicio + "****" + fin;
@@ -208,7 +257,9 @@ public record DatosPersonales(
      * @return nueva instancia con el email actualizado
      */
     public DatosPersonales conEmail(String nuevoEmail) {
-        return new DatosPersonales(dni, nombre, apellidos, nuevoEmail, telefono, fechaNacimiento);
+        return this.toBuilder()
+                .email(nuevoEmail)
+                .build();
     }
 
     /**
@@ -218,29 +269,46 @@ public record DatosPersonales(
      * @return nueva instancia con el teléfono actualizado
      */
     public DatosPersonales conTelefono(String nuevoTelefono) {
-        return new DatosPersonales(dni, nombre, apellidos, email, nuevoTelefono, fechaNacimiento);
+        return this.toBuilder()
+                .telefono(nuevoTelefono)
+                .build();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DatosPersonales that = (DatosPersonales) o;
-        return Objects.equals(dni, that.dni) &&
-               Objects.equals(nombre, that.nombre) &&
-               Objects.equals(apellidos, that.apellidos) &&
-               Objects.equals(email, that.email) &&
-               Objects.equals(telefono, that.telefono) &&
-               Objects.equals(fechaNacimiento, that.fechaNacimiento);
+    /**
+     * Crea una copia actualizando los datos de contacto.
+     * El DNI y la fecha de nacimiento permanecen inmutables.
+     *
+     * <p>Este método es ideal para operaciones de actualización de perfil
+     * donde ciertos datos identificativos no deben cambiar.
+     *
+     * @param nuevoNombre nuevo nombre del cliente
+     * @param nuevosApellidos nuevos apellidos del cliente
+     * @param nuevoEmail nuevo email del cliente
+     * @param nuevoTelefono nuevo teléfono del cliente (puede ser null)
+     * @return nueva instancia con los datos de contacto actualizados
+     * @throws IllegalArgumentException si los nuevos datos no son válidos
+     */
+    public DatosPersonales actualizarDatosContacto(
+            String nuevoNombre,
+            String nuevosApellidos,
+            String nuevoEmail,
+            String nuevoTelefono) {
+
+        return this.toBuilder()
+                .nombre(nuevoNombre)
+                .apellidos(nuevosApellidos)
+                .email(nuevoEmail)
+                .telefono(nuevoTelefono)
+                .build();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(dni, nombre, apellidos, email, telefono, fechaNacimiento);
-    }
-
-    @Override
-    public String toString() {
+    /**
+     * Representación personalizada del objeto para logs.
+     * Enmascara datos sensibles (DNI y teléfono).
+     *
+     * @return representación del objeto con datos sensibles enmascarados
+     */
+    public String toStringSeguro() {
         return "DatosPersonales{" +
                "dni='" + obtenerDniEnmascarado() + '\'' +
                ", nombre='" + nombre + '\'' +

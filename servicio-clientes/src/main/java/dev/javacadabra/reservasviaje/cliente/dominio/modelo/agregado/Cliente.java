@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Agregado Root Cliente - Representa un cliente del sistema de Pagos de viajes.
@@ -122,7 +123,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
             Direccion direccion,
             TarjetaCredito tarjetaInicial
     ) {
-        log.debug("🔍 Creando nuevo cliente con email: {}", datosPersonales.email());
+        log.debug("🔍 Creando nuevo cliente con email: {}", datosPersonales.getEmail());
 
         validarParametrosCreacion(datosPersonales, direccion, tarjetaInicial);
 
@@ -146,7 +147,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
         // Publicar evento de dominio
         cliente.registerEvent(new ClienteCreadoEvento(
                 nuevoClienteId,
-                datosPersonales.email(),
+                datosPersonales.getEmail(),
                 datosPersonales.obtenerNombreCompleto(),
                 datosPersonales.obtenerDniEnmascarado(),
                 EstadoCliente.PENDIENTE_VALIDACION,
@@ -222,7 +223,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
         // Publicar evento de dominio
         registerEvent(new ClienteActivadoEvento(
                 clienteId,
-                datosPersonales.email(),
+                datosPersonales.getEmail(),
                 datosPersonales.obtenerNombreCompleto()
         ));
 
@@ -255,7 +256,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
         // Publicar evento de dominio
         registerEvent(new ClienteBloqueadoEvento(
                 clienteId,
-                datosPersonales.email(),
+                datosPersonales.getEmail(),
                 motivo,
                 requiereRevisionManual
         ));
@@ -297,7 +298,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
         // Publicar evento de dominio
         registerEvent(new ClienteDesbloqueadoEvento(
                 clienteId,
-                datosPersonales.email(),
+                datosPersonales.getEmail(),
                 motivoBloqueoOriginal,
                 motivoDesbloqueo,
                 administrador
@@ -578,20 +579,20 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
             throw new IllegalArgumentException("Los nuevos datos personales no pueden ser nulos");
         }
 
-        boolean emailModificado = !datosPersonales.email().equals(nuevosDatosPersonales.email());
+        boolean emailModificado = !datosPersonales.getEmail().equals(nuevosDatosPersonales.getEmail());
 
         // Determinar campos modificados
         java.util.Set<String> camposModificados = new java.util.HashSet<>();
-        if (!datosPersonales.nombre().equals(nuevosDatosPersonales.nombre())) {
+        if (!datosPersonales.getNombre().equals(nuevosDatosPersonales.getNombre())) {
             camposModificados.add("nombre");
         }
-        if (!datosPersonales.apellidos().equals(nuevosDatosPersonales.apellidos())) {
+        if (!datosPersonales.getApellidos().equals(nuevosDatosPersonales.getApellidos())) {
             camposModificados.add("apellidos");
         }
         if (emailModificado) {
             camposModificados.add("email");
         }
-        if (!java.util.Objects.equals(datosPersonales.telefono(), nuevosDatosPersonales.telefono())) {
+        if (!Objects.equals(datosPersonales.getTelefono(), nuevosDatosPersonales.getTelefono())) {
             camposModificados.add("telefono");
         }
 
@@ -601,7 +602,7 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
         // Publicar evento de dominio
         registerEvent(new DatosPersonalesActualizadosEvento(
                 clienteId,
-                nuevosDatosPersonales.email(),
+                nuevosDatosPersonales.getEmail(),
                 nuevosDatosPersonales.obtenerNombreCompleto(),
                 camposModificados,
                 emailModificado

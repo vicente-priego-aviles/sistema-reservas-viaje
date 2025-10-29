@@ -9,6 +9,9 @@
 spring:
   application:
     name: servicio-cliente
+  sql:
+    init:
+      mode: embedded  # Solo se ejecuta en bases de datos embebidas (H2)
 
   #profiles:
     #active: ${SPRING_PROFILES_ACTIVE:dev}
@@ -35,6 +38,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO:create-drop}
+    defer-datasource-initialization: true
     show-sql: ${SHOW_SQL:false}
     properties:
       hibernate:

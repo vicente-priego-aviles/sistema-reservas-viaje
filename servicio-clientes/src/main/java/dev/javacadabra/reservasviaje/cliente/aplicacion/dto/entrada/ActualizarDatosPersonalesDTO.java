@@ -1,82 +1,46 @@
 package dev.javacadabra.reservasviaje.cliente.aplicacion.dto.entrada;
 
-import jakarta.validation.constraints.*;
-
-import java.io.Serializable;
-import java.time.LocalDate;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 /**
- * DTO de entrada para actualizar los datos personales de un cliente.
+ * DTO de entrada para actualización de datos personales.
  *
- * <p>Permite actualizar nombre, apellidos, email, teléfono y fecha de nacimiento.
- * El DNI NO se puede actualizar por motivos de seguridad y compliance.
- *
- * <p><strong>Validaciones:</strong>
- * <ul>
- *   <li>Nombre y apellidos: mínimo 2 caracteres</li>
- *   <li>Email: formato válido y único en el sistema</li>
- *   <li>Teléfono: formato internacional (opcional)</li>
- *   <li>Fecha nacimiento: mayor de 18 años</li>
- * </ul>
- *
- * <p><strong>Reglas de negocio:</strong>
- * <ul>
- *   <li>Solo clientes ACTIVOS o EN_PROCESO_RESERVA pueden actualizar datos</li>
- *   <li>Clientes BLOQUEADOS o INACTIVOS no pueden actualizar</li>
- *   <li>Si se cambia el email, puede requerir revalidación</li>
- * </ul>
- *
- * @param nombre nuevo nombre del cliente
- * @param apellidos nuevos apellidos del cliente
- * @param email nuevo email del cliente (debe ser único)
- * @param telefono nuevo teléfono del cliente (opcional)
- * @param fechaNacimiento nueva fecha de nacimiento (debe ser mayor de 18 años)
+ * <p>No incluye DNI ni fecha de nacimiento porque son campos inmutables.
+ * Solo permite actualizar datos de contacto.
  *
  * @author javacadabra
  * @version 1.0.0
  */
+@Builder
+@Schema(description = "Datos para actualizar información personal del cliente")
 public record ActualizarDatosPersonalesDTO(
 
         @NotBlank(message = "El nombre es obligatorio")
         @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
+        @Schema(description = "Nombre del cliente", example = "Juan", required = true)
         String nombre,
 
         @NotBlank(message = "Los apellidos son obligatorios")
         @Size(min = 2, max = 100, message = "Los apellidos deben tener entre 2 y 100 caracteres")
+        @Schema(description = "Apellidos del cliente", example = "García Pérez", required = true)
         String apellidos,
 
         @NotBlank(message = "El email es obligatorio")
-        @Email(message = "El email debe tener un formato válido")
+        @Email(message = "El email no tiene un formato válido")
         @Size(max = 255, message = "El email no puede exceder 255 caracteres")
+        @Schema(description = "Email del cliente", example = "juan.garcia@email.com", required = true)
         String email,
 
         @Pattern(
                 regexp = "^\\+?[0-9]{9,15}$",
-                message = "El teléfono debe tener formato internacional (9-15 dígitos, puede empezar con +)"
+                message = "El teléfono debe tener entre 9 y 15 dígitos, opcionalmente con el prefijo +"
         )
-        String telefono, // Opcional
-
-        @NotNull(message = "La fecha de nacimiento es obligatoria")
-        @Past(message = "La fecha de nacimiento debe estar en el pasado")
-        LocalDate fechaNacimiento
-
-) implements Serializable {
-
-    /**
-     * Obtiene el nombre completo del cliente.
-     *
-     * @return nombre completo (nombre + apellidos)
-     */
-    public String obtenerNombreCompleto() {
-        return nombre + " " + apellidos;
-    }
-
-    /**
-     * Normaliza el email a minúsculas.
-     *
-     * @return email normalizado en minúsculas
-     */
-    public String obtenerEmailNormalizado() {
-        return email.trim().toLowerCase();
-    }
+        @Schema(description = "Teléfono del cliente", example = "+34612345678")
+        String telefono
+) {
 }
