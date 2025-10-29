@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ProcesoPrincipal" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.37.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.7.0">
   <bpmn:process id="proceso-principal" name="Proceso Principal de Reserva de Viaje" isExecutable="true">
-    <bpmn:startEvent id="evento-inicio-solicitud-reserva" name="📩 Solicitud de Reserva de Viaje">
-      <bpmn:extensionElements>
-        <zeebe:ioMapping>
-          <zeebe:output source="=uuid()" target="reservaId" />
-        </zeebe:ioMapping>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>flujo-inicio-a-validar-datos</bpmn:outgoing>
-    </bpmn:startEvent>
+    <bpmn:endEvent id="evento-fin-solicitud-completada" name="✅ Solicitud de Viaje Completada">
+      <bpmn:incoming>flujo-pago-a-fin-exitoso</bpmn:incoming>
+    </bpmn:endEvent>
     <bpmn:serviceTask id="validar-datos-entrada" name="✅ Validar Datos de Entrada">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="validar-datos-entrada" retries="3" />
+        <zeebe:taskDefinition type="validar-datos-entrada" retries="" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-inicio-a-validar-datos</bpmn:incoming>
       <bpmn:outgoing>flujo-validar-a-gestion-cliente</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:boundaryEvent id="evento-error-validacion-datos" name="❌ Error Validación" attachedToRef="validar-datos-entrada">
-      <bpmn:outgoing>flujo-error-validacion-a-fin</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDef_ValidacionDatos" errorRef="Error_ValidacionDatos" />
-    </bpmn:boundaryEvent>
     <bpmn:endEvent id="evento-fin-datos-invalidos" name="❌ Datos Inválidos">
       <bpmn:incoming>flujo-error-validacion-a-fin</bpmn:incoming>
     </bpmn:endEvent>
@@ -30,13 +21,24 @@
     <bpmn:endEvent id="evento-fin-error-gestion-cliente" name="❌ Error en Gestión de Cliente">
       <bpmn:incoming>flujo-error-cliente-a-fin</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:userTask id="revisar-datos-entrada" name="📋 Revisar Datos de Entrada">
-      <bpmn:extensionElements>
-        <zeebe:assignmentDefinition assignee="demo" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>flujo-gestion-cliente-a-revisar-datos</bpmn:incoming>
-      <bpmn:outgoing>flujo-revisar-datos-a-proceso-reserva</bpmn:outgoing>
-    </bpmn:userTask>
+    <bpmn:boundaryEvent id="evento-error-proceso-pago" name="❌ Error Pago" attachedToRef="call-activity-proceso-pago">
+      <bpmn:outgoing>flujo-error-pago-a-fin</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDef_ProcesoPago" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
+      <bpmn:outgoing>flujo-error-reserva-a-notificar</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1bfojac" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="evento-error-datos-invalidos" name="❌ Error Validación" attachedToRef="validar-datos-entrada">
+      <bpmn:outgoing>flujo-error-validacion-a-fin</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDef_ValidacionDatos" errorRef="Error_ValidacionDatos" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="evento-fin-error-pago" name="❌ Pago Fallido">
+      <bpmn:incoming>flujo-error-pago-a-fin</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="evento-fin-reserva-fallida" name="❌ Reserva Fallida">
+      <bpmn:incoming>flujo-notificar-a-fin-reserva-fallida</bpmn:incoming>
+    </bpmn:endEvent>
     <bpmn:callActivity id="call-activity-proceso-reserva" name="🎟️ Proceso de Reserva">
       <bpmn:extensionElements>
         <zeebe:calledElement processId="subproceso-proceso-reserva" propagateAllChildVariables="true" />
@@ -44,43 +46,6 @@
       <bpmn:incoming>flujo-revisar-datos-a-proceso-reserva</bpmn:incoming>
       <bpmn:outgoing>flujo-proceso-reserva-a-pago</bpmn:outgoing>
     </bpmn:callActivity>
-    <bpmn:sendTask id="notificar-cliente-reserva-fallida" name="📧 Notificar Cliente: Reserva Fallida">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="notificar-reserva-fallida" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>flujo-error-reserva-a-notificar</bpmn:incoming>
-      <bpmn:outgoing>flujo-notificar-a-fin-reserva-fallida</bpmn:outgoing>
-    </bpmn:sendTask>
-    <bpmn:endEvent id="evento-fin-reserva-fallida" name="❌ Reserva Fallida">
-      <bpmn:incoming>flujo-notificar-a-fin-reserva-fallida</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:callActivity id="call-activity-proceso-pago" name="💳 Proceso de Pago">
-      <bpmn:extensionElements>
-        <zeebe:calledElement processId="subproceso-pago" propagateAllChildVariables="true" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>flujo-proceso-reserva-a-pago</bpmn:incoming>
-      <bpmn:outgoing>flujo-pago-a-fin-exitoso</bpmn:outgoing>
-    </bpmn:callActivity>
-    <bpmn:boundaryEvent id="evento-error-proceso-pago" name="❌ Error Pago" attachedToRef="call-activity-proceso-pago">
-      <bpmn:outgoing>flujo-error-pago-a-fin</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDef_ProcesoPago" />
-    </bpmn:boundaryEvent>
-    <bpmn:endEvent id="evento-fin-error-pago" name="❌ Pago Fallido">
-      <bpmn:incoming>flujo-error-pago-a-fin</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:endEvent id="evento-fin-solicitud-completada" name="✅ Solicitud de Viaje Completada">
-      <bpmn:incoming>flujo-pago-a-fin-exitoso</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="flujo-inicio-a-validar-datos" sourceRef="evento-inicio-solicitud-reserva" targetRef="validar-datos-entrada" />
-    <bpmn:sequenceFlow id="flujo-validar-a-gestion-cliente" sourceRef="validar-datos-entrada" targetRef="call-activity-gestion-cliente" />
-    <bpmn:sequenceFlow id="flujo-gestion-cliente-a-revisar-datos" sourceRef="call-activity-gestion-cliente" targetRef="revisar-datos-entrada" />
-    <bpmn:sequenceFlow id="flujo-revisar-datos-a-proceso-reserva" sourceRef="revisar-datos-entrada" targetRef="call-activity-proceso-reserva" />
-    <bpmn:sequenceFlow id="flujo-proceso-reserva-a-pago" sourceRef="call-activity-proceso-reserva" targetRef="call-activity-proceso-pago" />
-    <bpmn:sequenceFlow id="flujo-pago-a-fin-exitoso" sourceRef="call-activity-proceso-pago" targetRef="evento-fin-solicitud-completada" />
-    <bpmn:sequenceFlow id="flujo-error-validacion-a-fin" sourceRef="evento-error-validacion-datos" targetRef="evento-fin-datos-invalidos" />
-    <bpmn:sequenceFlow id="flujo-error-cliente-a-fin" sourceRef="evento-error-gestion-cliente" targetRef="evento-fin-error-gestion-cliente" />
-    <bpmn:sequenceFlow id="flujo-notificar-a-fin-reserva-fallida" sourceRef="notificar-cliente-reserva-fallida" targetRef="evento-fin-reserva-fallida" />
-    <bpmn:sequenceFlow id="flujo-error-pago-a-fin" sourceRef="evento-error-proceso-pago" targetRef="evento-fin-error-pago" />
     <bpmn:callActivity id="call-activity-gestion-cliente" name="👤 Gestión de Cliente">
       <bpmn:extensionElements>
         <zeebe:calledElement processId="subproceso-gestion-cliente" propagateAllChildVariables="true" />
@@ -88,13 +53,48 @@
       <bpmn:incoming>flujo-validar-a-gestion-cliente</bpmn:incoming>
       <bpmn:outgoing>flujo-gestion-cliente-a-revisar-datos</bpmn:outgoing>
     </bpmn:callActivity>
+    <bpmn:callActivity id="call-activity-proceso-pago" name="💳 Proceso de Pago">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="subproceso-pago" propagateAllChildVariables="true" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-proceso-reserva-a-pago</bpmn:incoming>
+      <bpmn:outgoing>flujo-pago-a-fin-exitoso</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:userTask id="revisar-datos-entrada" name="📋 Revisar Datos de Entrada">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition assignee="demo" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-gestion-cliente-a-revisar-datos</bpmn:incoming>
+      <bpmn:outgoing>flujo-revisar-datos-a-proceso-reserva</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="notificar-cliente-reserva-fallida" name="📧 Notificar Cliente: Reserva Fallida">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="notificar-reserva-fallida" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-error-reserva-a-notificar</bpmn:incoming>
+      <bpmn:outgoing>flujo-notificar-a-fin-reserva-fallida</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:startEvent id="evento-inicio-solicitud-reserva" name="📩 Solicitud de Reserva de Viaje">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="=uuid()" target="reservaId" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>flujo-inicio-a-validar-datos</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="flujo-error-cliente-a-fin" sourceRef="evento-error-gestion-cliente" targetRef="evento-fin-error-gestion-cliente" />
+    <bpmn:sequenceFlow id="flujo-error-pago-a-fin" sourceRef="evento-error-proceso-pago" targetRef="evento-fin-error-pago" />
     <bpmn:sequenceFlow id="flujo-error-reserva-a-notificar" sourceRef="evento-compensar-reserva" targetRef="notificar-cliente-reserva-fallida" />
-    <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
-      <bpmn:outgoing>flujo-error-reserva-a-notificar</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDefinition_1bfojac" />
-    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="flujo-error-validacion-a-fin" sourceRef="evento-error-datos-invalidos" targetRef="evento-fin-datos-invalidos" />
+    <bpmn:sequenceFlow id="flujo-gestion-cliente-a-revisar-datos" sourceRef="call-activity-gestion-cliente" targetRef="revisar-datos-entrada" />
+    <bpmn:sequenceFlow id="flujo-inicio-a-validar-datos" sourceRef="evento-inicio-solicitud-reserva" targetRef="validar-datos-entrada" />
+    <bpmn:sequenceFlow id="flujo-notificar-a-fin-reserva-fallida" sourceRef="notificar-cliente-reserva-fallida" targetRef="evento-fin-reserva-fallida" />
+    <bpmn:sequenceFlow id="flujo-pago-a-fin-exitoso" sourceRef="call-activity-proceso-pago" targetRef="evento-fin-solicitud-completada" />
+    <bpmn:sequenceFlow id="flujo-proceso-reserva-a-pago" sourceRef="call-activity-proceso-reserva" targetRef="call-activity-proceso-pago" />
+    <bpmn:sequenceFlow id="flujo-revisar-datos-a-proceso-reserva" sourceRef="revisar-datos-entrada" targetRef="call-activity-proceso-reserva" />
+    <bpmn:sequenceFlow id="flujo-validar-a-gestion-cliente" sourceRef="validar-datos-entrada" targetRef="call-activity-gestion-cliente" />
   </bpmn:process>
-  <bpmn:error id="Error_ValidacionDatos" name="Error Validación Datos" errorCode="ERROR_VALIDACION_DATOS" />
+  <bpmn:error id="Error_ValidacionDatos" name="Error Datos Iválidos" errorCode="ERROR_DATOS_INVALIDOS" />
   <bpmn:error id="Error_ReservaFallida" name="Error Reserva Fallida" errorCode="ERROR_RESERVA_FALLIDA" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_ProcesoPrincipal">
     <bpmndi:BPMNPlane id="BPMNPlane_ProcesoPrincipal" bpmnElement="proceso-principal">
@@ -152,6 +152,12 @@
       <bpmndi:BPMNShape id="Shape_call-activity-gestion-cliente" bpmnElement="call-activity-gestion-cliente">
         <dc:Bounds x="410" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mp78mk_di" bpmnElement="evento-compensar-reserva">
+        <dc:Bounds x="772" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="806" y="203" width="88" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-error-proceso-pago" bpmnElement="evento-error-proceso-pago">
         <dc:Bounds x="942" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -164,16 +170,10 @@
           <dc:Bounds x="526" y="203" width="80" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-error-validacion-datos" bpmnElement="evento-error-validacion-datos">
+      <bpmndi:BPMNShape id="Shape_evento-error-validacion-datos" bpmnElement="evento-error-datos-invalidos">
         <dc:Bounds x="292" y="162" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="325" y="196" width="50" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1mp78mk_di" bpmnElement="evento-compensar-reserva">
-        <dc:Bounds x="772" y="162" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="806" y="203" width="88" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_flujo-inicio-a-validar-datos" bpmnElement="flujo-inicio-a-validar-datos">

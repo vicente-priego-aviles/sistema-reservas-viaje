@@ -1,0 +1,9 @@
+{
+  "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+  "fechaInicio": "2025-12-10",
+  "fechaFin": "2025-12-20",
+  "destino": "Roma",
+  "numeroPasajeros": 2,
+  "emailContacto": "cliente@example.com",
+  "telefonoContacto": "+34600123456"
+}

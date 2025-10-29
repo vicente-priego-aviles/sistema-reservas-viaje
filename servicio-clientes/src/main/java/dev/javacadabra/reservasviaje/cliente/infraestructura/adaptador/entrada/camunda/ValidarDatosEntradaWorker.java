@@ -1,4 +1,4 @@
-package dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.entrada.camunda;
+package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.camunda;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
@@ -190,7 +190,7 @@ public class ValidarDatosEntradaWorker {
      * Valida el ID del cliente.
      *
      * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param errores   lista para acumular errores
      * @return clienteId validado o null si es inválido
      */
     private String validarClienteId(Map<String, Object> variables, List<String> errores) {
@@ -226,7 +226,7 @@ public class ValidarDatosEntradaWorker {
      * Valida la fecha de inicio.
      *
      * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param errores   lista para acumular errores
      * @return fecha de inicio validada o null si es inválida
      */
     private LocalDate validarFechaInicio(Map<String, Object> variables, List<String> errores) {
@@ -265,7 +265,7 @@ public class ValidarDatosEntradaWorker {
      * Valida la fecha de fin.
      *
      * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param errores   lista para acumular errores
      * @return fecha de fin validada o null si es inválida
      */
     private LocalDate validarFechaFin(Map<String, Object> variables, List<String> errores) {
@@ -303,9 +303,9 @@ public class ValidarDatosEntradaWorker {
     /**
      * Valida la coherencia entre fechas de inicio y fin.
      *
-     * @param fechaInicio fecha de inicio
-     * @param fechaFin fecha de fin
-     * @param errores lista para acumular errores
+     * @param fechaInicio  fecha de inicio
+     * @param fechaFin     fecha de fin
+     * @param errores      lista para acumular errores
      * @param advertencias lista para acumular advertencias
      */
     private void validarCoherenciaFechas(
@@ -345,7 +345,7 @@ public class ValidarDatosEntradaWorker {
      * Valida el destino.
      *
      * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param errores   lista para acumular errores
      */
     private void validarDestino(Map<String, Object> variables, List<String> errores) {
         if (!variables.containsKey("destino")) {
@@ -380,8 +380,8 @@ public class ValidarDatosEntradaWorker {
     /**
      * Valida el número de pasajeros.
      *
-     * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param variables    variables del proceso
+     * @param errores      lista para acumular errores
      * @param advertencias lista para acumular advertencias
      */
     private void validarNumeroPasajeros(
@@ -434,7 +434,7 @@ public class ValidarDatosEntradaWorker {
      * Valida el email de contacto.
      *
      * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param errores   lista para acumular errores
      */
     private void validarEmailContacto(Map<String, Object> variables, List<String> errores) {
         if (!variables.containsKey("emailContacto")) {
@@ -465,7 +465,7 @@ public class ValidarDatosEntradaWorker {
      * Valida el teléfono de contacto.
      *
      * @param variables variables del proceso
-     * @param errores lista para acumular errores
+     * @param errores   lista para acumular errores
      */
     private void validarTelefonoContacto(Map<String, Object> variables, List<String> errores) {
         if (!variables.containsKey("telefonoContacto")) {
