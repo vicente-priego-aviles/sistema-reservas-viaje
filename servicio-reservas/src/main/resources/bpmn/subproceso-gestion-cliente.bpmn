@@ -26,9 +26,6 @@
     <bpmn:serviceTask id="actualizar-estado-en-proceso" name="Actualizar Estado: En Proceso">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="actualizar-estado-cliente" />
-        <zeebe:ioMapping>
-          <zeebe:input source="=&#34;EN_PROCESO_RESERVA&#34;" target="nuevoEstado" />
-        </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-a-actualizar-estado</bpmn:incoming>
       <bpmn:outgoing>flujo-a-fin-cliente</bpmn:outgoing>

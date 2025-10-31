@@ -78,6 +78,7 @@ public interface TarjetaCreditoMapper {
      * @param numeroEnmascarado número de tarjeta enmascarado
      * @return últimos 4 dígitos
      */
+    @Named("extraerUltimosDigitosTarjeta")
     default String extraerUltimosDigitos(String numeroEnmascarado) {
         if (numeroEnmascarado == null || numeroEnmascarado.length() < 4) {
             return numeroEnmascarado;

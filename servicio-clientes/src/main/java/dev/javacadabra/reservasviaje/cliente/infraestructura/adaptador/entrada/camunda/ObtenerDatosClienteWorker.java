@@ -222,10 +222,6 @@ public class ObtenerDatosClienteWorker {
 
         log.debug("✅ Output construido con {} variables", output.size());
 
-        // En ObtenerDatosClienteWorker, en el método construirOutputConCliente
-        log.info("🔍 DEBUG - Ciudad del cliente: '{}'", cliente.direccion().ciudad());
-        log.info("🔍 DEBUG - Output completo: {}", output);
-
         return output;
     }
 }
