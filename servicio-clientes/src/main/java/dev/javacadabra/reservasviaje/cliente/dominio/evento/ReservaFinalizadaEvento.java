@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @param clienteId ID del cliente
  * @param reservaId ID de la reserva finalizada
  * @param estadoAnterior Estado anterior del cliente
- * @param estadoNuevo Estado nuevo del cliente (ACTIVO)
+ * @param estadoCliente Estado nuevo del cliente (ACTIVO)
  * @param fechaFinalizacion Fecha y hora de finalización
  */
 @DomainEvent
@@ -18,7 +18,7 @@ public record ReservaFinalizadaEvento(
         String clienteId,
         String reservaId,
         String estadoAnterior,
-        String estadoNuevo,
+        String estadoCliente,
         LocalDateTime fechaFinalizacion
 ) {
 }

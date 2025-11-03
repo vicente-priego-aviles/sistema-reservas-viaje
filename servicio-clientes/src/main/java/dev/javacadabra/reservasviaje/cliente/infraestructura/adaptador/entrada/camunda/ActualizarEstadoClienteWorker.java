@@ -19,12 +19,12 @@ import java.util.Map;
  * Worker de Camunda que actualiza el estado de un cliente.
  *
  * <p>Este worker es genérico y puede actualizar el estado del cliente según
- * el valor recibido en la variable de proceso {@code nuevoEstado}.
+ * el valor recibido en la variable de proceso {@code estadoCliente}.
  *
  * <p><strong>Variables de entrada esperadas:</strong>
  * <ul>
  *   <li>{@code clienteId} (String) - ID del cliente a actualizar (UUID)</li>
- *   <li>{@code nuevoEstado} (String) - Estado destino (EN_PROCESO_RESERVA o RESERVA_CONFIRMADA)</li>
+ *   <li>{@code estadoCliente} (String) - Estado destino (EN_PROCESO_RESERVA o RESERVA_CONFIRMADA)</li>
  *   <li>{@code reservaId} (String) - ID de la reserva asociada</li>
  * </ul>
  *
@@ -32,7 +32,7 @@ import java.util.Map;
  * <ul>
  *   <li>{@code estadoActualizado} (Boolean) - true si se actualizó correctamente</li>
  *   <li>{@code estadoAnterior} (String) - estado previo del cliente</li>
- *   <li>{@code estadoNuevo} (String) - estado actual del cliente</li>
+ *   <li>{@code estadoCliente} (String) - estado actual del cliente</li>
  * </ul>
  *
  * <p><strong>Errores BPMN que puede lanzar:</strong>
@@ -78,7 +78,7 @@ public class ActualizarEstadoClienteWorker {
             Map<String, Object> variables = job.getVariablesAsMap();
 
             String clienteId = extraerClienteId(variables);
-            String nuevoEstado = extraerNuevoEstado(variables);
+            String nuevoEstado = "EN_PROCESO_RESERVA";
             String reservaId = extraerReservaId(variables);
 
             log.info("🔍 Actualizando estado de cliente: {} → Estado nuevo: {} - Reserva: {}",
@@ -103,7 +103,7 @@ public class ActualizarEstadoClienteWorker {
             return Map.of(
                     "estadoActualizado", true,
                     "estadoAnterior", estadoAnterior,
-                    "estadoNuevo", nuevoEstado
+                    "estadoCliente", nuevoEstado
             );
 
         } catch (ClienteNoEncontradoExcepcion e) {
@@ -188,20 +188,20 @@ public class ActualizarEstadoClienteWorker {
      *
      * @param variables variables del proceso
      * @return nuevo estado del cliente
-     * @throws IllegalArgumentException si el nuevoEstado no está presente o es vacío
+     * @throws IllegalArgumentException si el estadoCliente no está presente o es vacío
      */
     private String extraerNuevoEstado(Map<String, Object> variables) {
-        if (!variables.containsKey("nuevoEstado")) {
-            throw new IllegalArgumentException("La variable 'nuevoEstado' es obligatoria");
+        if (!variables.containsKey("estadoCliente")) {
+            throw new IllegalArgumentException("La variable 'estadocliente' es obligatoria");
         }
 
-        String nuevoEstado = variables.get("nuevoEstado").toString();
+        String estadoCliente = variables.get("estadoCliente").toString();
 
-        if (StringUtils.isBlank(nuevoEstado)) {
-            throw new IllegalArgumentException("El 'nuevoEstado' no puede estar vacío");
+        if (StringUtils.isBlank(estadoCliente)) {
+            throw new IllegalArgumentException("El 'estadoCliente' no puede estar vacío");
         }
 
-        return nuevoEstado.trim();
+        return estadoCliente.trim();
     }
 
     /**
@@ -228,16 +228,16 @@ public class ActualizarEstadoClienteWorker {
     /**
      * Valida que el estado proporcionado sea un valor válido del enum EstadoCliente.
      *
-     * @param nuevoEstado estado a validar
+     * @param estadoCliente estado a validar
      * @throws IllegalArgumentException si el estado no es válido
      */
-    private void validarEstado(String nuevoEstado) {
+    private void validarEstado(String estadoCliente) {
         try {
-            EstadoCliente.valueOf(nuevoEstado);
+            EstadoCliente.valueOf(estadoCliente);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                     String.format("El estado '%s' no es válido. Estados permitidos: %s",
-                            nuevoEstado,
+                            estadoCliente,
                             String.join(", ", obtenerEstadosPermitidos()))
             );
         }

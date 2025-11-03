@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @param clienteId ID del cliente que inicia la reserva
  * @param reservaId ID de la reserva iniciada
  * @param estadoAnterior Estado anterior del cliente
- * @param estadoNuevo Estado nuevo del cliente (EN_PROCESO_RESERVA)
+ * @param estadoCliente Estado nuevo del cliente (EN_PROCESO_RESERVA)
  * @param fechaInicio Fecha y hora en que se inició el proceso
  */
 @DomainEvent
@@ -18,7 +18,7 @@ public record ProcesoReservaIniciadoEvento(
         String clienteId,
         String reservaId,
         String estadoAnterior,
-        String estadoNuevo,
+        String estadoCliente,
         LocalDateTime fechaInicio
 ) {
 }
