@@ -41,7 +41,7 @@ public class BpmnDeploymentService {
      */
     private static final List<String> ORDEN_DESPLIEGUE = Arrays.asList(
             "bpmn/subproceso-gestion-cliente.bpmn",
-            "bpmn/subproceso-proceso-reserva.bpmn",
+            "bpmn/subproceso-reserva.bpmn",
             "bpmn/subproceso-pago.bpmn",
             "bpmn/proceso-principal.bpmn"
     );
