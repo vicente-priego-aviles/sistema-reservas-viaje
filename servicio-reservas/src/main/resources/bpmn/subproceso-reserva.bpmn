@@ -192,6 +192,7 @@
     <bpmn:userTask id="gestionar-reserva-coche" name="🚗 Gestionar Reserva de Coche">
       <bpmn:extensionElements>
         <zeebe:assignmentDefinition assignee="demo" />
+        <zeebe:formDefinition formId="gestionar-reserva-coche" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-a-gestionar-reservar-coche</bpmn:incoming>
       <bpmn:outgoing>flujo-a-reservar-coche</bpmn:outgoing>

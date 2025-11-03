@@ -37,7 +37,7 @@ public class ReservaCocheAdaptador implements ReservaCochePuerto {
         // 2. Guardar en base de datos
         ReservaCocheEntidad entidadGuardada = repositorio.save(entidad);
 
-        log.debug("✅ Reserva de coche guardada con ID técnico: {}", entidadGuardada.getId());
+        log.debug("✅ Reserva de coche guardada con ID : {}", entidadGuardada.getReservaId());
 
         // 3. Convertir entidad JPA de vuelta a dominio
         return mapeador.aDominio(entidadGuardada);

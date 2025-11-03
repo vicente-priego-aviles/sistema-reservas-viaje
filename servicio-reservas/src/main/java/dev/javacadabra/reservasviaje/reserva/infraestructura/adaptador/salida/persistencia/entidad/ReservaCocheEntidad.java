@@ -22,9 +22,6 @@ import java.time.LocalDateTime;
 public class ReservaCocheEntidad {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "reserva_id", nullable = false, unique = true, length = 100)
     private String reservaId;
 

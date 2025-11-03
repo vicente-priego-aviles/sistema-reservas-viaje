@@ -1,0 +1,408 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "1.0.0"
+  },
+  "schemaVersion": 16,
+  "id": "gestionar-reserva-coche",
+  "components": [
+    {
+      "text": "# 🚗 Gestión de Reserva de Coche\n\nComplete los datos del alquiler de coche para procesar la reserva.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      },
+      "id": "Field_Header"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_Divider_1"
+    },
+    {
+      "text": "## 👤 Información del Cliente",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_ClienteHeader"
+    },
+    {
+      "label": "ID del Cliente",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "clienteId",
+      "key": "clienteId",
+      "description": "Identificador único del cliente que realiza la reserva",
+      "validate": {
+        "required": true,
+        "minLength": 1,
+        "maxLength": 50
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_Divider_2"
+    },
+    {
+      "text": "## 🚗 Información del Vehículo",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_5",
+        "columns": null
+      },
+      "id": "Field_CocheHeader"
+    },
+    {
+      "label": "Empresa de Alquiler",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_6",
+        "columns": 6
+      },
+      "id": "empresaAlquiler",
+      "key": "empresaAlquiler",
+      "description": "Nombre de la empresa de alquiler (ej: Hertz, Avis, Europcar)",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "label": "Modelo del Coche",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_6",
+        "columns": 6
+      },
+      "id": "modeloCoche",
+      "key": "modeloCoche",
+      "description": "Modelo específico del vehículo (ej: Toyota Corolla, BMW Serie 3)",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "label": "Categoría del Coche",
+      "type": "select",
+      "layout": {
+        "row": "Row_7",
+        "columns": null
+      },
+      "id": "categoriaCoche",
+      "key": "categoriaCoche",
+      "description": "Seleccione la categoría del vehículo",
+      "validate": {
+        "required": true
+      },
+      "values": [
+        {
+          "label": "Económico",
+          "value": "ECONOMICO"
+        },
+        {
+          "label": "Compacto",
+          "value": "COMPACTO"
+        },
+        {
+          "label": "Mediano",
+          "value": "MEDIANO"
+        },
+        {
+          "label": "SUV",
+          "value": "SUV"
+        },
+        {
+          "label": "Minivan",
+          "value": "MINIVAN"
+        },
+        {
+          "label": "Lujo",
+          "value": "LUJO"
+        },
+        {
+          "label": "Deportivo",
+          "value": "DEPORTIVO"
+        },
+        {
+          "label": "Eléctrico",
+          "value": "ELECTRICO"
+        }
+      ]
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_8",
+        "columns": null
+      },
+      "id": "Field_Divider_3"
+    },
+    {
+      "text": "## 📍 Ubicaciones",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_9",
+        "columns": null
+      },
+      "id": "Field_UbicacionesHeader"
+    },
+    {
+      "label": "Ubicación de Recogida",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_10",
+        "columns": 6
+      },
+      "id": "ubicacionRecogida",
+      "key": "ubicacionRecogida",
+      "description": "Dirección o punto donde se recogerá el vehículo",
+      "validate": {
+        "required": true,
+        "minLength": 5,
+        "maxLength": 200
+      }
+    },
+    {
+      "label": "Ubicación de Devolución",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_10",
+        "columns": 6
+      },
+      "id": "ubicacionDevolucion",
+      "key": "ubicacionDevolucion",
+      "description": "Dirección o punto donde se devolverá el vehículo",
+      "validate": {
+        "required": true,
+        "minLength": 5,
+        "maxLength": 200
+      }
+    },
+    {
+      "text": "ℹ️ **Nota:** Si la ubicación de devolución es diferente a la de recogida, pueden aplicar cargos adicionales.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_11",
+        "columns": null
+      },
+      "id": "Field_UbicacionesInfo"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_12",
+        "columns": null
+      },
+      "id": "Field_Divider_4"
+    },
+    {
+      "text": "## 📅 Fechas y Horarios",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_13",
+        "columns": null
+      },
+      "id": "Field_FechasHeader"
+    },
+    {
+      "label": "Fecha y Hora de Recogida",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_14",
+        "columns": 6
+      },
+      "id": "fechaRecogida",
+      "key": "fechaRecogida",
+      "description": "Fecha y hora para recoger el vehículo",
+      "validate": {
+        "required": true
+      },
+      "dateLabel": "Fecha de Recogida",
+      "timeLabel": "Hora de Recogida",
+      "timeSerializingFormat": "utc_offset",
+      "timeInterval": 15
+    },
+    {
+      "label": "Fecha y Hora de Devolución",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_14",
+        "columns": 6
+      },
+      "id": "fechaDevolucion",
+      "key": "fechaDevolucion",
+      "description": "Fecha y hora para devolver el vehículo",
+      "validate": {
+        "required": true
+      },
+      "dateLabel": "Fecha de Devolución",
+      "timeLabel": "Hora de Devolución",
+      "timeSerializingFormat": "utc_offset",
+      "timeInterval": 15
+    },
+    {
+      "text": "⚠️ **Importante:** La fecha de devolución debe ser posterior a la fecha de recogida",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_15",
+        "columns": null
+      },
+      "id": "Field_FechasWarning"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_16",
+        "columns": null
+      },
+      "id": "Field_Divider_5"
+    },
+    {
+      "text": "## 💰 Información de Pago",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_17",
+        "columns": null
+      },
+      "id": "Field_PrecioHeader"
+    },
+    {
+      "label": "Precio Total del Alquiler",
+      "type": "number",
+      "layout": {
+        "row": "Row_18",
+        "columns": 6
+      },
+      "id": "precioCoche",
+      "key": "precioCoche",
+      "description": "Precio total del alquiler (incluye todos los cargos)",
+      "validate": {
+        "required": true,
+        "min": 0
+      },
+      "decimalDigits": 2
+    },
+    {
+      "label": "Código de Moneda",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_18",
+        "columns": 6
+      },
+      "id": "codigoMoneda",
+      "key": "codigoMoneda",
+      "description": "Código ISO de moneda (ej: EUR, USD, GBP)",
+      "defaultValue": "EUR",
+      "validate": {
+        "minLength": 3,
+        "maxLength": 3,
+        "pattern": "^[A-Z]{3}$"
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_19",
+        "columns": null
+      },
+      "id": "Field_Divider_6"
+    },
+    {
+      "text": "## 📝 Información Adicional",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_20",
+        "columns": null
+      },
+      "id": "Field_AdicionalHeader"
+    },
+    {
+      "label": "Código de Confirmación",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_21",
+        "columns": null
+      },
+      "id": "codigoConfirmacion",
+      "key": "codigoConfirmacion",
+      "description": "Código de confirmación de la empresa de alquiler (opcional)",
+      "validate": {
+        "maxLength": 20
+      }
+    },
+    {
+      "label": "Observaciones del Alquiler",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_22",
+        "columns": null
+      },
+      "id": "observacionesCoche",
+      "key": "observacionesCoche",
+      "description": "Observaciones adicionales (conductores adicionales, seguros, GPS, silla de bebé, etc.)",
+      "validate": {
+        "maxLength": 500
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_23",
+        "columns": null
+      },
+      "id": "Field_Divider_7"
+    },
+    {
+      "text": "### ℹ️ Información Importante\n\n- Todos los campos marcados como obligatorios deben ser completados\n- La fecha de devolución debe ser posterior a la fecha de recogida\n- Se requiere carnet de conducir válido y tarjeta de crédito para recoger el vehículo\n- Verifique las condiciones del alquiler (combustible, kilometraje, seguros)\n- Revise cuidadosamente los datos antes de enviar",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_24",
+        "columns": null
+      },
+      "id": "Field_Info"
+    }
+  ],
+  "type": "default"
+}
