@@ -56,3 +56,4 @@ connector-secrets.txt
 # logs
 logs/
 */logs/*
+/logs/

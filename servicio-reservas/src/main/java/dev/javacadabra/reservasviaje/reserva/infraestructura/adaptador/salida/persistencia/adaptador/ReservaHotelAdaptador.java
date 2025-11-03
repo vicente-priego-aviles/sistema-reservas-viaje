@@ -37,7 +37,7 @@ public class ReservaHotelAdaptador implements ReservaHotelPuerto {
         // 2. Guardar en base de datos
         ReservaHotelEntidad entidadGuardada = repositorio.save(entidad);
 
-        log.debug("✅ Reserva de hotel guardada con ID técnico: {}", entidadGuardada.getId());
+        log.debug("✅ Reserva de hotel guardada con ID : {}", entidadGuardada.getReservaId());
 
         // 3. Convertir entidad JPA de vuelta a dominio
         return mapeador.aDominio(entidadGuardada);

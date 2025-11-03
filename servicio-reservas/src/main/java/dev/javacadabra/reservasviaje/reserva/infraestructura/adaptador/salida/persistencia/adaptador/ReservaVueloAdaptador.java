@@ -42,7 +42,7 @@ public class ReservaVueloAdaptador implements ReservaVueloPuerto {
         // 3. Guardar en base de datos
         ReservaVueloEntidad entidadGuardada = repositorio.save(entidad);
 
-        log.debug("✅ Reserva de vuelo guardada con ID técnico: {}", entidadGuardada.getId());
+        log.debug("✅ Reserva de vuelo guardada con ID : {}", entidadGuardada.getReservaId());
 
         // 4. Convertir entidad JPA de vuelta a dominio
         return mapeador.aDominio(entidadGuardada);

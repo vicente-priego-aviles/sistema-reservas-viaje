@@ -1,0 +1,397 @@
+{
+  "components": [
+    {
+      "text": "# 🏨 Gestión de Reserva de Hotel\n\nComplete los datos del hotel para procesar la reserva.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      },
+      "id": "Field_Header"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_Divider_1"
+    },
+    {
+      "text": "## 👤 Información del Cliente",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_ClienteHeader"
+    },
+    {
+      "label": "ID del Cliente",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "clienteId",
+      "key": "clienteId",
+      "description": "Identificador único del cliente que realiza la reserva",
+      "validate": {
+        "required": true,
+        "minLength": 1,
+        "maxLength": 50
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_Divider_2"
+    },
+    {
+      "text": "## 🏨 Información del Hotel",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_5",
+        "columns": null
+      },
+      "id": "Field_HotelHeader"
+    },
+    {
+      "label": "Nombre del Hotel",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_6",
+        "columns": 6
+      },
+      "id": "nombreHotel",
+      "key": "nombreHotel",
+      "description": "Nombre completo del hotel",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 150
+      },
+      "defaultValue": "Hotel Luxury Palace"
+    },
+    {
+      "label": "Ciudad",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_6",
+        "columns": 6
+      },
+      "id": "ciudad",
+      "key": "ciudad",
+      "description": "Ciudad donde se encuentra el hotel",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      },
+      "defaultValue": "Madrid"
+    },
+    {
+      "label": "Dirección",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_7",
+        "columns": null
+      },
+      "id": "direccion",
+      "key": "direccion",
+      "description": "Dirección completa del hotel",
+      "validate": {
+        "required": true,
+        "minLength": 5,
+        "maxLength": 250
+      },
+      "defaultValue": "Paseo de la Castellana 150, 28046 Madrid"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_8",
+        "columns": null
+      },
+      "id": "Field_Divider_3"
+    },
+    {
+      "text": "## 📅 Fechas de Estancia",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_9",
+        "columns": null
+      },
+      "id": "Field_FechasHeader"
+    },
+    {
+      "subtype": "date",
+      "label": "Fecha de Entrada",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_10",
+        "columns": 6
+      },
+      "id": "fechaEntrada",
+      "key": "fechaEntrada",
+      "description": "Fecha de check-in en el hotel",
+      "validate": {
+        "required": true
+      },
+      "dateLabel": "Fecha de Entrada"
+    },
+    {
+      "subtype": "date",
+      "label": "Fecha de Salida",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_10",
+        "columns": 6
+      },
+      "id": "fechaSalida",
+      "key": "fechaSalida",
+      "description": "Fecha de check-out del hotel",
+      "validate": {
+        "required": true
+      },
+      "dateLabel": "Fecha de Salida"
+    },
+    {
+      "text": "⚠️ **Importante:** La fecha de salida debe ser posterior a la fecha de entrada",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_11",
+        "columns": null
+      },
+      "id": "Field_FechasWarning"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_12",
+        "columns": null
+      },
+      "id": "Field_Divider_4"
+    },
+    {
+      "text": "## 🛏️ Detalles de la Habitación",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_13",
+        "columns": null
+      },
+      "id": "Field_HabitacionHeader"
+    },
+    {
+      "label": "Tipo de Habitación",
+      "values": [
+        {
+          "label": "Individual",
+          "value": "INDIVIDUAL"
+        },
+        {
+          "label": "Doble",
+          "value": "DOBLE"
+        },
+        {
+          "label": "Triple",
+          "value": "TRIPLE"
+        },
+        {
+          "label": "Suite",
+          "value": "SUITE"
+        },
+        {
+          "label": "Suite Junior",
+          "value": "SUITE_JUNIOR"
+        },
+        {
+          "label": "Suite Presidencial",
+          "value": "SUITE_PRESIDENCIAL"
+        },
+        {
+          "label": "Familiar",
+          "value": "FAMILIAR"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_14",
+        "columns": 6
+      },
+      "id": "tipoHabitacion",
+      "key": "tipoHabitacion",
+      "description": "Seleccione el tipo de habitación",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "SUITE"
+    },
+    {
+      "label": "Número de Habitaciones",
+      "type": "number",
+      "layout": {
+        "row": "Row_14",
+        "columns": 6
+      },
+      "id": "numeroHabitaciones",
+      "key": "numeroHabitaciones",
+      "description": "Cantidad de habitaciones a reservar",
+      "validate": {
+        "required": true,
+        "min": 1,
+        "max": 10
+      },
+      "decimalDigits": 0,
+      "defaultValue": 3
+    },
+    {
+      "label": "Número de Huéspedes",
+      "type": "number",
+      "layout": {
+        "row": "Row_15",
+        "columns": 6
+      },
+      "id": "numeroHuespedes",
+      "key": "numeroHuespedes",
+      "description": "Cantidad total de huéspedes",
+      "validate": {
+        "required": true,
+        "min": 1,
+        "max": 20
+      },
+      "decimalDigits": 0,
+      "defaultValue": 6
+    },
+    {
+      "label": "Precio Total del Hotel",
+      "type": "number",
+      "layout": {
+        "row": "Row_15",
+        "columns": 6
+      },
+      "id": "precioHotel",
+      "key": "precioHotel",
+      "description": "Precio total de la estancia",
+      "validate": {
+        "required": true,
+        "min": 0
+      },
+      "decimalDigits": 2,
+      "defaultValue": 3500
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_16",
+        "columns": null
+      },
+      "id": "Field_Divider_5"
+    },
+    {
+      "text": "## 💰 Información Adicional",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_17",
+        "columns": null
+      },
+      "id": "Field_AdicionalHeader"
+    },
+    {
+      "label": "Código de Moneda",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_18",
+        "columns": 6
+      },
+      "id": "codigoMoneda",
+      "key": "codigoMoneda",
+      "description": "Código ISO de moneda (ej: EUR, USD, GBP)",
+      "defaultValue": "EUR",
+      "validate": {
+        "minLength": 3,
+        "maxLength": 3,
+        "pattern": "^[A-Z]{3}$"
+      }
+    },
+    {
+      "label": "Código de Confirmación",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_18",
+        "columns": 6
+      },
+      "id": "codigoConfirmacion",
+      "key": "codigoConfirmacion",
+      "description": "Código de confirmación del hotel (opcional)",
+      "validate": {
+        "maxLength": 20
+      },
+      "defaultValue": "LUX-XMAS-2025"
+    },
+    {
+      "label": "Observaciones del Hotel",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_19",
+        "columns": null
+      },
+      "id": "observacionesHotel",
+      "key": "observacionesHotel",
+      "description": "Observaciones adicionales (preferencias de habitación, alergias, peticiones especiales, etc.)",
+      "validate": {
+        "maxLength": 500
+      },
+      "defaultValue": "Habitaciones en la misma planta, vista al mar, desayuno incluido"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_20",
+        "columns": null
+      },
+      "id": "Field_Divider_6"
+    },
+    {
+      "text": "### ℹ️ Información Importante\n\n- Todos los campos marcados como obligatorios deben ser completados\n- La fecha de salida debe ser posterior a la fecha de entrada\n- El número de huéspedes debe ser compatible con el tipo y cantidad de habitaciones\n- Revise cuidadosamente los datos antes de enviar",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_21",
+        "columns": null
+      },
+      "id": "Field_Info"
+    }
+  ],
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.37.0"
+  },
+  "schemaVersion": 18,
+  "id": "gestionar-reserva-hotel",
+  "type": "default"
+}

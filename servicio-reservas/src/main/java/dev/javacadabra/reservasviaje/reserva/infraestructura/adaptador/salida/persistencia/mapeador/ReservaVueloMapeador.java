@@ -18,7 +18,6 @@ import java.util.List;
 public interface ReservaVueloMapeador {
 
     // =================== DOMINIO → ENTIDAD ===================
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "reservaId", source = "reservaId.valor")
     @Mapping(target = "numeroVuelo", source = "datosVuelo.numeroVuelo")
     @Mapping(target = "aerolinea", source = "datosVuelo.aerolinea")
@@ -98,7 +97,6 @@ public interface ReservaVueloMapeador {
 
     default DetalleReserva mapDetalleReserva(ReservaVueloEntidad entidad) {
         return DetalleReserva.builder()
-                .id(entidad.getId())
                 .clienteId(entidad.getClienteId())
                 .observaciones(entidad.getObservaciones())
                 .codigoConfirmacion(entidad.getCodigoConfirmacion())

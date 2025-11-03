@@ -1,0 +1,466 @@
+{
+  "components": [
+    {
+      "text": "# ✈️ Gestión de Reserva de Vuelo\n\nComplete los datos del vuelo y pasajeros para procesar la reserva.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      },
+      "id": "Field_Header"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      },
+      "id": "Field_Divider_1"
+    },
+    {
+      "text": "## 👤 Información del Cliente",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      },
+      "id": "Field_ClienteHeader"
+    },
+    {
+      "label": "ID del Cliente",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      },
+      "id": "clienteId",
+      "key": "clienteId",
+      "description": "Identificador único del cliente que realiza la reserva",
+      "validate": {
+        "required": true,
+        "minLength": 1,
+        "maxLength": 50
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      },
+      "id": "Field_Divider_2"
+    },
+    {
+      "text": "## ✈️ Detalles del Vuelo",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_5",
+        "columns": null
+      },
+      "id": "Field_VueloHeader"
+    },
+    {
+      "label": "Número de Vuelo",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_6",
+        "columns": 6
+      },
+      "id": "numeroVuelo",
+      "key": "numeroVuelo",
+      "description": "Código del vuelo (ej: IB3456)",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 10,
+        "pattern": "^[A-Z0-9]+$"
+      },
+      "defaultValue": "VY1234"
+    },
+    {
+      "label": "Aerolínea",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_6",
+        "columns": 6
+      },
+      "id": "aerolinea",
+      "key": "aerolinea",
+      "description": "Nombre de la aerolínea",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      },
+      "defaultValue": "Vueling"
+    },
+    {
+      "label": "Ciudad de Origen",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_7",
+        "columns": 6
+      },
+      "id": "origen",
+      "key": "origen",
+      "description": "Ciudad de salida del vuelo",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      },
+      "defaultValue": "Madrid"
+    },
+    {
+      "label": "Ciudad de Destino",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_7",
+        "columns": 6
+      },
+      "id": "destino",
+      "key": "destino",
+      "description": "Ciudad de llegada del vuelo",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "subtype": "datetime",
+      "label": "Fecha y Hora de Salida",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_8",
+        "columns": 6
+      },
+      "id": "fechaSalida",
+      "key": "fechaSalida",
+      "description": "Fecha y hora de salida del vuelo",
+      "validate": {
+        "required": true
+      },
+      "dateLabel": "Fecha de Salida",
+      "timeLabel": "Time",
+      "timeSerializingFormat": "utc_offset",
+      "timeInterval": 15
+    },
+    {
+      "subtype": "datetime",
+      "label": "Fecha y Hora de Llegada",
+      "type": "datetime",
+      "layout": {
+        "row": "Row_8",
+        "columns": 6
+      },
+      "id": "fechaLlegada",
+      "key": "fechaLlegada",
+      "description": "Fecha y hora de llegada del vuelo",
+      "validate": {
+        "required": true
+      },
+      "dateLabel": "Fecha de Llegada",
+      "timeLabel": "Time",
+      "timeSerializingFormat": "utc_offset",
+      "timeInterval": 15
+    },
+    {
+      "label": "Clase del Vuelo",
+      "values": [
+        {
+          "label": "Económica",
+          "value": "ECONOMICA"
+        },
+        {
+          "label": "Business",
+          "value": "BUSINESS"
+        },
+        {
+          "label": "Primera Clase",
+          "value": "PRIMERA"
+        }
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_9",
+        "columns": 6
+      },
+      "id": "clase",
+      "key": "clase",
+      "description": "Seleccione la clase del vuelo",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "ECONOMICA"
+    },
+    {
+      "label": "Precio del Vuelo",
+      "type": "number",
+      "layout": {
+        "row": "Row_9",
+        "columns": 6
+      },
+      "id": "precioVuelo",
+      "key": "precioVuelo",
+      "description": "Precio total del vuelo",
+      "validate": {
+        "required": true,
+        "min": 0
+      },
+      "decimalDigits": 2,
+      "defaultValue": 89.99
+    },
+    {
+      "label": "Código de Moneda",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_10",
+        "columns": 6
+      },
+      "id": "codigoMoneda",
+      "key": "codigoMoneda",
+      "description": "Código ISO de moneda (ej: EUR, USD)",
+      "defaultValue": "EUR",
+      "validate": {
+        "minLength": 3,
+        "maxLength": 3,
+        "pattern": "^[A-Z]{3}$"
+      }
+    },
+    {
+      "label": "Código de Confirmación",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_10",
+        "columns": 6
+      },
+      "id": "codigoConfirmacion",
+      "key": "codigoConfirmacion",
+      "description": "Código de confirmación de la aerolínea (opcional)",
+      "validate": {
+        "maxLength": 20
+      }
+    },
+    {
+      "label": "Observaciones del Vuelo",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_11",
+        "columns": null
+      },
+      "id": "observacionesVuelo",
+      "key": "observacionesVuelo",
+      "description": "Observaciones adicionales sobre el vuelo (equipaje especial, comidas especiales, etc.)",
+      "validate": {
+        "maxLength": 500
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_12",
+        "columns": null
+      },
+      "id": "Field_Divider_3"
+    },
+    {
+      "text": "## 👥 Datos de Pasajeros\n\n**Importante:** Agregue todos los pasajeros que viajarán en este vuelo. Cada pasajero debe tener su información completa.",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_13",
+        "columns": null
+      },
+      "id": "Field_PasajerosHeader"
+    },
+    {
+      "label": "Pasajeros",
+      "components": [
+        {
+          "label": "Nombre",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0",
+            "columns": 6
+          },
+          "id": "Field_Nombre",
+          "key": "nombre",
+          "description": "Nombre del pasajero",
+          "validate": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "defaultValue": "María"
+        },
+        {
+          "label": "Apellidos",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_0",
+            "columns": 6
+          },
+          "id": "Field_Apellidos",
+          "key": "apellidos",
+          "description": "Apellidos del pasajero",
+          "validate": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "defaultValue": "González López"
+        },
+        {
+          "label": "Tipo de Documento",
+          "values": [
+            {
+              "label": "Pasaporte",
+              "value": "PASAPORTE"
+            },
+            {
+              "label": "DNI",
+              "value": "DNI"
+            },
+            {
+              "label": "NIE",
+              "value": "NIE"
+            },
+            {
+              "label": "Carnet de Identidad",
+              "value": "CARNET_IDENTIDAD"
+            }
+          ],
+          "type": "select",
+          "layout": {
+            "row": "Row_1",
+            "columns": 6
+          },
+          "id": "Field_TipoDocumento",
+          "key": "tipoDocumento",
+          "description": "Tipo de documento de identidad",
+          "validate": {
+            "required": true
+          },
+          "defaultValue": "DNI"
+        },
+        {
+          "label": "Número de Documento",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_1",
+            "columns": 6
+          },
+          "id": "Field_NumeroDocumento",
+          "key": "numeroDocumento",
+          "description": "Número del documento de identidad",
+          "validate": {
+            "required": true,
+            "minLength": 5,
+            "maxLength": 20
+          },
+          "defaultValue": "23456789B"
+        },
+        {
+          "subtype": "date",
+          "label": "Fecha de Nacimiento",
+          "type": "datetime",
+          "layout": {
+            "row": "Row_2",
+            "columns": 6
+          },
+          "id": "Field_FechaNacimiento",
+          "key": "fechaNacimiento",
+          "description": "Fecha de nacimiento del pasajero",
+          "validate": {
+            "required": true
+          },
+          "dateLabel": "Fecha de Nacimiento"
+        },
+        {
+          "label": "Nacionalidad",
+          "type": "textfield",
+          "layout": {
+            "row": "Row_2",
+            "columns": 6
+          },
+          "id": "Field_Nacionalidad",
+          "key": "nacionalidad",
+          "description": "Nacionalidad del pasajero (ej: Española)",
+          "validate": {
+            "required": true,
+            "minLength": 2,
+            "maxLength": 50
+          },
+          "defaultValue": "Española"
+        }
+      ],
+      "showOutline": true,
+      "isRepeating": true,
+      "allowAddRemove": true,
+      "defaultRepetitions": 1,
+      "type": "dynamiclist",
+      "layout": {
+        "row": "Row_14",
+        "columns": null
+      },
+      "id": "pasajeros",
+      "key": "pasajeros",
+      "path": "pasajeros",
+      "validate": {
+        "required": true,
+        "minItems": 1,
+        "maxItems": 9
+      },
+      "disallowAddRemoveItems": false,
+      "defaultValue": [
+        {
+          "nombre": "",
+          "apellidos": "",
+          "numeroDocumento": "",
+          "tipoDocumento": "PASAPORTE",
+          "fechaNacimiento": null,
+          "nacionalidad": ""
+        }
+      ]
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_15",
+        "columns": null
+      },
+      "id": "Field_Divider_4"
+    },
+    {
+      "text": "### ℹ️ Información Importante\n\n- Todos los campos marcados como obligatorios deben ser completados\n- Los datos deben coincidir con los documentos de viaje\n- Revise cuidadosamente los datos antes de enviar",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_16",
+        "columns": null
+      },
+      "id": "Field_Info"
+    }
+  ],
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.37.0"
+  },
+  "schemaVersion": 18,
+  "id": "gestionar-reserva-vuelo",
+  "type": "default"
+}

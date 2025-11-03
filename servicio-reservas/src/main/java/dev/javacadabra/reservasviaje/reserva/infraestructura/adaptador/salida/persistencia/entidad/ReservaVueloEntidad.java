@@ -23,10 +23,11 @@ import java.util.List;
 @AllArgsConstructor
 public class ReservaVueloEntidad {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    //private Long id;
 
+    @Id
     @Column(name = "reserva_id", nullable = false, unique = true, length = 100)
     private String reservaId;
 

@@ -14,7 +14,6 @@ import java.util.Currency;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ReservaHotelMapeador {
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "reservaId", source = "reservaId.valor")
     @Mapping(target = "nombreHotel", source = "datosHotel.nombreHotel")
     @Mapping(target = "ciudad", source = "datosHotel.ciudad")
@@ -80,7 +79,6 @@ public interface ReservaHotelMapeador {
 
     default DetalleReserva mapDetalleReserva(ReservaHotelEntidad entidad) {
         return DetalleReserva.builder()
-                .id(entidad.getId())
                 .clienteId(entidad.getClienteId())
                 .observaciones(entidad.getObservaciones())
                 .codigoConfirmacion(entidad.getCodigoConfirmacion())

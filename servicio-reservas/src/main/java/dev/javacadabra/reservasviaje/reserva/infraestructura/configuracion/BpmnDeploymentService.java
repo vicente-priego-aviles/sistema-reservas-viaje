@@ -43,7 +43,9 @@ public class BpmnDeploymentService {
             "bpmn/subproceso-gestion-cliente.bpmn",
             "bpmn/subproceso-reserva.bpmn",
             "bpmn/subproceso-pago.bpmn",
-            "bpmn/proceso-principal.bpmn"
+            "bpmn/proceso-principal.bpmn",
+            "bpmn/form/gestionar-reserva-vuelo.form",
+            "bpmn/form/gestionar-reserva-hotel.form"
     );
 
     private static final int MAX_REINTENTOS = 3;
