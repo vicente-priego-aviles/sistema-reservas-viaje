@@ -226,7 +226,7 @@
         "columns": 6
       },
       "id": "codigoMoneda",
-      "key": "codigoMoneda",
+      "key": "codigoMonedaVuelo",
       "description": "Código ISO de moneda (ej: EUR, USD)",
       "defaultValue": "EUR",
       "validate": {
@@ -243,11 +243,12 @@
         "columns": 6
       },
       "id": "codigoConfirmacion",
-      "key": "codigoConfirmacion",
+      "key": "codigoConfirmacionVuelo",
       "description": "Código de confirmación de la aerolínea (opcional)",
       "validate": {
         "maxLength": 20
-      }
+      },
+      "defaultValue": "CV-2025-01"
     },
     {
       "label": "Observaciones del Vuelo",

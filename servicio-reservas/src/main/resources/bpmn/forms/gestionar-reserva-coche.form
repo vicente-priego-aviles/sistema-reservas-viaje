@@ -1,12 +1,4 @@
 {
-  "executionPlatform": "Camunda Cloud",
-  "executionPlatformVersion": "8.7.0",
-  "exporter": {
-    "name": "Camunda Web Modeler",
-    "version": "1.0.0"
-  },
-  "schemaVersion": 16,
-  "id": "gestionar-reserva-coche",
   "components": [
     {
       "text": "# 🚗 Gestión de Reserva de Coche\n\nComplete los datos del alquiler de coche para procesar la reserva.",
@@ -88,7 +80,8 @@
         "required": true,
         "minLength": 2,
         "maxLength": 100
-      }
+      },
+      "defaultValue": "Mercedes-Benz Rent"
     },
     {
       "label": "Modelo del Coche",
@@ -104,21 +97,11 @@
         "required": true,
         "minLength": 2,
         "maxLength": 100
-      }
+      },
+      "defaultValue": "Mercedes-Benz Clase A 200"
     },
     {
       "label": "Categoría del Coche",
-      "type": "select",
-      "layout": {
-        "row": "Row_7",
-        "columns": null
-      },
-      "id": "categoriaCoche",
-      "key": "categoriaCoche",
-      "description": "Seleccione la categoría del vehículo",
-      "validate": {
-        "required": true
-      },
       "values": [
         {
           "label": "Económico",
@@ -152,7 +135,19 @@
           "label": "Eléctrico",
           "value": "ELECTRICO"
         }
-      ]
+      ],
+      "type": "select",
+      "layout": {
+        "row": "Row_7",
+        "columns": null
+      },
+      "id": "categoriaCoche",
+      "key": "categoriaCoche",
+      "description": "Seleccione la categoría del vehículo",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "COMPACTO"
     },
     {
       "text": "---",
@@ -188,7 +183,8 @@
         "required": true,
         "minLength": 5,
         "maxLength": 200
-      }
+      },
+      "defaultValue": "Aeropuerto Adolfo Suárez Madrid-Barajas, Terminal 4, 28042 Madrid"
     },
     {
       "label": "Ubicación de Devolución",
@@ -204,7 +200,8 @@
         "required": true,
         "minLength": 5,
         "maxLength": 200
-      }
+      },
+      "defaultValue": "Aeropuerto Adolfo Suárez Madrid-Barajas, Terminal 4, 28042 Madrid"
     },
     {
       "text": "ℹ️ **Nota:** Si la ubicación de devolución es diferente a la de recogida, pueden aplicar cargos adicionales.",
@@ -237,6 +234,7 @@
       "id": "Field_FechasHeader"
     },
     {
+      "subtype": "datetime",
       "label": "Fecha y Hora de Recogida",
       "type": "datetime",
       "layout": {
@@ -250,11 +248,12 @@
         "required": true
       },
       "dateLabel": "Fecha de Recogida",
-      "timeLabel": "Hora de Recogida",
+      "timeLabel": "Time",
       "timeSerializingFormat": "utc_offset",
       "timeInterval": 15
     },
     {
+      "subtype": "datetime",
       "label": "Fecha y Hora de Devolución",
       "type": "datetime",
       "layout": {
@@ -268,7 +267,7 @@
         "required": true
       },
       "dateLabel": "Fecha de Devolución",
-      "timeLabel": "Hora de Devolución",
+      "timeLabel": "Time",
       "timeSerializingFormat": "utc_offset",
       "timeInterval": 15
     },
@@ -316,7 +315,8 @@
         "required": true,
         "min": 0
       },
-      "decimalDigits": 2
+      "decimalDigits": 2,
+      "defaultValue": 280
     },
     {
       "label": "Código de Moneda",
@@ -363,11 +363,12 @@
         "columns": null
       },
       "id": "codigoConfirmacion",
-      "key": "codigoConfirmacion",
+      "key": "codigoConfirmacionCoche",
       "description": "Código de confirmación de la empresa de alquiler (opcional)",
       "validate": {
         "maxLength": 20
-      }
+      },
+      "defaultValue": "CC-2025-01"
     },
     {
       "label": "Observaciones del Alquiler",
@@ -381,7 +382,8 @@
       "description": "Observaciones adicionales (conductores adicionales, seguros, GPS, silla de bebé, etc.)",
       "validate": {
         "maxLength": 500
-      }
+      },
+      "defaultValue": "Conductor principal + 1 conductor adicional. GPS incluido. Seguro a todo riesgo sin franquicia."
     },
     {
       "text": "---",
@@ -404,5 +406,13 @@
       "id": "Field_Info"
     }
   ],
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.37.0"
+  },
+  "schemaVersion": 18,
+  "id": "gestionar-reserva-coche",
   "type": "default"
 }

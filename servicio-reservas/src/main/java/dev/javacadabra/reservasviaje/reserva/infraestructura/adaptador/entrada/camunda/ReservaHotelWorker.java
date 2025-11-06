@@ -55,7 +55,7 @@ public class ReservaHotelWorker {
      * <ul>
      *   <li>reservaHotelId (String): ID de la reserva creada</li>
      *   <li>reservaHotelExitosa (Boolean): true si la reserva fue exitosa</li>
-     *   <li>codigoConfirmacionHotel (String): Código de confirmación de la reserva</li>
+     *   <li>codigoConfirmacionHotel (String): Código de confirmación de la reserva del hotel</li>
      *   <li>precioHotelFinal (Double): Precio final de la reserva</li>
      *   <li>numeroNoches (Integer): Número de noches de la estancia</li>
      * </ul>
@@ -202,7 +202,7 @@ public class ReservaHotelWorker {
                     convertirABigDecimal(variables.get("precioHotel")),
                     (String) variables.getOrDefault("codigoMoneda", "EUR"),
                     (String) variables.get("observacionesHotel"),
-                    (String) variables.get("codigoConfirmacion")
+                    (String) variables.get("codigoConfirmacionHotel")
             );
 
         } catch (IllegalArgumentException e) {

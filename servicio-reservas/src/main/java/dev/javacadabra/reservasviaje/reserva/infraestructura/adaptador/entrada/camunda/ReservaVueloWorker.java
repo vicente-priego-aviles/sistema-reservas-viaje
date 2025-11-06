@@ -60,7 +60,7 @@ public class ReservaVueloWorker {
      * <ul>
      *   <li>reservaVueloId (String): ID de la reserva creada</li>
      *   <li>reservaVueloExitosa (Boolean): true si la reserva fue exitosa</li>
-     *   <li>codigoConfirmacionVuelo (String): Código de confirmación de la reserva</li>
+     *   <li>codigoConfirmacionVuelo (String): Código de confirmación de la reserva del vuelo</li>
      *   <li>precioVueloFinal (Double): Precio final de la reserva</li>
      * </ul>
      * </p>
@@ -199,7 +199,7 @@ public class ReservaVueloWorker {
                     (String) variables.getOrDefault("codigoMoneda", "EUR"),
                     pasajeros,
                     (String) variables.get("observacionesVuelo"),
-                    (String) variables.get("codigoConfirmacion")
+                    (String) variables.get("codigoConfirmacionVuelo")
             );
 
         } catch (Exception e) {
@@ -252,6 +252,7 @@ public class ReservaVueloWorker {
                 "No se puede convertir el precio a BigDecimal: " + valor.getClass()
         );
     }
+
     /**
      * Parsea una fecha-hora desde diferentes formatos posibles.
      *

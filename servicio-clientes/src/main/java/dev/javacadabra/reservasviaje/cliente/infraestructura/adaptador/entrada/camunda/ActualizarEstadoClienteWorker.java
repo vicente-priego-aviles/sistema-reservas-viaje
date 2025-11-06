@@ -71,6 +71,7 @@ public class ActualizarEstadoClienteWorker {
      */
     @JobWorker(type = "actualizar-estado-cliente", autoComplete = true)
     public Map<String, Object> actualizarEstado(ActivatedJob job) {
+
         log.info("🔄 Iniciando actualización de estado de cliente - Job: {}", job.getKey());
 
         try {
@@ -78,7 +79,7 @@ public class ActualizarEstadoClienteWorker {
             Map<String, Object> variables = job.getVariablesAsMap();
 
             String clienteId = extraerClienteId(variables);
-            String nuevoEstado = "EN_PROCESO_RESERVA";
+            String nuevoEstado = extraerNuevoEstado(variables);
             String reservaId = extraerReservaId(variables);
 
             log.info("🔍 Actualizando estado de cliente: {} → Estado nuevo: {} - Reserva: {}",
@@ -191,11 +192,11 @@ public class ActualizarEstadoClienteWorker {
      * @throws IllegalArgumentException si el estadoCliente no está presente o es vacío
      */
     private String extraerNuevoEstado(Map<String, Object> variables) {
-        if (!variables.containsKey("estadoCliente")) {
+        if (!variables.containsKey("nuevoEstado")) {
             throw new IllegalArgumentException("La variable 'estadocliente' es obligatoria");
         }
 
-        String estadoCliente = variables.get("estadoCliente").toString();
+        String estadoCliente = variables.get("nuevoEstado").toString();
 
         if (StringUtils.isBlank(estadoCliente)) {
             throw new IllegalArgumentException("El 'estadoCliente' no puede estar vacío");

@@ -342,12 +342,12 @@
         "columns": 6
       },
       "id": "codigoConfirmacion",
-      "key": "codigoConfirmacion",
+      "key": "codigoConfirmacionHotel",
       "description": "Código de confirmación del hotel (opcional)",
       "validate": {
         "maxLength": 20
       },
-      "defaultValue": "LUX-XMAS-2025"
+      "defaultValue": "CH-2025-01"
     },
     {
       "label": "Observaciones del Hotel",

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 /**
@@ -54,7 +56,7 @@ public class ReservaCocheWorker {
      * <ul>
      *   <li>reservaCocheId (String): ID de la reserva creada</li>
      *   <li>reservaCocheExitosa (Boolean): true si la reserva fue exitosa</li>
-     *   <li>codigoConfirmacionCoche (String): Código de confirmación de la reserva</li>
+     *   <li>codigoConfirmacionCoche (String): Código de confirmación de la reserva del coche</li>
      *   <li>precioCocheFinal (Double): Precio final de la reserva</li>
      *   <li>diasAlquiler (Integer): Número de días de alquiler</li>
      * </ul>
@@ -178,7 +180,7 @@ public class ReservaCocheWorker {
                     convertirABigDecimal(variables.get("precioCoche")),
                     (String) variables.getOrDefault("codigoMoneda", "EUR"),
                     (String) variables.get("observacionesCoche"),
-                    (String) variables.get("codigoConfirmacion")
+                    (String) variables.get("codigoConfirmacionCoche")
             );
 
         } catch (IllegalArgumentException e) {
@@ -217,9 +219,16 @@ public class ReservaCocheWorker {
 
     /**
      * Parsea una fecha-hora desde diferentes formatos posibles.
+     * <p>
+     * CORREGIDO: Ahora soporta el formato con offset de Camunda.
+     * Formatos soportados:
+     * - "2025-05-20T12:00+02:00" (formato de Camunda con offset)
+     * - "2025-05-20T12:00:00" (formato ISO sin offset)
+     * - LocalDateTime directo
      *
      * @param fechaObj Objeto que contiene la fecha (String ISO o LocalDateTime)
      * @return LocalDateTime parseado
+     * @throws IllegalArgumentException Si el formato no es válido
      */
     private LocalDateTime parseDateTime(Object fechaObj) {
         if (fechaObj == null) {
@@ -228,13 +237,35 @@ public class ReservaCocheWorker {
 
         if (fechaObj instanceof LocalDateTime) {
             return (LocalDateTime) fechaObj;
-        } else if (fechaObj instanceof String) {
-            return LocalDateTime.parse((String) fechaObj);
+        }
+
+        if (fechaObj instanceof String) {
+            String fechaStr = (String) fechaObj;
+
+            try {
+                // Intentar parsear con offset (formato de Camunda)
+                // "2025-05-20T12:00+02:00" → OffsetDateTime → LocalDateTime
+                OffsetDateTime offsetDateTime = OffsetDateTime.parse(fechaStr);
+                return offsetDateTime.toLocalDateTime();
+
+            } catch (DateTimeParseException e) {
+                // Si falla, intentar parsear como LocalDateTime estándar
+                // "2025-05-20T12:00:00" (sin offset)
+                try {
+                    return LocalDateTime.parse(fechaStr);
+                } catch (DateTimeParseException e2) {
+                    throw new IllegalArgumentException(
+                            "Formato de fecha no válido. Se esperaba ISO 8601 con o sin offset. " +
+                            "Recibido: " + fechaStr, e2
+                    );
+                }
+            }
         }
 
         throw new IllegalArgumentException(
                 "Formato de fecha no soportado: " + fechaObj.getClass()
         );
     }
+
 }
 

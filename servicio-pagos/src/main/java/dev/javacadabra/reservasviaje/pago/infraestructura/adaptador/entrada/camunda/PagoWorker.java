@@ -26,7 +26,11 @@ public class PagoWorker {
     public Map<String, Object> procesarPago(ActivatedJob job) {
         String reservaId = (String) job.getVariablesAsMap().get("reservaId");
         String clienteId = (String) job.getVariablesAsMap().get("clienteId");
-        Double monto = ((Number) job.getVariablesAsMap().get("monto")).doubleValue();
+
+        Double montoVuelo = ((Number) job.getVariablesAsMap().get("precioVueloFinal")).doubleValue();
+        Double montoHotel = ((Number) job.getVariablesAsMap().get("precioHotelFinal")).doubleValue();
+        Double montoCoche = ((Number) job.getVariablesAsMap().get("precioCocheFinal")).doubleValue();
+        Double monto = montoVuelo + montoHotel + montoCoche;
 
         log.info("🔄 Worker: procesar-pago - Reserva: {} - Monto: {}€", reservaId, monto);
 

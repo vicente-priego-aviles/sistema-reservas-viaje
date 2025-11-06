@@ -25,12 +25,17 @@ server:
   port: 9084
   shutdown: graceful
 
+# ============================================================================
+# CAMUNDA PLATFORM 8 - ZEEBE
+# ============================================================================
 camunda:
   client:
     mode: self-managed
     zeebe:
-      gateway-address: zeebe:26500
-      rest-address: http://zeebe:8080
+      #gateway-address: ${ZEEBE_ADDRESS:zeebe:26500}
+      #rest-address: ${ZEEBE_REST:http://zeebe:8080}
+      grpc-address: http://127.0.0.1:26500
+      rest-address: http://127.0.0.1:8088
     auth:
       username: demo
       password: demo
