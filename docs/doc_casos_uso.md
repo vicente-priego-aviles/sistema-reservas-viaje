@@ -665,10 +665,36 @@ Esto provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`, que activa 
 
 ### Logs a consultar
 
-**`./logs.sh reservas`** — fallo en la validación y compensaciones:
+> El PI de la respuesta HTTP corresponde al **proceso principal**. La gestión de cliente corre bajo el PI del **subproceso-gestion-cliente** y la reserva bajo el PI del **subproceso-proceso-reserva** (ambos son hijos distintos).
+
+**`docker logs servicio-clientes 2>&1 | grep "<PI-subproceso-gestion-cliente>"`** — gestión de cliente exitosa:
 ```
-🚀 Iniciando worker de reserva de vuelo - Job Key: ...
-❌ Error de validación en reserva de vuelo: Lista de pasajeros vacía o no proporcionada
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker obtener-datos-cliente - Job Key: <jobKey>
+🔍 Obteniendo datos del cliente: 123e4567-e89b-12d3-a456-426655440000
+✅ Cliente encontrado: 123e4567-e89b-12d3-a456-426655440000 - Estado: ACTIVO - Email: juan.perez@example.com
+📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: true
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker validar-tarjeta-credito - Job Key: <jobKey>
+💳 Validando tarjeta de crédito para cliente: 123e4567-e89b-12d3-a456-426655440000
+🔍 Tarjeta seleccionada: 11111111-1111-1111-1111-000000000001 - Tipo: VISA - Últimos 4 dígitos: 0366
+✅ Fecha de expiración válida: 12/2027
+🔐 Simulando validación con pasarela de pago - Monto: 1000.0€
+✅ Pasarela de pago: Transacción APROBADA - Código: <código>
+✅ Tarjeta validada correctamente - Código autorización: <código>
+📤 Validación completada exitosamente
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🔄 Iniciando actualización de estado de cliente - Job: <jobKey>
+🔍 Actualizando estado de cliente: 123e4567-e89b-12d3-a456-426655440000 → Estado nuevo: EN_PROCESO_RESERVA - Reserva: <reservaId>
+🚀 Proceso de reserva iniciado para cliente: 123e4567-e89b-12d3-a456-426655440000 - Reserva: <reservaId>
+✅ Estado de cliente actualizado correctamente: 123e4567-e89b-12d3-a456-426655440000 - ACTIVO → EN_PROCESO_RESERVA
+```
+
+**`docker logs servicio-reservas 2>&1 | grep "<PI-subproceso-proceso-reserva>"`** — fallo en validación del vuelo y compensaciones BPMN:
+```
+🔗 Proceso: <PI> [subproceso-proceso-reserva] | Job: <jobKey>
+🚀 Iniciando worker de reserva de vuelo - Job Key: <jobKey>
+❌ Error de validación en reserva de vuelo: La lista de pasajeros no puede estar vacía
 🛑 Iniciando worker de cancelación de vuelo (compensación) - Job Key: ...
 ⚠️ No se encontró ID de reserva de vuelo para cancelar. La reserva puede no haberse creado.
 🛑 Iniciando worker de cancelación de hotel (compensación) - Job Key: ...
@@ -677,7 +703,7 @@ Esto provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`, que activa 
 ⚠️ No se encontró ID de reserva de coche para cancelar. La reserva puede no haberse creado.
 ```
 
-**`./logs.sh clientes`** — notificación del fallo al cliente:
+**`docker logs servicio-clientes 2>&1 | grep "<PI-subproceso-gestion-cliente>"`** — notificación del fallo al cliente:
 ```
 📨 Iniciando notificación de reserva fallida - Job: ...
 📧 Notificando fallo de reserva - Cliente: 123e4567-... - Reserva: ... - Motivo: ...

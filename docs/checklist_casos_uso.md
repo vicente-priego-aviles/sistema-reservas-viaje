@@ -15,7 +15,7 @@ Marcar como ✅ una vez probado y los logs confirmen el flujo esperado.
 | 3 | Cliente No Encontrado | ✅ Probado | Gateway `clienteObtenido=false` → error gestión cliente |
 | 4 | Cliente Bloqueado | ✅ Probado | `ERROR_CLIENTE_BLOQUEADO` en `actualizar-estado-en-proceso` → error gestión cliente |
 | 5 | Tarjeta Expirada | ✅ Probado | `ERROR_TARJETA_INVALIDA` boundary en `validar-tarjeta-credito` → error gestión cliente |
-| 6 | Error en Reserva con Compensación BPMN | ⬜ Pendiente | `ERROR_VALIDACION_VUELO` → error event subprocess → BPMN compensation → `ERROR_RESERVA_FALLIDA` → notificar → `fin-reserva-fallida` |
+| 6 | Error en Reserva con Compensación BPMN | ✅ Probado | `ERROR_VALIDACION_VUELO` → error event subprocess → BPMN compensation → `ERROR_RESERVA_FALLIDA` → notificar → `fin-reserva-fallida` |
 | 7 | Error en Pago con Compensación por Mensaje | ⬜ Pendiente | `ERROR_PROCESAR_PAGO` → mensaje `compensar-reserva` → subproceso compensación manual → `fin-reserva-no-completada` |
 | 8 | Advertencia en Actualización | ⬜ Pendiente | Error en `actualizar-estado-confirmado` → `revertir-estado-cliente` → `marcar-reserva-advertencia` → `fin-reserva-con-advertencia` |
 | 9 | Actualización de Tarjeta en Paralelo | ⬜ Pendiente | Mensaje no-interrumpible `tarjeta-proporcionada` → subproceso paralelo → `actualizar-informacion-tarjeta` |
@@ -35,5 +35,5 @@ Marcar como ✅ una vez probado y los logs confirmen el flujo esperado.
 ## Notas de Testing
 
 - **Caso 8**: Actualmente requiere manipulación manual de la BBDD (H2 console) ya que el boundary event en el BPMN captura `ERROR_ACTUALIZACION_CLIENTE` pero el worker lanza `ERROR_TRANSICION_INVALIDA`. Ver instrucciones detalladas en `doc_casos_uso.md`.
-- **Caso 6**: Para forzar el error en la reserva de vuelo, completar el User Task vía Zeebe REST API con `pasajeros: []`.
+- **Caso 6**: ✅ Probado. Para forzar el error: completar el User Task "Gestionar Reserva de Vuelo" con `pasajeros: []` vía Zeebe REST API o dejando el campo vacío en el formulario de Tasklist.
 - **Todos los casos**: La respuesta HTTP 202 del REST endpoint siempre es `"estado": "INICIADA"` — el resultado real se observa en Camunda Operate.
