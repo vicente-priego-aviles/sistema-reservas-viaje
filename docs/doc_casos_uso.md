@@ -560,46 +560,6 @@ Los datos de entrada y la gestión de cliente son válidos, pero al procesar la 
 
 > Este caso difiere del Caso 7: aquí la compensación la activa el error event subprocess del subproceso de reserva, no un mensaje del subproceso de pago.
 
-### Datos de Entrada
-
-Iniciar con datos válidos (el error se provoca al completar el User Task de gestión de vuelo):
-
-```json
-{
-  "clienteId": "123e4567-e89b-12d3-a456-426655440000",
-  "origen": "Madrid",
-  "destino": "Barcelona",
-  "fechaInicio": "2027-06-01",
-  "fechaFin": "2027-06-08",
-  "numeroPasajeros": 2,
-  "emailContacto": "juan.perez@example.com",
-  "telefonoContacto": "+34600123456"
-}
-```
-
-**Cómo forzar el error en el vuelo**: Completar el User Task "Gestionar Reserva Vuelo" vía Zeebe REST API enviando una lista de pasajeros vacía, lo que provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`:
-
-```bash
-# 1. Obtener el userTaskKey del User Task "Gestionar Reserva Vuelo" desde Operate o Tasklist
-# 2. Completar el task con pasajeros vacío:
-curl -X PATCH "http://localhost:8088/v2/user-tasks/<userTaskKey>/completion" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "variables": {
-      "clienteId": "123e4567-e89b-12d3-a456-426655440000",
-      "numeroVuelo": "IB1234",
-      "aerolinea": "Iberia",
-      "origen": "Madrid",
-      "destino": "Barcelona",
-      "fechaSalida": "2027-06-01T10:00:00+02:00",
-      "fechaLlegada": "2027-06-01T11:00:00+02:00",
-      "clase": "ECONOMICA",
-      "precioVuelo": 150.0,
-      "pasajeros": []
-    }
-  }'
-```
-
 ### Flujo del Proceso
 
 ```
@@ -618,9 +578,7 @@ curl -X PATCH "http://localhost:8088/v2/user-tasks/<userTaskKey>/completion" \
 6. Fin: Reserva No Completada ❌
 ```
 
-### Ejecutar con cURL
-
-**Paso 1: Iniciar el proceso**
+### Paso 1: Iniciar el proceso
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -637,12 +595,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   }'
 ```
 
-**Paso 2: Completar User Tasks en Tasklist** (http://localhost:8081)
-
-- Completar "Revisar Datos de Entrada"
-- Completar "Gestionar Reserva Vuelo" **vía Zeebe Swagger** (http://localhost:8088/swagger-ui/index.html) con `pasajeros: []` para forzar el error
-
-### Respuesta Esperada
+Respuesta:
 
 ```json
 {
@@ -651,6 +604,64 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   "mensaje": "Reserva iniciada correctamente"
 }
 ```
+
+### Paso 2: Completar "Revisar Datos de Entrada"
+
+En **Tasklist** (http://localhost:8082): aparecerá el User Task "Revisar Datos de Entrada". Complétalo con los datos que aparecen pre-rellenos.
+
+### Paso 3: Obtener el `userTaskKey` del User Task de vuelo
+
+Tras completar el paso anterior, el proceso avanza al subproceso de reserva y quedan activos tres User Tasks en paralelo (vuelo, hotel, coche). Necesitas el `userTaskKey` del task de vuelo para completarlo con `pasajeros: []` y forzar el error.
+
+**Opción A — Tasklist** (http://localhost:8082):
+
+1. Ve a la sección **Tasks**
+2. Localiza "✈️ Gestionar Reserva de Vuelo"
+3. El `userTaskKey` es el número que aparece en la URL al hacer click sobre el task: `.../tasks/<userTaskKey>`
+
+**Opción B — Operate** (http://localhost:8081):
+
+1. Entra en la instancia del proceso activa
+2. Haz click sobre el nodo "✈️ Gestionar Reserva de Vuelo" (aparece resaltado en azul)
+3. Se abre un popup — haz click en el enlace **View**
+4. En la vista de detalle del nodo verás la metadata; el campo **Key** es el `userTaskKey`
+
+**Opción C — Zeebe REST API**:
+
+```bash
+curl -s -u demo:demo "http://localhost:8088/v2/user-tasks?size=10" | python3 -m json.tool
+```
+
+Busca el elemento con `"elementId": "gestionar-reserva-vuelo"` y anota su `"userTaskKey"`.
+
+### Paso 4: Forzar el error completando el task de vuelo con `pasajeros: []`
+
+Sustituye `<userTaskKey>` por el valor obtenido en el paso anterior:
+
+```bash
+curl -X PATCH "http://localhost:8088/v2/user-tasks/<userTaskKey>/completion" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "variables": {
+      "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+      "numeroVuelo": "IB1234",
+      "aerolinea": "Iberia",
+      "origen": "Madrid",
+      "destino": "Barcelona",
+      "fechaSalida": "2027-06-01T10:00:00+02:00",
+      "fechaLlegada": "2027-06-01T11:00:00+02:00",
+      "clase": "ECONOMICA",
+      "precioVuelo": 150.0,
+      "pasajeros": []
+    }
+  }'
+```
+
+> También puedes usar el Swagger de Zeebe en http://localhost:8088/swagger-ui/index.html, endpoint `PATCH /v2/user-tasks/{userTaskKey}/completion`.
+
+**Alternativa — formulario en Tasklist**: abre el task "✈️ Gestionar Reserva de Vuelo" en Tasklist (http://localhost:8082), rellena el formulario con los datos del vuelo y deja el campo **Pasajeros** vacío (sin añadir ningún pasajero). Al enviar, el formulario completará el task con `pasajeros: []` con el mismo efecto.
+
+Esto provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`, que activa el Saga de compensación.
 
 ### Logs a consultar
 
@@ -675,8 +686,8 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ### Verificar en Camunda
 
-1. **Operate** (http://localhost:8080): instancia terminada en `fin-reserva-fallida`; ver el evento de error y los tres eventos de compensación ejecutados; variable `motivoFallo` con el mensaje de error
-2. **Tasklist** (http://localhost:8081): no hay User Tasks pendientes
+1. **Operate** (http://localhost:8081): instancia terminada en `fin-reserva-fallida`; ver el evento de error y los tres eventos de compensación ejecutados; variable `motivoFallo` con el mensaje de error
+2. **Tasklist** (http://localhost:8082): no hay User Tasks pendientes
 
 ---
 
@@ -1021,8 +1032,8 @@ curl -X POST http://localhost:8088/v2/messages/publication \
 - [Checklist de Progreso](checklist_casos_uso.md) — Estado de cada caso probado
 - Swagger microservicio reservas: http://localhost:9090/swagger-ui.html
 - Swagger Zeebe REST API: http://localhost:8088/swagger-ui/index.html
-- Camunda Operate: http://localhost:8080
-- Camunda Tasklist: http://localhost:8081
+- Camunda Operate: http://localhost:8081
+- Camunda Tasklist: http://localhost:8082
 
 ---
 
