@@ -62,7 +62,7 @@
       <bpmn:startEvent id="error-reserva-inicio" name="Error Reserva 1">
         <bpmn:extensionElements>
           <zeebe:ioMapping>
-            <zeebe:output source="=error.message" target="motivoFallo" />
+            <zeebe:output source="=motivoFallo" target="motivoFallo" />
           </zeebe:ioMapping>
         </bpmn:extensionElements>
         <bpmn:outgoing>flujo-error-a-gateway</bpmn:outgoing>
