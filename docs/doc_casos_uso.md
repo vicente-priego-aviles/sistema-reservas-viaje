@@ -30,7 +30,7 @@ Ejemplos prácticos de uso del sistema con diferentes escenarios.
 | `223e4567-e89b-12d3-a456-426655440001` | María López Martínez | ✅ ACTIVO | MASTERCARD válida | Casos exitosos |
 | `323e4567-e89b-12d3-a456-426655440002` | Carlos Rodríguez Sánchez | ✅ ACTIVO | AMEX válida | Casos exitosos |
 | `b23e4567-e89b-12d3-a456-426655440010` | Roberto Morales Gil | 🚫 BLOQUEADO | VISA válida (*5727) | Caso 4: cliente bloqueado |
-| `g23e4567-e89b-12d3-a456-426655440015` | Raquel Iglesias Márquez | ✅ ACTIVO | ❌ VISA expirada (2023) | Caso 5: tarjeta expirada |
+| `0e3e4567-e89b-12d3-a456-426655440015` | Raquel Iglesias Márquez | ✅ ACTIVO | ❌ VISA expirada (2023) | Caso 5: tarjeta expirada |
 
 ### Variables del proceso según monto de pago
 
@@ -425,6 +425,25 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   "mensaje": "Reserva iniciada correctamente"
 }
 ```
+✅ Iniciando validación de datos de entrada - Job: ...
+✅ Datos de entrada válidos - Cliente: b23e4567-...
+🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
+🔍 Obteniendo datos del cliente: b23e4567-...
+✅ Cliente encontrado: Roberto Morales Gil - Estado: BLOQUEADO - Email: roberto.morales@example.com
+📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
+💳 Validando tarjeta de crédito para cliente: b23e4567-...
+🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 5727
+✅ Tarjeta validada correctamente - Código autorización: ...
+🔄 Iniciando actualización de estado de cliente - Job: ...
+❌ Cliente bloqueado: El cliente b23e4567-... está bloqueado
+```
+
+> El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.
+
+### Verificar en Camunda
+
+1. **Operate** (http://localhost:8080): instancia terminada en `fin-error-gestion-cliente`; variable `estadoCliente=BLOQUEADO`
+2. **Tasklist** (http://localhost:8081): no hay User Tasks pendientes
 
 ### Logs a consultar
 

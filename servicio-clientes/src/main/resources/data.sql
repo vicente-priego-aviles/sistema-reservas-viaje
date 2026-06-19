@@ -130,17 +130,17 @@ VALUES ('11111111-1111-1111-1111-000000000015', 'f23e4567-e89b-12d3-a456-4266554
 
 -- Cliente 16: Raquel Iglesias Márquez (ACTIVO pero tarjeta expirada)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
-VALUES ('g23e4567-e89b-12d3-a456-426655440015', '66789012Q', 'Raquel', 'Iglesias Márquez', 'raquel.iglesias@example.com', '+34666789012', '1992-05-17', 'Calle Velázquez 88', 'Madrid', '28006', 'Madrid', 'España', 'ACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('0e3e4567-e89b-12d3-a456-426655440015', '66789012Q', 'Raquel', 'Iglesias Márquez', 'raquel.iglesias@example.com', '+34666789012', '1992-05-17', 'Calle Velázquez 88', 'Madrid', '28006', 'Madrid', 'España', 'ACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000016', 'g23e4567-e89b-12d3-a456-426655440015', 'NDUzOTE0ODgwMzQzNjQ3NA==', '6474', 2023, 8, 'VISA', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000016', '0e3e4567-e89b-12d3-a456-426655440015', 'NDUzOTE0ODgwMzQzNjQ3NA==', '6474', 2023, 8, 'VISA', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Cliente 17: Sergio Rubio Campos (ACTIVO pero tarjeta expirada)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
-VALUES ('h23e4567-e89b-12d3-a456-426655440016', '77890123R', 'Sergio', 'Rubio Campos', 'sergio.rubio@example.com', '+34677890123', '1986-08-29', 'Ronda Universidad 12', 'Barcelona', '08007', 'Barcelona', 'España', 'ACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('0f3e4567-e89b-12d3-a456-426655440016', '77890123R', 'Sergio', 'Rubio Campos', 'sergio.rubio@example.com', '+34677890123', '1986-08-29', 'Ronda Universidad 12', 'Barcelona', '08007', 'Barcelona', 'España', 'ACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000017', 'h23e4567-e89b-12d3-a456-426655440016', 'NTU1NTU1NTU1NTU1NDQ1MQ==', '4451', 2024, 2, 'MASTERCARD', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000017', '0f3e4567-e89b-12d3-a456-426655440016', 'NTU1NTU1NTU1NTU1NDQ1MQ==', '4451', 2024, 2, 'MASTERCARD', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================================
 -- CLIENTES INACTIVOS (2 clientes - para probar estado)
@@ -148,17 +148,17 @@ VALUES ('11111111-1111-1111-1111-000000000017', 'h23e4567-e89b-12d3-a456-4266554
 
 -- Cliente 18: Cristina Pascual León (INACTIVO)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
-VALUES ('i23e4567-e89b-12d3-a456-426655440017', '88901234S', 'Cristina', 'Pascual León', 'cristina.pascual@example.com', '+34688901234', '1989-12-03', 'Calle Mayor 150', 'Zaragoza', '50001', 'Zaragoza', 'España', 'INACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('1a3e4567-e89b-12d3-a456-426655440017', '88901234S', 'Cristina', 'Pascual León', 'cristina.pascual@example.com', '+34688901234', '1989-12-03', 'Calle Mayor 150', 'Zaragoza', '50001', 'Zaragoza', 'España', 'INACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000018', 'i23e4567-e89b-12d3-a456-426655440017', 'MzcxNDQ5NjM1Mzk4NDQ4', '8448', 2029, 7, 'AMEX', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000018', '1a3e4567-e89b-12d3-a456-426655440017', 'MzcxNDQ5NjM1Mzk4NDQ4', '8448', 2029, 7, 'AMEX', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Cliente 19: Daniel Márquez Soler (INACTIVO)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
-VALUES ('j23e4567-e89b-12d3-a456-426655440018', '99012345T', 'Daniel', 'Márquez Soler', 'daniel.marquez@example.com', '+34699012345', '1993-06-11', 'Plaza Nueva 7', 'Granada', '18001', 'Granada', 'España', 'INACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('1b3e4567-e89b-12d3-a456-426655440018', '99012345T', 'Daniel', 'Márquez Soler', 'daniel.marquez@example.com', '+34699012345', '1993-06-11', 'Plaza Nueva 7', 'Granada', '18001', 'Granada', 'España', 'INACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000019', 'j23e4567-e89b-12d3-a456-426655440018', 'NjAxMTAwMDk5MDEzOTQzMQ==', '9431', 2028, 10, 'DISCOVER', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000019', '1b3e4567-e89b-12d3-a456-426655440018', 'NjAxMTAwMDk5MDEzOTQzMQ==', '9431', 2028, 10, 'DISCOVER', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================================
 -- CLIENTE EN_PROCESO_RESERVA (1 cliente - para probar concurrencia)
@@ -166,10 +166,10 @@ VALUES ('11111111-1111-1111-1111-000000000019', 'j23e4567-e89b-12d3-a456-4266554
 
 -- Cliente 20: Mónica Gil Domínguez (EN_PROCESO_RESERVA)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
-VALUES ('k23e4567-e89b-12d3-a456-426655440019', '10123456V', 'Mónica', 'Gil Domínguez', 'monica.gil@example.com', '+34610123456', '1991-09-19', 'Avenida Diagonal 456', 'Barcelona', '08006', 'Barcelona', 'España', 'EN_PROCESO_RESERVA', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('1c3e4567-e89b-12d3-a456-426655440019', '10123456V', 'Mónica', 'Gil Domínguez', 'monica.gil@example.com', '+34610123456', '1991-09-19', 'Avenida Diagonal 456', 'Barcelona', '08006', 'Barcelona', 'España', 'EN_PROCESO_RESERVA', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000020', 'k23e4567-e89b-12d3-a456-426655440019', 'NDkxNjMzODUwNjA4Mjg0OQ==', '2849', 2027, 8, 'VISA', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000020', '1c3e4567-e89b-12d3-a456-426655440019', 'NDkxNjMzODUwNjA4Mjg0OQ==', '2849', 2027, 8, 'VISA', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================================
 -- FIN DEL SCRIPT
