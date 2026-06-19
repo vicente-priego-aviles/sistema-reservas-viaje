@@ -57,3 +57,7 @@ connector-secrets.txt
 logs/
 */logs/*
 /logs/
+
+# Claude Code
+.agents/
+skills-lock.json
