@@ -425,25 +425,6 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   "mensaje": "Reserva iniciada correctamente"
 }
 ```
-✅ Iniciando validación de datos de entrada - Job: ...
-✅ Datos de entrada válidos - Cliente: b23e4567-...
-🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
-🔍 Obteniendo datos del cliente: b23e4567-...
-✅ Cliente encontrado: Roberto Morales Gil - Estado: BLOQUEADO - Email: roberto.morales@example.com
-📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
-💳 Validando tarjeta de crédito para cliente: b23e4567-...
-🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 5727
-✅ Tarjeta validada correctamente - Código autorización: ...
-🔄 Iniciando actualización de estado de cliente - Job: ...
-❌ Cliente bloqueado: El cliente b23e4567-... está bloqueado
-```
-
-> El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.
-
-### Verificar en Camunda
-
-1. **Operate** (http://localhost:8080): instancia terminada en `fin-error-gestion-cliente`; variable `estadoCliente=BLOQUEADO`
-2. **Tasklist** (http://localhost:8081): no hay User Tasks pendientes
 
 ### Logs a consultar
 
@@ -486,7 +467,7 @@ Cliente activo pero con tarjeta de crédito expirada. El worker `validar-tarjeta
 
 ```json
 {
-  "clienteId": "g23e4567-e89b-12d3-a456-426655440015",
+  "clienteId": "0e3e4567-e89b-12d3-a456-426655440015",
   "origen": "Madrid",
   "destino": "Barcelona",
   "fechaInicio": "2027-06-01",
@@ -514,7 +495,7 @@ Cliente activo pero con tarjeta de crédito expirada. El worker `validar-tarjeta
 curl -X POST http://localhost:9090/api/reservas/iniciar \
   -H "Content-Type: application/json" \
   -d '{
-    "clienteId": "g23e4567-e89b-12d3-a456-426655440015",
+    "clienteId": "0e3e4567-e89b-12d3-a456-426655440015",
     "origen": "Madrid",
     "destino": "Barcelona",
     "fechaInicio": "2027-06-01",
@@ -537,16 +518,28 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ### Logs a consultar
 
-**`./logs.sh clientes`**:
+> El PI que devuelve el REST endpoint corresponde al **proceso principal**. Los workers de gestión de cliente corren bajo el PI del **subproceso-gestion-cliente** (un PI hijo distinto). Filtra por el PI hijo que aparece en los logs, no por el de la respuesta HTTP.
+
+**`docker logs servicio-clientes 2>&1 | grep "<PI-subproceso-gestion-cliente>"`**:
 ```
-✅ Iniciando validación de datos de entrada - Job: ...
-✅ Datos de entrada válidos - Cliente: g23e4567-...
-🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
-🔍 Obteniendo datos del cliente: g23e4567-...
-✅ Cliente encontrado: Raquel Iglesias Márquez - Estado: ACTIVO - Email: raquel.iglesias@example.com
-💳 Validando tarjeta de crédito para cliente: g23e4567-...
-🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 6474
-❌ Tarjeta expirada: VISA - Expiró en: 8/2023
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker obtener-datos-cliente - Job Key: <jobKey>
+🔍 Variables recibidas: {clienteId=0e3e4567-e89b-12d3-a456-426655440015, ..., datosValidos=true}
+✅ ClienteId validado: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Obteniendo datos del cliente: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015 - Estado: ACTIVO - Email: raquel.iglesias@example.com
+✅ Output construido con 13 variables
+📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker validar-tarjeta-credito - Job Key: <jobKey>
+🔍 Variables recibidas: {..., tieneTarjetasValidas=false, puedeRealizarPagos=false}
+⚠️ No se proporcionó montoReserva, usando monto por defecto para validación
+💳 Validando tarjeta de crédito para cliente: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015
+❌ El cliente 0e3e4567-e89b-12d3-a456-426655440015 no tiene tarjetas válidas
 ```
 
 > El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.
