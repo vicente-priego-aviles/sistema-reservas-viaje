@@ -61,3 +61,4 @@ logs/
 # Claude Code
 .agents/
 skills-lock.json
+.claude/settings.local.json
