@@ -626,14 +626,6 @@ Tras completar el paso anterior, el proceso avanza al subproceso de reserva y qu
 3. Se abre un popup — haz click en el enlace **View**
 4. En la vista de detalle del nodo verás la metadata; el campo **Key** es el `userTaskKey`
 
-**Opción C — Zeebe REST API**:
-
-```bash
-curl -s -u demo:demo "http://localhost:8088/v2/user-tasks?size=10" | python3 -m json.tool
-```
-
-Busca el elemento con `"elementId": "gestionar-reserva-vuelo"` y anota su `"userTaskKey"`.
-
 ### Paso 4: Forzar el error completando el task de vuelo con `pasajeros: []`
 
 Sustituye `<userTaskKey>` por el valor obtenido en el paso anterior:
