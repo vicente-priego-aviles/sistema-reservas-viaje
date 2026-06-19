@@ -22,7 +22,10 @@
       "Bash(curl -s -X POST http://localhost:8082/v1/tasks/search -H 'Content-Type: application/json' -d '{\"pageSize\": 20, \"state\": \"CREATED\"}')",
       "Bash(curl -s -c /tmp/tl2.txt -X POST http://localhost:8082/api/login -d 'username=demo&password=demo' -w '\\\\nHTTP: %{http_code}\\\\n')",
       "Bash(curl -s -c /tmp/tl2.txt -b /tmp/tl2.txt -X POST http://localhost:8082/v1/tasks/search -H 'Content-Type: application/json' -d '{\"pageSize\": 20, \"state\": \"CREATED\"}')",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(javap -p io/camunda/client/spring/properties/CamundaClientProperties.class)",
+      "Bash(javap -p io/camunda/client/spring/properties/CamundaClientWorkerProperties.class)",
+      "Bash(javap -p io/camunda/client/spring/properties/CamundaClientJobWorkerProperties.class)"
     ]
   }
 }
