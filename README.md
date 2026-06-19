@@ -209,156 +209,43 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 
 ## 🚀 Inicio Rápido
 
-### Primera vez (compilación + todo el entorno)
-
 ```bash
+# 1. Crear el archivo de secrets (solo la primera vez)
+cp connector-secrets.txt.example connector-secrets.txt
+
+# 2. Compilar y levantar todo el sistema
 ./build-and-run.sh
 ```
 
-Este script:
-1. Crea la red Docker de Camunda
-2. Levanta Camunda Platform 8 (Zeebe, Operate, Tasklist)
-3. Espera a que Camunda esté listo (health check)
-4. Compila todos los microservicios con Maven
-5. Construye las imágenes Docker
-6. Levanta todos los microservicios
+Para reiniciar sin recompilar: `./start.sh` · Para parar todo: `./stop-all.sh`
 
-**Tiempo estimado**: 3-5 minutos
-
-### Reinicio rápido (sin recompilar)
-
-```bash
-./start.sh
-```
-
-Levanta Camunda, espera el health check, y arranca los microservicios. Útil cuando el código no ha cambiado.
-
-### Limpiar el entorno Docker
-
-```bash
-./limpieza.sh
-```
-
-Para y elimina todos los contenedores, redes personalizadas y hace limpieza del sistema Docker.
-
-### Verificar que todo está funcionando
-
-```bash
-# Verificar Camunda
-curl http://localhost:8080/actuator/health
-
-# Verificar microservicios
-curl http://localhost:9090/actuator/health
-curl http://localhost:9080/actuator/health
-```
-
-**Camunda Platform 8:**
-- 📊 **Operate**: http://localhost:8080 (demo/demo)
-- 📋 **Tasklist**: http://localhost:8081 (demo/demo)
+> 📖 **Guía completa paso a paso**: [docs/doc_quick_start.md](docs/doc_quick_start.md)  
+> 📜 **Referencia de todos los scripts**: [SCRIPTS.md](SCRIPTS.md)
 
 ---
 
 ## 🌐 API REST
 
-### Iniciar una Reserva
+El punto de entrada principal es `servicio-reservas` (puerto 9090):
 
-**`POST http://localhost:9090/api/Pagos`**
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/api/Pagos` | Iniciar una reserva de viaje |
+| `GET` | `/api/Pagos/{reservaId}` | Consultar el estado de una reserva |
 
-```bash
-curl -X POST http://localhost:9090/api/Pagos \
-  -H "Content-Type: application/json" \
-  -d '{
-    "clienteId": "CLI-001",
-    "origen": "Madrid",
-    "destino": "Barcelona",
-    "fechaInicio": "2025-12-15",
-    "fechaFin": "2025-12-20",
-    "monto": 1500.00
-  }'
-```
+Cada microservicio expone además su propia API REST documentada en `/swagger-ui.html`.
 
-**Response (201 Created):**
-```json
-{
-  "reservaId": "550e8400-e29b-41d4-a716-446655440000",
-  "processInstanceKey": 2251799813685249,
-  "estado": "INICIADA",
-  "fechaCreacion": "2025-10-18T10:30:00",
-  "mensaje": "Reserva iniciada correctamente. El proceso BPMN está en ejecución."
-}
-```
-
-### Consultar una Reserva
-
-**`GET http://localhost:9090/api/Pagos/{reservaId}`**
-
-### Datos de prueba precargados
-
-| Cliente | ID | Tarjeta |
-|---------|----|----|
-| Vicente Priego | `CLI-001` | Válida |
-| Verónica Lesmes | `CLI-002` | Válida |
-| Juan Pérez | `CLI-003` | Inválida |
-
-### Escenarios de prueba
-
-| Escenario | Configuración | Resultado esperado |
-|-----------|--------------|-------------------|
-| ✅ Flujo feliz | `CLI-001`, monto < 5000 | Reserva `CONFIRMADA` |
-| ❌ Cliente no existe | `CLI-999` | Error `ERROR_CLIENTE_NO_ENCONTRADO` |
-| ❌ Tarjeta inválida | `CLI-003` | Error `ERROR_TARJETA_INVALIDA` |
-| ❌ Pago rechazado | monto > 10000 | Compensaciones automáticas |
-| ⚠️ Advertencia | monto 5000–10000 | Reserva confirmada con advertencia |
-
-### Completar User Tasks
-
-1. Abrir http://localhost:8081 (demo/demo)
-2. Completar las tareas que aparecen tras iniciar la reserva:
-   - 📋 Revisar Datos de Entrada
-   - ✈️ Revisar Reserva de Vuelo
-   - 🏨 Revisar Reserva de Hotel
-   - 🚗 Revisar Reserva de Coche
-
-### Documentación Swagger
-
-| Servicio | URL |
-|---------|-----|
-| Reservas | http://localhost:9090/swagger-ui.html |
-| Clientes | http://localhost:9080/swagger-ui.html |
-| Vuelos | http://localhost:9081/swagger-ui.html |
-| Hoteles | http://localhost:9082/swagger-ui.html |
-| Coches | http://localhost:9083/swagger-ui.html |
-| Pagos | http://localhost:9084/swagger-ui.html |
+> 📖 **Ejemplos completos, datos de prueba y escenarios de error**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
 
 ---
 
 ## 📊 Monitoreo
 
-### Camunda Operate (http://localhost:8080)
+- **Camunda Operate** (http://localhost:8080) — visualización de instancias de proceso, incidents y variables
+- **Camunda Tasklist** (http://localhost:8081) — completar User Tasks del flujo
+- **H2 Console** — cada servicio en `http://localhost:908X/h2-console` (usuario `sa`, sin contraseña)
 
-- Ver instancias de procesos activas, completadas y fallidas
-- Navegar por Call Activities jerárquicamente
-- Inspeccionar variables de proceso
-- Resolver incidents manualmente
-
-### Camunda Tasklist (http://localhost:8081)
-
-- Ver y completar User Tasks pendientes
-- Ver formularios asociados a cada tarea
-
-### Consolas H2
-
-Cada servicio expone su base de datos en memoria:
-
-| Servicio | URL | JDBC URL |
-|---------|-----|----------|
-| Clientes | http://localhost:9080/h2-console | `jdbc:h2:mem:cliente_db` |
-| Vuelos | http://localhost:9081/h2-console | `jdbc:h2:mem:vuelos_db` |
-| Hoteles | http://localhost:9082/h2-console | `jdbc:h2:mem:hoteles_db` |
-| Coches | http://localhost:9083/h2-console | `jdbc:h2:mem:coches_db` |
-| Pagos | http://localhost:9084/h2-console | `jdbc:h2:mem:pagos_db` |
-
-Usuario: `sa` / Contraseña: (vacía)
+> 📖 **Logs, consolas H2 y monitoreo detallado**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
 
 ---
 
