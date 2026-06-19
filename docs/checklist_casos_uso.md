@@ -1,0 +1,39 @@
+# Checklist de Casos de Uso BPMN
+
+Progreso en la verificación de todos los flujos posibles del proceso `proceso-principal`.
+
+Marcar como ✅ una vez probado y los logs confirmen el flujo esperado.
+
+---
+
+## Estado de Casos
+
+| # | Caso | Estado | Flujo BPMN cubierto |
+|---|------|--------|---------------------|
+| 1 | Reserva Exitosa | ✅ Probado | Happy path completo → `fin-solicitud-completada` |
+| 2 | Datos de Entrada Inválidos | ⬜ Pendiente | `ERROR_DATOS_INVALIDOS` → `fin-datos-invalidos` |
+| 3 | Cliente No Encontrado | ⬜ Pendiente | Gateway `clienteObtenido=false` → error gestión cliente |
+| 4 | Cliente Bloqueado | ⬜ Pendiente | `ERROR_CLIENTE_BLOQUEADO` en `actualizar-estado-en-proceso` → error gestión cliente |
+| 5 | Tarjeta Expirada | ⬜ Pendiente | `ERROR_TARJETA_INVALIDA` boundary en `validar-tarjeta-credito` → error gestión cliente |
+| 6 | Error en Reserva con Compensación BPMN | ⬜ Pendiente | `ERROR_VALIDACION_VUELO` → error event subprocess → BPMN compensation → `ERROR_RESERVA_FALLIDA` → notificar → `fin-reserva-fallida` |
+| 7 | Error en Pago con Compensación por Mensaje | ⬜ Pendiente | `ERROR_PROCESAR_PAGO` → mensaje `compensar-reserva` → subproceso compensación manual → `fin-reserva-no-completada` |
+| 8 | Advertencia en Actualización | ⬜ Pendiente | Error en `actualizar-estado-confirmado` → `revertir-estado-cliente` → `marcar-reserva-advertencia` → `fin-reserva-con-advertencia` |
+| 9 | Actualización de Tarjeta en Paralelo | ⬜ Pendiente | Mensaje no-interrumpible `tarjeta-proporcionada` → subproceso paralelo → `actualizar-informacion-tarjeta` |
+
+---
+
+## Subprocess Coverage
+
+| Subproceso | Casos que lo cubren |
+|------------|---------------------|
+| `subproceso-gestion-cliente` | 1, 2, 3, 4, 5 |
+| `subproceso-proceso-reserva` | 1, 6, 7, 9 |
+| `subproceso-pago` | 1, 7, 8 |
+
+---
+
+## Notas de Testing
+
+- **Caso 8**: Actualmente requiere manipulación manual de la BBDD (H2 console) ya que el boundary event en el BPMN captura `ERROR_ACTUALIZACION_CLIENTE` pero el worker lanza `ERROR_TRANSICION_INVALIDA`. Ver instrucciones detalladas en `doc_casos_uso.md`.
+- **Caso 6**: Para forzar el error en la reserva de vuelo, completar el User Task vía Zeebe REST API con `pasajeros: []`.
+- **Todos los casos**: La respuesta HTTP 202 del REST endpoint siempre es `"estado": "INICIADA"` — el resultado real se observa en Camunda Operate.

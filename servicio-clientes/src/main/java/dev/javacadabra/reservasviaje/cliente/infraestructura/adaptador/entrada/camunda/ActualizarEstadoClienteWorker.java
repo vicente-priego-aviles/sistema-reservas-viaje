@@ -193,7 +193,7 @@ public class ActualizarEstadoClienteWorker {
      */
     private String extraerNuevoEstado(Map<String, Object> variables) {
         if (!variables.containsKey("nuevoEstado")) {
-            throw new IllegalArgumentException("La variable 'estadocliente' es obligatoria");
+            throw new IllegalArgumentException("La variable 'nuevoEstado' es obligatoria");
         }
 
         String estadoCliente = variables.get("nuevoEstado").toString();
