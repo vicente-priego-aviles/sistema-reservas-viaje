@@ -1,0 +1,155 @@
+{
+  "components": [
+    {
+      "text": "# 🎯 Iniciar Reserva de Viaje\n\nComplete los datos para iniciar el proceso de reserva.",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_0", "columns": null },
+      "id": "Field_Header"
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_1", "columns": null },
+      "id": "Field_Divider_1"
+    },
+    {
+      "text": "## 👤 Datos del Cliente",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_2", "columns": null },
+      "id": "Field_ClienteHeader"
+    },
+    {
+      "label": "ID del Cliente (UUID)",
+      "type": "textfield",
+      "layout": { "row": "Row_3", "columns": null },
+      "id": "clienteId",
+      "key": "clienteId",
+      "description": "Identificador único del cliente. Ej: 123e4567-e89b-12d3-a456-426655440000",
+      "validate": {
+        "required": true,
+        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+      }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_4", "columns": null },
+      "id": "Field_Divider_2"
+    },
+    {
+      "text": "## ✈️ Detalles del Viaje",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_5", "columns": null },
+      "id": "Field_ViajeHeader"
+    },
+    {
+      "label": "Destino",
+      "type": "textfield",
+      "layout": { "row": "Row_6", "columns": null },
+      "id": "destino",
+      "key": "destino",
+      "description": "Ciudad o país de destino del viaje",
+      "validate": {
+        "required": true,
+        "minLength": 2,
+        "maxLength": 100
+      }
+    },
+    {
+      "subtype": "date",
+      "label": "Fecha de Inicio",
+      "type": "datetime",
+      "layout": { "row": "Row_7", "columns": 6 },
+      "id": "fechaInicio",
+      "key": "fechaInicio",
+      "description": "Fecha de inicio del viaje",
+      "validate": { "required": true },
+      "dateLabel": "Fecha de Inicio"
+    },
+    {
+      "subtype": "date",
+      "label": "Fecha de Fin",
+      "type": "datetime",
+      "layout": { "row": "Row_7", "columns": 6 },
+      "id": "fechaFin",
+      "key": "fechaFin",
+      "description": "Fecha de fin del viaje (debe ser posterior a la fecha de inicio)",
+      "validate": { "required": true },
+      "dateLabel": "Fecha de Fin"
+    },
+    {
+      "label": "Número de Pasajeros",
+      "type": "number",
+      "layout": { "row": "Row_8", "columns": 6 },
+      "id": "numeroPasajeros",
+      "key": "numeroPasajeros",
+      "description": "Número de personas que realizarán el viaje (1–10)",
+      "validate": {
+        "required": true,
+        "min": 1,
+        "max": 10
+      },
+      "defaultValue": 1
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_9", "columns": null },
+      "id": "Field_Divider_3"
+    },
+    {
+      "text": "## 📧 Datos de Contacto",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_10", "columns": null },
+      "id": "Field_ContactoHeader"
+    },
+    {
+      "label": "Email de Contacto",
+      "type": "textfield",
+      "layout": { "row": "Row_11", "columns": 6 },
+      "id": "emailContacto",
+      "key": "emailContacto",
+      "description": "Email para recibir notificaciones de la reserva",
+      "validate": { "required": true }
+    },
+    {
+      "label": "Teléfono de Contacto",
+      "type": "textfield",
+      "layout": { "row": "Row_11", "columns": 6 },
+      "id": "telefonoContacto",
+      "key": "telefonoContacto",
+      "description": "Teléfono en formato internacional. Ej: +34600123456",
+      "validate": { "required": true }
+    },
+    {
+      "text": "---",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_12", "columns": null },
+      "id": "Field_Divider_4"
+    },
+    {
+      "text": "### ℹ️ Información\n\n- El proceso verificará al cliente y su tarjeta de crédito automáticamente\n- Se reservarán vuelo, hotel y coche en paralelo\n- Si el pago falla, todas las reservas se cancelarán de forma automática (Saga)",
+      "label": "Text view",
+      "type": "text",
+      "layout": { "row": "Row_13", "columns": null },
+      "id": "Field_Info"
+    }
+  ],
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.37.0"
+  },
+  "schemaVersion": 18,
+  "id": "iniciar-reserva",
+  "type": "default"
+}

@@ -112,7 +112,8 @@ Todos deben devolver `{"status":"UP"}`.
 1. Abre http://localhost:8082 (demo/demo)
 2. Click en **"Start Process"**
 3. Selecciona **"proceso-principal"**
-4. Rellena el formulario con los datos del cliente y haz click en **"Start"**
+4. Rellena el formulario con los datos del cliente (ver [Datos de Prueba](#-datos-de-prueba) para IDs válidos)
+5. Haz click en **"Start"**
 
 ### Completar el flujo (User Tasks)
 
@@ -131,11 +132,15 @@ El sistema incluye datos precargados para facilitar las pruebas.
 
 ### Clientes Disponibles
 
-| ID | Nombre | Tarjeta | Estado |
-|----|--------|---------|--------|
-| `CLI-001` | Vicente Priego | ✅ Válida | ACTIVO |
-| `CLI-002` | Verónica Lesmes | ✅ Válida | ACTIVO |
-| `CLI-003` | Juan Pérez | ❌ Inválida | ACTIVO |
+Los IDs son UUIDs reales del script `data.sql` precargado en H2.
+
+| clienteId | Nombre | Tarjeta | Estado |
+|-----------|--------|---------|--------|
+| `123e4567-e89b-12d3-a456-426655440000` | Juan Pérez García | ✅ Válida (VISA) | ACTIVO |
+| `223e4567-e89b-12d3-a456-426655440001` | María López Martínez | ✅ Válida (MASTERCARD) | ACTIVO |
+| `323e4567-e89b-12d3-a456-426655440002` | Carlos Rodríguez Sánchez | ✅ Válida (AMEX) | ACTIVO |
+| `b23e4567-e89b-12d3-a456-426655440010` | Roberto Morales Gil | ✅ Válida | BLOQUEADO ❌ |
+| `g23e4567-e89b-12d3-a456-426655440015` | Raquel Iglesias Márquez | ⌛ Expirada | ACTIVO |
 
 ### Escenarios por Monto
 
@@ -149,8 +154,9 @@ El sistema incluye datos precargados para facilitar las pruebas.
 
 | Caso | Configuración | Error BPMN | Resultado |
 |------|--------------|------------|-----------|
-| Cliente no existe | `clienteId: "CLI-999"` | `ERROR_CLIENTE_NO_ENCONTRADO` | Proceso termina en error |
-| Tarjeta inválida | `clienteId: "CLI-003"` | `ERROR_TARJETA_INVALIDA` | Proceso termina en error |
+| Cliente no existe | UUID inexistente (ej: `00000000-0000-0000-0000-000000000000`) | `ERROR_CLIENTE_NO_ENCONTRADO` | Proceso termina en error |
+| Cliente bloqueado | `clienteId: b23e4567-e89b-12d3-a456-426655440010` | `ERROR_CLIENTE_BLOQUEADO` | Proceso termina en error |
+| Tarjeta expirada | `clienteId: g23e4567-e89b-12d3-a456-426655440015` | `ERROR_TARJETA_INVALIDA` | Proceso termina en error |
 | Pago rechazado | `monto: 15000` | `ERROR_PAGO_RECHAZADO` | Compensaciones automáticas |
 
 ---

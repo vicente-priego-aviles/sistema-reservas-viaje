@@ -76,6 +76,7 @@
     </bpmn:sendTask>
     <bpmn:startEvent id="evento-inicio-solicitud-reserva" name="📩 Solicitud de Reserva de Viaje">
       <bpmn:extensionElements>
+        <zeebe:formDefinition formId="iniciar-reserva" />
         <zeebe:ioMapping>
           <zeebe:output source="=uuid()" target="reservaId" />
         </zeebe:ioMapping>

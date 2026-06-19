@@ -44,6 +44,7 @@ public class BpmnDeploymentService {
             "bpmn/subproceso-reserva.bpmn",
             "bpmn/subproceso-pago.bpmn",
             "bpmn/proceso-principal.bpmn",
+            "bpmn/forms/iniciar-reserva.form",
             "bpmn/forms/gestionar-reserva-vuelo.form",
             "bpmn/forms/gestionar-reserva-hotel.form",
             "bpmn/forms/gestionar-reserva-coche.form"
