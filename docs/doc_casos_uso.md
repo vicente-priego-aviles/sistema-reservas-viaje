@@ -12,8 +12,9 @@ Ejemplos prácticos de uso del sistema con diferentes escenarios.
 | 2 | Cliente No Encontrado | ❌ Error | Básico |
 | 3 | Tarjeta Inválida | ❌ Error | Básico |
 | 4 | Error en Pago con Compensación | 🔄 Compensación | Avanzado |
-| 5 | Advertencia en Actualización | ⚠️ Advertencia | Avanzado |
-| 6 | Actualización de Tarjeta en Paralelo | 🔄 Evento No Interrumpible | Avanzado |
+| 5 | Tarjeta Expirada | ❌ Error | Básico |
+| 6 | Advertencia en Actualización | ⚠️ Advertencia | Avanzado |
+| 7 | Actualización de Tarjeta en Paralelo | 🔄 Evento No Interrumpible | Avanzado |
 
 ---
 
@@ -245,7 +246,69 @@ En **Camunda Operate** verás:
 
 ---
 
-## ⚠️ Caso 5: Advertencia en Actualización
+## ❌ Caso 5: Tarjeta Expirada
+
+### Descripción
+Cliente activo pero con tarjeta de crédito expirada. El proceso falla en la validación de tarjeta antes de llegar a la pasarela de pago.
+
+### Datos de Entrada
+
+```json
+{
+  "clienteId": "0e3e4567-e89b-12d3-a456-426655440015",
+  "origen": "Madrid",
+  "destino": "Barcelona",
+  "fechaInicio": "2027-06-01",
+  "fechaFin": "2027-06-08",
+  "numeroPasajeros": 1,
+  "emailContacto": "raquel.iglesias@example.com",
+  "telefonoContacto": "+34666789012"
+}
+```
+
+**Nota**: Raquel Iglesias (ACTIVO) tiene una tarjeta VISA con últimos 4 dígitos `6474` expirada en 08/2023.
+
+### Flujo del Proceso
+
+```
+1. Validar Datos de Entrada ✅
+2. Gestión de Cliente
+   - Obtener datos cliente ✅
+   - Cliente encontrado: ACTIVO - puede reservar: false (tarjeta expirada)
+   - Validar tarjeta ❌
+   - ERROR_TARJETA_INVALIDA: Todas las tarjetas están expiradas
+   - Boundary Event: Error Tarjeta Inválida
+   - End Event: Tarjeta Inválida
+3. Fin: Error en Gestión de Cliente
+```
+
+### Logs a consultar (servicio-clientes)
+
+```bash
+docker logs servicio-clientes 2>&1 | grep "<processInstanceKey>"
+```
+
+```
+🔗 Proceso: <PI> [proceso-principal] | Job: <jobKey>
+✅ Iniciando validación de datos de entrada - Job: <jobKey>
+🔍 Variables recibidas: [reservaId, numeroPasajeros, clienteId, ...]
+✅ Datos de entrada válidos - Cliente: 0e3e4567-e89b-12d3-a456-426655440015
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker obtener-datos-cliente - Job Key: <jobKey>
+🔍 Obteniendo datos del cliente: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015 - Estado: ACTIVO - Email: raquel.iglesias@example.com
+📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker validar-tarjeta-credito - Job Key: <jobKey>
+💳 Validando tarjeta de crédito para cliente: 0e3e4567-e89b-12d3-a456-426655440015
+❌ El cliente 0e3e4567-e89b-12d3-a456-426655440015 no tiene tarjetas válidas
+```
+
+**Diferencia con Caso 3 (Tarjeta Inválida)**: el Caso 3 falla por rechazo en la pasarela de pago (algoritmo Luhn o últimos 4 dígitos especiales). El Caso 5 falla antes de llegar a la pasarela porque `esValida()` devuelve `false` al detectar `estaExpirada() = true`.
+
+---
+
+## ⚠️ Caso 6: Advertencia en Actualización
 
 ### Descripción
 El pago se procesa correctamente pero falla la actualización del estado del cliente, generando una advertencia.
@@ -292,7 +355,7 @@ El pago se procesa correctamente pero falla la actualización del estado del cli
 
 ---
 
-## 🔄 Caso 6: Actualización de Tarjeta en Paralelo
+## 🔄 Caso 7: Actualización de Tarjeta en Paralelo
 
 ### Descripción
 Durante el proceso de reserva, el cliente actualiza su información de tarjeta de crédito sin interrumpir el flujo principal.
