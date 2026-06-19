@@ -66,6 +66,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Spring AOP - Aspect-oriented programming -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- ========================================== -->
         <!-- CAMUNDA PLATFORM 8 -->
         <!-- ========================================== -->
