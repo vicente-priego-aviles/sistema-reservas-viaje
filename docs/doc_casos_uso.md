@@ -153,10 +153,49 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 }
 ```
 
+### 📋 Logs a consultar
+
+**`./logs.sh clientes`** — validación, gestión de cliente y tarjeta:
+```
+✅ Iniciando validación de datos de entrada - Job: ...
+✅ Datos de entrada válidos - Cliente: 123e4567-...
+🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
+🔍 Obteniendo datos del cliente: 123e4567-...
+✅ Cliente encontrado: Juan Pérez García - Estado: ACTIVO - Email: juan.perez@example.com
+💳 Validando tarjeta de crédito para cliente: 123e4567-...
+🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 0366
+✅ Tarjeta validada correctamente - Código autorización: ...
+🔄 Iniciando actualización de estado de cliente - Job: ...
+✅ Estado de cliente actualizado correctamente: 123e4567-... ACTIVO → EN_PROCESO_RESERVA
+```
+
+**`./logs.sh reservas`** — reservas de vuelo, hotel y coche (en paralelo):
+```
+🚀 Iniciando worker de reserva de vuelo - Job Key: ...
+✈️ Procesando reserva de vuelo ... para cliente: 123e4567-...
+✅ Reserva de vuelo completada exitosamente - ID: ...
+🚀 Iniciando worker de reserva de hotel - Job Key: ...
+🏨 Procesando reserva de hotel ... en ... para cliente: 123e4567-...
+✅ Reserva de hotel completada exitosamente - ID: ...
+🚀 Iniciando worker de reserva de coche - Job Key: ...
+🚗 Procesando reserva de coche ... de ... para cliente: 123e4567-...
+✅ Reserva de coche completada exitosamente - ID: ...
+```
+
+**`./logs.sh pagos`** — pago y confirmación:
+```
+🔄 Worker: procesar-pago - Reserva: ... - Monto: ...€
+✅ Pago procesado - Transacción: ...
+🔄 Worker: confirmar-reserva - Reserva: ...
+✅ Reserva confirmada - Número: ...
+🔄 Iniciando actualización de estado de cliente - Job: ...
+✅ Estado de cliente actualizado correctamente: 123e4567-... → RESERVA_CONFIRMADA
+```
+
 ### Verificar en Camunda
 
-1. Acceder a **Operate**: http://localhost:8080 — ver instancia del proceso en ejecución
-2. Acceder a **Tasklist**: http://localhost:8081 — completar los User Tasks para avanzar el flujo
+1. **Operate** (http://localhost:8080): ver instancia del proceso en ejecución
+2. **Tasklist** (http://localhost:8081): completar los User Tasks para avanzar el flujo
 
 ---
 
@@ -172,8 +211,8 @@ Se intenta reservar con un cliente que está bloqueado en el sistema.
   "clienteId": "b23e4567-e89b-12d3-a456-426655440010",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-15",
-  "fechaFin": "2025-12-22",
+  "fechaInicio": "2027-06-01",
+  "fechaFin": "2027-06-08",
   "numeroPasajeros": 1,
   "emailContacto": "roberto.morales@example.com",
   "telefonoContacto": "+34611234567"
@@ -187,19 +226,24 @@ Se intenta reservar con un cliente que está bloqueado en el sistema.
 ```
 1. Validar Datos de Entrada ✅
 2. Gestión de Cliente
-   - Obtener datos cliente ❌ → Roberto Morales Gil (BLOQUEADO)
+   - Obtener datos cliente ✅ → Roberto Morales Gil (BLOQUEADO)
    - Boundary Event captura el bloqueo
 3. Fin: Error en Gestión de Cliente ❌
 ```
 
-### Logs Esperados
+### 📋 Logs a consultar
 
+**`./logs.sh clientes`**:
 ```
-🔍 Iniciando gestión de cliente: b23e4567-e89b-12d3-a456-426655440010
-🔍 Buscando cliente en base de datos...
-🚫 Cliente bloqueado: Roberto Morales Gil — Actividad sospechosa detectada
-❌ Error en gestión de cliente: ERROR_CLIENTE_BLOQUEADO
+✅ Iniciando validación de datos de entrada - Job: ...
+✅ Datos de entrada válidos - Cliente: b23e4567-...
+🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
+🔍 Obteniendo datos del cliente: b23e4567-...
+✅ Cliente encontrado: Roberto Morales Gil - Estado: BLOQUEADO - Email: roberto.morales@example.com
+📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
 ```
+
+> El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.
 
 ---
 
@@ -215,8 +259,8 @@ Cliente activo pero con tarjeta de crédito expirada.
   "clienteId": "g23e4567-e89b-12d3-a456-426655440015",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-15",
-  "fechaFin": "2025-12-22",
+  "fechaInicio": "2027-06-01",
+  "fechaFin": "2027-06-08",
   "numeroPasajeros": 1,
   "emailContacto": "raquel.iglesias@example.com",
   "telefonoContacto": "+34666789012"
@@ -236,14 +280,21 @@ Cliente activo pero con tarjeta de crédito expirada.
 3. Fin: Error en Gestión de Cliente ❌
 ```
 
-### Logs Esperados
+### 📋 Logs a consultar
 
+**`./logs.sh clientes`**:
 ```
-🔍 Validando tarjeta para cliente: g23e4567-e89b-12d3-a456-426655440015
-🔍 Comprobando fecha de expiración...
-❌ Tarjeta expirada: VISA *6474 — expiró 08/2023
-❌ Error: ERROR_TARJETA_INVALIDA
+✅ Iniciando validación de datos de entrada - Job: ...
+✅ Datos de entrada válidos - Cliente: g23e4567-...
+🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
+🔍 Obteniendo datos del cliente: g23e4567-...
+✅ Cliente encontrado: Raquel Iglesias Márquez - Estado: ACTIVO - Email: raquel.iglesias@example.com
+💳 Validando tarjeta de crédito para cliente: g23e4567-...
+🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 6474
+❌ Tarjeta expirada: VISA - Expiró en: 8/2023
 ```
+
+> El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.
 
 ---
 
@@ -261,8 +312,8 @@ El error de pago se simula cuando la suma de los precios calculados por los work
   "clienteId": "123e4567-e89b-12d3-a456-426655440000",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-15",
-  "fechaFin": "2025-12-22",
+  "fechaInicio": "2027-06-01",
+  "fechaFin": "2027-06-08",
   "numeroPasajeros": 2,
   "emailContacto": "juan.perez@example.com",
   "telefonoContacto": "+34600123456"
@@ -292,20 +343,25 @@ El error de pago se simula cuando la suma de los precios calculados por los work
 7. Fin: Reserva No Completada ❌
 ```
 
-### Logs Esperados
+### 📋 Logs a consultar
 
+**`./logs.sh pagos`** — el fallo del pago:
 ```
-✅ Vuelo reservado
-✅ Hotel reservado
-✅ Coche reservado
-💳 Procesando pago...
-❌ Error: Monto excede límite permitido
-🔄 Iniciando compensaciones...
-🔄 Cancelando vuelo
-🔄 Cancelando hotel
-🔄 Cancelando coche
-✅ Compensaciones completadas
-📧 Notificando cliente sobre reserva fallida
+🔄 Worker: procesar-pago - Reserva: ... - Monto: ...€
+❌ Monto excede límite: ...€
+```
+
+**`./logs.sh reservas`** — las compensaciones que se disparan a continuación:
+```
+🛑 Iniciando worker de cancelación de vuelo (compensación) - Job Key: ...
+❌ Cancelando reserva de vuelo: ... - Motivo: ...
+✅ Reserva de vuelo cancelada exitosamente: ...
+🛑 Iniciando worker de cancelación de hotel (compensación) - Job Key: ...
+❌ Cancelando reserva de hotel: ... - Motivo: ...
+✅ Reserva de hotel cancelada exitosamente: ...
+🛑 Iniciando worker de cancelación de coche (compensación) - Job Key: ...
+❌ Cancelando reserva de coche: ... - Motivo: ...
+✅ Reserva de coche cancelada exitosamente: ...
 ```
 
 ### Verificar Compensaciones
@@ -345,6 +401,26 @@ El pago se procesa correctamente pero falla la actualización del estado del cli
   "requiereIntervencionManual": true,
   "motivo": "Error al actualizar estado tras confirmación"
 }
+```
+
+### 📋 Logs a consultar
+
+**`./logs.sh pagos`** — pago y confirmación exitosos, seguidos del fallo de actualización y compensación parcial:
+```
+🔄 Worker: procesar-pago - Reserva: ... - Monto: ...€
+✅ Pago procesado - Transacción: ...
+🔄 Worker: confirmar-reserva - Reserva: ...
+✅ Reserva confirmada - Número: ...
+🔄 Worker: revertir-estado-cliente - Reserva: ...
+✅ Estado del cliente revertido
+🔄 Worker: marcar-reserva-advertencia - Reserva: ...
+⚠️ Reserva marcada con advertencia
+```
+
+**`./logs.sh clientes`** — el error en la actualización de estado que desencadena el boundary event:
+```
+🔄 Iniciando actualización de estado de cliente - Job: ...
+❌ Transición de estado inválida: ...
 ```
 
 ---
@@ -395,15 +471,14 @@ Con el proceso en ejecución (esperando un User Task), publicar el mensaje desde
 - 💾 La tarjeta se actualiza en paralelo
 - ✅ El proceso principal continúa normalmente
 
-### Logs Esperados
+### 📋 Logs a consultar
 
+El subproceso de actualización de tarjeta es manejado directamente por el motor BPMN (evento de mensaje no interrumpible). La activación se observa en **Camunda Operate** (http://localhost:8080), donde verás el subproceso activo en paralelo con el flujo principal.
+
+**`./logs.sh clientes`** — si el subproceso dispara un worker de actualización de tarjeta:
 ```
-🔄 Proceso de reserva en curso...
-📥 Mensaje recibido: tarjeta-proporcionada
-🔄 Iniciando actualización de tarjeta (no interrumpible)...
-💾 Actualizando información de tarjeta...
-✅ Tarjeta actualizada correctamente
-🔄 Proceso principal continúa...
+🔄 Iniciando actualización de estado de cliente - Job: ...
+✅ Estado de cliente actualizado correctamente: ...
 ```
 
 ---
