@@ -12,9 +12,9 @@ Marcar como ✅ una vez probado y los logs confirmen el flujo esperado.
 |---|------|--------|---------------------|
 | 1 | Reserva Exitosa | ✅ Probado | Happy path completo → `fin-solicitud-completada` |
 | 2 | Datos de Entrada Inválidos | ✅ Probado | `ERROR_DATOS_INVALIDOS` → `fin-datos-invalidos` |
-| 3 | Cliente No Encontrado | ⬜ Pendiente | Gateway `clienteObtenido=false` → error gestión cliente |
-| 4 | Cliente Bloqueado | ⬜ Pendiente | `ERROR_CLIENTE_BLOQUEADO` en `actualizar-estado-en-proceso` → error gestión cliente |
-| 5 | Tarjeta Expirada | ⬜ Pendiente | `ERROR_TARJETA_INVALIDA` boundary en `validar-tarjeta-credito` → error gestión cliente |
+| 3 | Cliente No Encontrado | ✅ Probado | Gateway `clienteObtenido=false` → error gestión cliente |
+| 4 | Cliente Bloqueado | ✅ Probado | `ERROR_CLIENTE_BLOQUEADO` en `actualizar-estado-en-proceso` → error gestión cliente |
+| 5 | Tarjeta Expirada | ✅ Probado | `ERROR_TARJETA_INVALIDA` boundary en `validar-tarjeta-credito` → error gestión cliente |
 | 6 | Error en Reserva con Compensación BPMN | ⬜ Pendiente | `ERROR_VALIDACION_VUELO` → error event subprocess → BPMN compensation → `ERROR_RESERVA_FALLIDA` → notificar → `fin-reserva-fallida` |
 | 7 | Error en Pago con Compensación por Mensaje | ⬜ Pendiente | `ERROR_PROCESAR_PAGO` → mensaje `compensar-reserva` → subproceso compensación manual → `fin-reserva-no-completada` |
 | 8 | Advertencia en Actualización | ⬜ Pendiente | Error en `actualizar-estado-confirmado` → `revertir-estado-cliente` → `marcar-reserva-advertencia` → `fin-reserva-con-advertencia` |

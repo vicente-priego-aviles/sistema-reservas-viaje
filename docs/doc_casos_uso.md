@@ -514,16 +514,28 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ### Logs a consultar
 
-**`./logs.sh clientes`**:
+> El PI que devuelve el REST endpoint corresponde al **proceso principal**. Los workers de gestión de cliente corren bajo el PI del **subproceso-gestion-cliente** (un PI hijo distinto). Filtra por el PI hijo que aparece en los logs, no por el de la respuesta HTTP.
+
+**`docker logs servicio-clientes 2>&1 | grep "<PI-subproceso-gestion-cliente>"`**:
 ```
-✅ Iniciando validación de datos de entrada - Job: ...
-✅ Datos de entrada válidos - Cliente: 0e3e4567-...
-🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
-🔍 Obteniendo datos del cliente: 0e3e4567-...
-✅ Cliente encontrado: Raquel Iglesias Márquez - Estado: ACTIVO - Email: raquel.iglesias@example.com
-💳 Validando tarjeta de crédito para cliente: 0e3e4567-...
-🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 6474
-❌ Tarjeta expirada: VISA - Expiró en: 8/2023
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker obtener-datos-cliente - Job Key: <jobKey>
+🔍 Variables recibidas: {clienteId=0e3e4567-e89b-12d3-a456-426655440015, ..., datosValidos=true}
+✅ ClienteId validado: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Obteniendo datos del cliente: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015 - Estado: ACTIVO - Email: raquel.iglesias@example.com
+✅ Output construido con 13 variables
+📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
+🔗 Proceso: <PI> [subproceso-gestion-cliente] | Job: <jobKey>
+🚀 Iniciando worker validar-tarjeta-credito - Job Key: <jobKey>
+🔍 Variables recibidas: {..., tieneTarjetasValidas=false, puedeRealizarPagos=false}
+⚠️ No se proporcionó montoReserva, usando monto por defecto para validación
+💳 Validando tarjeta de crédito para cliente: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
+✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015
+❌ El cliente 0e3e4567-e89b-12d3-a456-426655440015 no tiene tarjetas válidas
 ```
 
 > El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.
