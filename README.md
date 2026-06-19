@@ -34,7 +34,7 @@
 - 🔁 **Patrón Saga** — Compensaciones automáticas en caso de error
 - 📊 **Observabilidad** — Health checks, métricas y logs estructurados
 - 🐳 **Containerización** — Docker y Docker Compose listos para producción
-- 📖 **OpenAPI** — Documentación automática de APIs REST
+- 📖 **OpenAPI** — Documentación automática de APIs REST *(pendiente: capa REST no implementada)*
 - 🧪 **Testing Completo** — Unitarios, integración y arquitectura
 
 ---
@@ -226,16 +226,16 @@ Para reiniciar sin recompilar: `./start.sh` · Para parar todo: `./stop-all.sh`
 
 ## 🌐 API REST
 
-El punto de entrada principal es `servicio-reservas` (puerto 9090):
+> ⚠️ **Pendiente de implementar.** Los controladores REST no existen aún en ningún microservicio — Swagger mostrará "No operations defined in spec!". La interacción actual con el sistema se realiza exclusivamente a través de **Camunda Tasklist** (http://localhost:8082).
+
+Los endpoints planificados para `servicio-reservas` (puerto 9090) son:
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | `POST` | `/api/Pagos` | Iniciar una reserva de viaje |
 | `GET` | `/api/Pagos/{reservaId}` | Consultar el estado de una reserva |
 
-Cada microservicio expone además su propia API REST documentada en `/swagger-ui.html`.
-
-> 📖 **Ejemplos completos, datos de prueba y escenarios de error**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
+> 📖 **Cómo iniciar una reserva hoy (vía Tasklist)**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
 
 ---
 

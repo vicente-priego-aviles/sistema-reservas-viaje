@@ -105,38 +105,14 @@ Todos deben devolver `{"status":"UP"}`.
 
 ## 🎯 Primera Reserva
 
-### Opción 1: API REST (curl)
+> ⚠️ **La capa REST aún no está implementada.** El único punto de entrada disponible actualmente es **Camunda Tasklist**. Los endpoints `/api/Pagos` están planificados como trabajo futuro.
 
-```bash
-curl -X POST http://localhost:9090/api/Pagos \
-  -H "Content-Type: application/json" \
-  -d '{
-    "clienteId": "CLI-001",
-    "origen": "Madrid",
-    "destino": "Barcelona",
-    "fechaInicio": "2025-12-15",
-    "fechaFin": "2025-12-20",
-    "monto": 1500.00
-  }'
-```
-
-**Respuesta esperada (201 Created):**
-```json
-{
-  "reservaId": "550e8400-e29b-41d4-a716-446655440000",
-  "processInstanceKey": 2251799813685249,
-  "estado": "INICIADA",
-  "fechaCreacion": "2025-10-18T10:30:00",
-  "mensaje": "Reserva iniciada correctamente. El proceso BPMN está en ejecución."
-}
-```
-
-### Opción 2: Camunda Tasklist
+### Iniciar el proceso desde Camunda Tasklist
 
 1. Abre http://localhost:8082 (demo/demo)
 2. Click en **"Start Process"**
 3. Selecciona **"proceso-principal"**
-4. Rellena el formulario con los datos del cliente
+4. Rellena el formulario con los datos del cliente y haz click en **"Start"**
 
 ### Completar el flujo (User Tasks)
 
@@ -146,12 +122,6 @@ Tras iniciar la reserva, el proceso se detiene en varias User Tasks que debes co
 2. ✈️ **Revisar Reserva de Vuelo** — confirma los detalles del vuelo
 3. 🏨 **Revisar Reserva de Hotel** — confirma los detalles del hotel
 4. 🚗 **Revisar Reserva de Coche** — confirma los detalles del coche
-
-### Consultar el estado de una reserva
-
-```bash
-curl http://localhost:9090/api/Pagos/{reservaId}
-```
 
 ---
 
@@ -229,9 +199,9 @@ Usuario: `sa` / Contraseña: (vacía)
 
 ## 🌐 Documentación API (Swagger)
 
-Cada microservicio expone su documentación OpenAPI:
+> ⚠️ **Pendiente de implementar.** Los controladores REST aún no existen, por lo que Swagger muestra "No operations defined in spec!" en todos los microservicios. Las URLs estarán disponibles una vez se implementen los endpoints REST.
 
-| Servicio | URL |
+| Servicio | URL (disponible cuando se implemente la capa REST) |
 |---------|-----|
 | 🎯 Reservas | http://localhost:9090/swagger-ui.html |
 | 👥 Clientes | http://localhost:9080/swagger-ui.html |
