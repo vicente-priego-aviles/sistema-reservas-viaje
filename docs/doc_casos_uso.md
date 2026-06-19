@@ -218,20 +218,16 @@ El worker `validar-datos-entrada` rechaza: fechas en el pasado, `fechaFin` anter
 {
   "clienteId": "123e4567-e89b-12d3-a456-426655440000",
   "origen": "Madrid",
-  "destino": "Barcelona",
-  "fechaInicio": "2020-01-01",
-  "fechaFin": "2020-01-08",
-  "numeroPasajeros": 2,
-  "emailContacto": "juan.perez@example.com",
+  "destino": "X",
+  "fechaInicio": "2027-06-01",
+  "fechaFin": "2027/06/08",
+  "numeroPasajeros": 11,
+  "emailContacto": "no-es-un-email",
   "telefonoContacto": "+34600123456"
 }
 ```
 
-Otras variantes que también provocan el error:
-- `numeroPasajeros: 0` o `numeroPasajeros: 11`
-- `emailContacto: "no-es-un-email"`
-- `telefonoContacto: "123"` (formato incorrecto)
-- `destino: "X"` (menos de 2 caracteres)
+Este JSON acumula 4 errores simultáneos: `destino` de 1 carácter, formato de `fechaFin` incorrecto (barras en vez de guiones), `numeroPasajeros` fuera del límite máximo de 10, y `emailContacto` inválido.
 
 ### Flujo del Proceso
 
@@ -249,11 +245,11 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   -d '{
     "clienteId": "123e4567-e89b-12d3-a456-426655440000",
     "origen": "Madrid",
-    "destino": "Barcelona",
-    "fechaInicio": "2020-01-01",
-    "fechaFin": "2020-01-08",
-    "numeroPasajeros": 2,
-    "emailContacto": "juan.perez@example.com",
+    "destino": "X",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027/06/08",
+    "numeroPasajeros": 11,
+    "emailContacto": "no-es-un-email",
     "telefonoContacto": "+34600123456"
   }'
 ```
@@ -275,9 +271,11 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 **`./logs.sh clientes`** — el worker de validación rechaza los datos:
 ```
 ✅ Iniciando validación de datos de entrada - Job: ...
-❌ Datos de entrada inválidos - 2 errores encontrados
-❌ La 'fechaInicio' no puede estar en el pasado
-❌ La 'fechaFin' no puede estar en el pasado
+❌ Datos de entrada inválidos - 4 errores encontrados
+❌ El formato de 'fechaFin' es inválido. Use yyyy-MM-dd (ejemplo: 2025-12-22)
+❌ El 'destino' debe tener al menos 2 caracteres
+❌ El 'numeroPasajeros' no puede superar 10
+❌ El 'emailContacto' tiene un formato inválido
 ```
 
 > No habrá trazas en `./logs.sh reservas` ni `./logs.sh pagos` — el proceso no avanza.
@@ -432,17 +430,21 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 **`./logs.sh clientes`**:
 ```
-✅ Iniciando validación de datos de entrada - Job: ...
-✅ Datos de entrada válidos - Cliente: b23e4567-...
 🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
 🔍 Obteniendo datos del cliente: b23e4567-...
-✅ Cliente encontrado: Roberto Morales Gil - Estado: BLOQUEADO - Email: roberto.morales@example.com
+✅ Cliente encontrado: b23e4567-... - Estado: BLOQUEADO - Email: roberto.morales@example.com
 📤 Datos del cliente preparados - Tarjetas: 1 - Puede reservar: false
+🚀 Iniciando worker validar-tarjeta-credito - Job Key: ...
 💳 Validando tarjeta de crédito para cliente: b23e4567-...
-🔍 Tarjeta seleccionada: VISA - Tipo: VISA - Últimos 4 dígitos: 5727
+🔍 Tarjeta seleccionada: ... - Tipo: VISA - Últimos 4 dígitos: 5727
+✅ Fecha de expiración válida: 12/2027
+🔐 Simulando validación con pasarela de pago - Monto: 1000.0€
+✅ Pasarela de pago: Transacción APROBADA - Código: ...
 ✅ Tarjeta validada correctamente - Código autorización: ...
+📤 Validación completada exitosamente
 🔄 Iniciando actualización de estado de cliente - Job: ...
-❌ Cliente bloqueado: El cliente b23e4567-... está bloqueado
+🔍 Actualizando estado de cliente: b23e4567-... → Estado nuevo: EN_PROCESO_RESERVA - Reserva: ...
+❌ Transición de estado inválida: Transición de estado no permitida: BLOQUEADO → EN_PROCESO_RESERVA. Consulte la documentación para ver las transiciones válidas.
 ```
 
 > El proceso no avanza más allá de la gestión de cliente — no habrá trazas en `reservas` ni `pagos`.

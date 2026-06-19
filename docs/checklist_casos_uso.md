@@ -11,8 +11,8 @@ Marcar como ✅ una vez probado y los logs confirmen el flujo esperado.
 | # | Caso | Estado | Flujo BPMN cubierto |
 |---|------|--------|---------------------|
 | 1 | Reserva Exitosa | ✅ Probado | Happy path completo → `fin-solicitud-completada` |
-| 2 | Datos de Entrada Inválidos | ⬜ Pendiente | `ERROR_DATOS_INVALIDOS` → `fin-datos-invalidos` |
-| 3 | Cliente No Encontrado | ⬜ Pendiente | Gateway `clienteObtenido=false` → error gestión cliente |
+| 2 | Datos de Entrada Inválidos | ✅ Probado | `ERROR_DATOS_INVALIDOS` → `fin-datos-invalidos` |
+| 3 | Cliente No Encontrado | ✅ Probado | Gateway `clienteObtenido=false` → error gestión cliente |
 | 4 | Cliente Bloqueado | ⬜ Pendiente | `ERROR_CLIENTE_BLOQUEADO` en `actualizar-estado-en-proceso` → error gestión cliente |
 | 5 | Tarjeta Expirada | ⬜ Pendiente | `ERROR_TARJETA_INVALIDA` boundary en `validar-tarjeta-credito` → error gestión cliente |
 | 6 | Error en Reserva con Compensación BPMN | ⬜ Pendiente | `ERROR_VALIDACION_VUELO` → error event subprocess → BPMN compensation → `ERROR_RESERVA_FALLIDA` → notificar → `fin-reserva-fallida` |
