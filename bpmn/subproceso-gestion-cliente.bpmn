@@ -27,6 +27,8 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="actualizar-estado-cliente" />
         <zeebe:ioMapping>
+          <zeebe:input source="=clienteId" target="clienteId" />
+          <zeebe:input source="=reservaId" target="reservaId" />
           <zeebe:input source="=&#34;EN_PROCESO_RESERVA&#34;" target="nuevoEstado" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>

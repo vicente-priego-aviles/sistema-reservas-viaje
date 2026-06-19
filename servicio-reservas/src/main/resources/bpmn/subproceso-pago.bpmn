@@ -6,7 +6,8 @@
         <zeebe:taskDefinition type="actualizar-estado-cliente" />
         <zeebe:ioMapping>
           <zeebe:input source="=&#34;RESERVA_CONFIRMADA&#34;" target="nuevoEstado" />
-          <zeebe:input source="=reservaId" target="reservaIdConfirmada" />
+          <zeebe:input source="=clienteId" target="clienteId" />
+          <zeebe:input source="=reservaId" target="reservaId" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-pago-a-actualizar-estado-confirmado</bpmn:incoming>
@@ -54,6 +55,7 @@
         <zeebe:ioMapping>
           <zeebe:input source="=&#34;CONFIRMADA_CON_ADVERTENCIA&#34;" target="estadoReservaFinal" />
           <zeebe:input source="=true" target="requiereIntervencionManual" />
+          <zeebe:input source="=reservaId" target="reservaId" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-pago-a-marcar-advertencia</bpmn:incoming>
@@ -83,7 +85,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="revertir-estado-cliente" />
         <zeebe:ioMapping>
-          <zeebe:input source="=&#34;ACTIVO&#34;" target="nuevoEstado" />
+          <zeebe:input source="=reservaId" target="reservaId" />
           <zeebe:input source="=&#34;Error al actualizar estado tras confirmación&#34;" target="motivoReversion" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
