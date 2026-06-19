@@ -9,29 +9,100 @@ Ejemplos prácticos de uso del sistema con diferentes escenarios.
 | # | Escenario | Resultado | Complejidad |
 |---|-----------|-----------|-------------|
 | 1 | Reserva Exitosa | ✅ Éxito | Básico |
-| 2 | Cliente No Encontrado | ❌ Error | Básico |
-| 3 | Tarjeta Inválida | ❌ Error | Básico |
+| 2 | Cliente Bloqueado | ❌ Error | Básico |
+| 3 | Tarjeta Expirada | ❌ Error | Básico |
 | 4 | Error en Pago con Compensación | 🔄 Compensación | Avanzado |
 | 5 | Advertencia en Actualización | ⚠️ Advertencia | Avanzado |
 | 6 | Actualización de Tarjeta en Paralelo | 🔄 Evento No Interrumpible | Avanzado |
 
 ---
 
-## ✅ Caso 1: Reserva Exitosa (Happy Path)
+## 🧪 Datos de Prueba
 
-### Descripción
-Cliente con datos válidos realiza una reserva completa exitosamente.
+### 👥 Clientes Precargados (data.sql)
 
-### Datos de Entrada
+| UUID | Nombre | Estado | Tarjeta | Usar para |
+|------|--------|--------|---------|-----------|
+| `123e4567-e89b-12d3-a456-426655440000` | Juan Pérez García | ✅ ACTIVO | VISA válida | Casos exitosos |
+| `223e4567-e89b-12d3-a456-426655440001` | María López Martínez | ✅ ACTIVO | MASTERCARD válida | Casos exitosos |
+| `323e4567-e89b-12d3-a456-426655440002` | Carlos Rodríguez Sánchez | ✅ ACTIVO | AMEX válida | Casos exitosos |
+| `b23e4567-e89b-12d3-a456-426655440010` | Roberto Morales Gil | 🚫 BLOQUEADO | — | Caso 2: cliente bloqueado |
+| `g23e4567-e89b-12d3-a456-426655440015` | Raquel Iglesias Márquez | ✅ ACTIVO | ❌ VISA expirada (2023) | Caso 3: tarjeta expirada |
+
+### 💳 Variables del proceso según monto de pago
+
+El pago se calcula como la suma de `precioVueloFinal + precioHotelFinal + precioCocheFinal`, que son los precios que devuelven los workers de reserva (simulados).
+
+---
+
+## 🚀 Cómo iniciar el proceso
+
+Hay dos formas de crear una instancia del proceso `proceso-principal`:
+
+### Opción A: REST API del microservicio (puerto 9090)
+
+```bash
+curl -X POST http://localhost:9090/api/reservas/iniciar \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }'
+```
+
+📖 Swagger UI disponible en: http://localhost:9090/swagger-ui.html
+
+### Opción B: Zeebe REST API directamente (puerto 8088)
+
+📖 Swagger UI: http://localhost:8088/swagger-ui/index.html — endpoint `POST /v2/process-instances`
 
 ```json
 {
-  "clienteId": "CLI-001",
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }
+}
+```
+
+> 💡 `processDefinitionId` es el ID del proceso definido en el BPMN (el atributo `id` del elemento `<process>`).
+> También puedes usar `processDefinitionKey` con el número que aparece en los logs de arranque de `servicio-reservas`:
+> `BpmnDeploymentService - Proceso deployado: proceso-principal | key: <NUMBER>`
+
+---
+
+## ✅ Caso 1: Reserva Exitosa (Happy Path)
+
+### Descripción
+Cliente activo con tarjeta válida realiza una reserva completa exitosamente.
+
+### Datos de Entrada
+
+> ⚠️ `fechaInicio` y `fechaFin` deben ser fechas **futuras**. El worker de validación rechazará fechas pasadas con `ERROR_DATOS_INVALIDOS`.
+
+```json
+{
+  "clienteId": "123e4567-e89b-12d3-a456-426655440000",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-01",
-  "fechaFin": "2025-12-05",
-  "monto": 1500
+  "fechaInicio": "2027-06-01",
+  "fechaFin": "2027-06-08",
+  "numeroPasajeros": 2,
+  "emailContacto": "juan.perez@example.com",
+  "telefonoContacto": "+34600123456"
 }
 ```
 
@@ -40,34 +111,35 @@ Cliente con datos válidos realiza una reserva completa exitosamente.
 ```
 1. Validar Datos de Entrada ✅
 2. Gestión de Cliente
-   - Obtener datos cliente ✅
-   - Cliente encontrado: Vicente Priego
-   - Validar tarjeta ✅
-   - Actualizar estado: EN_PROCESO_RESERVA ✅
+   - Obtener datos cliente ✅ → Juan Pérez García (ACTIVO)
+   - Validar tarjeta ✅       → VISA *0366 válida
+   - Actualizar estado ✅     → EN_PROCESO_RESERVA
 3. Revisar Datos de Entrada (User Task) 👤
 4. Proceso de Reserva (Paralelo)
-   - Reservar Vuelo ✅ → Revisar Vuelo 👤
-   - Reservar Hotel ✅ → Revisar Hotel 👤
-   - Reservar Coche ✅ → Revisar Coche 👤
+   - Reservar Vuelo ✅  → Revisar Vuelo 👤
+   - Reservar Hotel ✅  → Revisar Hotel 👤
+   - Reservar Coche ✅  → Revisar Coche 👤
 5. Proceso de Pago
    - Procesar Pago ✅
    - Confirmar Reserva ✅
-   - Actualizar Estado: CONFIRMADO ✅
-6. Fin: Viaje Reservado con Éxito 🎉
+   - Actualizar Estado: RESERVA_CONFIRMADA ✅
+6. Fin: Solicitud de Viaje Completada 🎉
 ```
 
 ### Ejecutar con cURL
 
 ```bash
-curl -X POST http://localhost:9090/api/Pagos/iniciar \
+curl -X POST http://localhost:9090/api/reservas/iniciar \
   -H "Content-Type: application/json" \
   -d '{
-    "clienteId": "CLI-001",
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
     "origen": "Madrid",
     "destino": "Barcelona",
-    "fechaInicio": "2025-12-01",
-    "fechaFin": "2025-12-05",
-    "monto": 1500
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
   }'
 ```
 
@@ -75,7 +147,7 @@ curl -X POST http://localhost:9090/api/Pagos/iniciar \
 
 ```json
 {
-  "reservaId": "550e8400-e29b-41d4-a716-446655440000",
+  "processInstanceKey": 2251799813685251,
   "estado": "INICIADA",
   "mensaje": "Reserva iniciada correctamente"
 }
@@ -83,93 +155,93 @@ curl -X POST http://localhost:9090/api/Pagos/iniciar \
 
 ### Verificar en Camunda
 
-1. Acceder a **Operate**: http://localhost:8080
-2. Ver proceso en ejecución
-3. Acceder a **Tasklist**: http://localhost:8081
-4. Completar User Tasks
+1. Acceder a **Operate**: http://localhost:8080 — ver instancia del proceso en ejecución
+2. Acceder a **Tasklist**: http://localhost:8081 — completar los User Tasks para avanzar el flujo
 
 ---
 
-## ❌ Caso 2: Cliente No Encontrado
+## ❌ Caso 2: Cliente Bloqueado
 
 ### Descripción
-Se intenta reservar con un cliente que no existe en el sistema.
+Se intenta reservar con un cliente que está bloqueado en el sistema.
 
 ### Datos de Entrada
 
 ```json
 {
-  "clienteId": "CLI-999",
+  "clienteId": "b23e4567-e89b-12d3-a456-426655440010",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-01",
-  "fechaFin": "2025-12-05",
-  "monto": 1500
+  "fechaInicio": "2025-12-15",
+  "fechaFin": "2025-12-22",
+  "numeroPasajeros": 1,
+  "emailContacto": "roberto.morales@example.com",
+  "telefonoContacto": "+34611234567"
 }
 ```
+
+**Nota**: Roberto Morales Gil está 🚫 BLOQUEADO por "Actividad sospechosa detectada".
 
 ### Flujo del Proceso
 
 ```
 1. Validar Datos de Entrada ✅
 2. Gestión de Cliente
-   - Obtener datos cliente ❌
-   - Cliente no encontrado
-   - End Event: Error Cliente No Encontrado
-3. Boundary Event captura error
-4. Fin: Error en Gestión de Cliente
+   - Obtener datos cliente ❌ → Roberto Morales Gil (BLOQUEADO)
+   - Boundary Event captura el bloqueo
+3. Fin: Error en Gestión de Cliente ❌
 ```
 
 ### Logs Esperados
 
 ```
-🔍 Iniciando gestión de cliente: CLI-999
+🔍 Iniciando gestión de cliente: b23e4567-e89b-12d3-a456-426655440010
 🔍 Buscando cliente en base de datos...
-❌ Cliente no encontrado: CLI-999
-❌ Error en gestión de cliente: ERROR_CLIENTE_NO_ENCONTRADO
+🚫 Cliente bloqueado: Roberto Morales Gil — Actividad sospechosa detectada
+❌ Error en gestión de cliente: ERROR_CLIENTE_BLOQUEADO
 ```
 
 ---
 
-## ❌ Caso 3: Tarjeta Inválida
+## ❌ Caso 3: Tarjeta Expirada
 
 ### Descripción
-Cliente existe pero su tarjeta de crédito no pasa la validación.
+Cliente activo pero con tarjeta de crédito expirada.
 
 ### Datos de Entrada
 
 ```json
 {
-  "clienteId": "CLI-003",
+  "clienteId": "g23e4567-e89b-12d3-a456-426655440015",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-01",
-  "fechaFin": "2025-12-05",
-  "monto": 1500
+  "fechaInicio": "2025-12-15",
+  "fechaFin": "2025-12-22",
+  "numeroPasajeros": 1,
+  "emailContacto": "raquel.iglesias@example.com",
+  "telefonoContacto": "+34666789012"
 }
 ```
 
-**Nota**: CLI-003 (Juan Pérez) tiene tarjeta inválida en datos de prueba.
+**Nota**: Raquel Iglesias Márquez tiene tarjeta VISA expirada (08/2023).
 
 ### Flujo del Proceso
 
 ```
 1. Validar Datos de Entrada ✅
 2. Gestión de Cliente
-   - Obtener datos cliente ✅
-   - Cliente encontrado: Juan Pérez
-   - Validar tarjeta ❌
+   - Obtener datos cliente ✅ → Raquel Iglesias Márquez (ACTIVO)
+   - Validar tarjeta ❌       → VISA *6474 EXPIRADA (08/2023)
    - Boundary Event: Error Tarjeta Inválida
-   - End Event: Tarjeta Inválida
-3. Fin: Error en Gestión de Cliente
+3. Fin: Error en Gestión de Cliente ❌
 ```
 
 ### Logs Esperados
 
 ```
-🔍 Validando tarjeta para cliente: CLI-003
-🔍 Ejecutando algoritmo de Luhn...
-❌ Tarjeta no válida: 1234-5678-9012-3456
+🔍 Validando tarjeta para cliente: g23e4567-e89b-12d3-a456-426655440015
+🔍 Comprobando fecha de expiración...
+❌ Tarjeta expirada: VISA *6474 — expiró 08/2023
 ❌ Error: ERROR_TARJETA_INVALIDA
 ```
 
@@ -178,22 +250,24 @@ Cliente existe pero su tarjeta de crédito no pasa la validación.
 ## 🔄 Caso 4: Error en Pago con Compensación
 
 ### Descripción
-Las Pagos se completan correctamente pero el pago falla, disparando compensaciones de todas las Pagos.
+Las reservas se completan correctamente pero el pago falla, disparando la compensación de todas las reservas.
+
+El error de pago se simula cuando la suma de los precios calculados por los workers supera el límite permitido. Para forzarlo, se puede completar los User Tasks de revisión de vuelo/hotel/coche con precios altos.
 
 ### Datos de Entrada
 
 ```json
 {
-  "clienteId": "CLI-001",
+  "clienteId": "123e4567-e89b-12d3-a456-426655440000",
   "origen": "Madrid",
   "destino": "Barcelona",
-  "fechaInicio": "2025-12-01",
-  "fechaFin": "2025-12-05",
-  "monto": 15000
+  "fechaInicio": "2025-12-15",
+  "fechaFin": "2025-12-22",
+  "numeroPasajeros": 2,
+  "emailContacto": "juan.perez@example.com",
+  "telefonoContacto": "+34600123456"
 }
 ```
-
-**Nota**: Monto > 10000 simula error de pago.
 
 ### Flujo del Proceso
 
@@ -201,37 +275,35 @@ Las Pagos se completan correctamente pero el pago falla, disparando compensacion
 1. Validar Datos ✅
 2. Gestión de Cliente ✅
 3. Revisar Datos 👤
-4. Proceso de Reserva
+4. Proceso de Reserva (Paralelo)
    - Reservar Vuelo ✅
    - Reservar Hotel ✅
    - Reservar Coche ✅
    - User Tasks completadas 👤
 5. Proceso de Pago
-   - Procesar Pago ❌ (monto > 10000)
+   - Procesar Pago ❌ (monto excede límite)
    - Boundary Event: Error Procesar Pago
-   - Throw Message Event: Compensar Reserva
-   - Notificar Cliente
-6. Proceso de Reserva recibe mensaje
-   - Subproceso de Compensación Manual
+   - Mensaje: Compensar Reserva
+   - Notificar Cliente 📧
+6. Proceso de Reserva recibe mensaje de compensación
    - Compensar Vuelo 🔄
    - Compensar Hotel 🔄
    - Compensar Coche 🔄
-   - Actualizar Registro Cliente
-7. Fin: Reserva No Completada
+7. Fin: Reserva No Completada ❌
 ```
 
 ### Logs Esperados
 
 ```
-✅ Vuelo reservado: RV-12345
-✅ Hotel reservado: RH-67890
-✅ Coche reservado: RC-24680
-💳 Procesando pago de 15000€...
+✅ Vuelo reservado
+✅ Hotel reservado
+✅ Coche reservado
+💳 Procesando pago...
 ❌ Error: Monto excede límite permitido
 🔄 Iniciando compensaciones...
-🔄 Cancelando vuelo: RV-12345
-🔄 Cancelando hotel: RH-67890
-🔄 Cancelando coche: RC-24680
+🔄 Cancelando vuelo
+🔄 Cancelando hotel
+🔄 Cancelando coche
 ✅ Compensaciones completadas
 📧 Notificando cliente sobre reserva fallida
 ```
@@ -239,7 +311,7 @@ Las Pagos se completan correctamente pero el pago falla, disparando compensacion
 ### Verificar Compensaciones
 
 En **Camunda Operate** verás:
-- Subproceso "Manejar Compensación" activado
+- Subproceso de compensación activado
 - Eventos de compensación ejecutados
 - Variables actualizadas
 
@@ -250,32 +322,17 @@ En **Camunda Operate** verás:
 ### Descripción
 El pago se procesa correctamente pero falla la actualización del estado del cliente, generando una advertencia.
 
-### Datos de Entrada
-
-```json
-{
-  "clienteId": "CLI-002",
-  "origen": "Madrid",
-  "destino": "Barcelona",
-  "fechaInicio": "2025-12-01",
-  "fechaFin": "2025-12-05",
-  "monto": 7500
-}
-```
-
-**Nota**: Monto entre 5000-10000 puede generar advertencia.
-
 ### Flujo del Proceso
 
 ```
-1-4. [Flujo normal hasta Pago]
+1-4. Flujo normal hasta Pago ✅
 5. Proceso de Pago
    - Procesar Pago ✅
    - Confirmar Reserva ✅
-   - Actualizar Estado: Confirmado ❌
+   - Actualizar Estado ❌
    - Boundary Event: Error Actualización
-   - Revertir Estado del Cliente
-   - Marcar Reserva con Advertencia
+   - Revertir Estado del Cliente 🔄
+   - Marcar Reserva con Advertencia ⚠️
 6. Fin: Reserva Confirmada con Advertencia ⚠️
 ```
 
@@ -300,41 +357,42 @@ Durante el proceso de reserva, el cliente actualiza su información de tarjeta d
 ### Paso 1: Iniciar Reserva
 
 ```bash
-curl -X POST http://localhost:9090/api/Pagos/iniciar \
+curl -X POST http://localhost:9090/api/reservas/iniciar \
   -H "Content-Type: application/json" \
   -d '{
-    "clienteId": "CLI-001",
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
     "origen": "Madrid",
     "destino": "Barcelona",
-    "fechaInicio": "2025-12-01",
-    "fechaFin": "2025-12-05",
-    "monto": 1500
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
   }'
 
-# Guardar reservaId de la respuesta
+# Guardar processInstanceKey de la respuesta
 ```
 
-### Paso 2: Actualizar Tarjeta (En Paralelo)
+### Paso 2: Publicar Mensaje de Actualización de Tarjeta
 
-```bash
-# Publicar mensaje mientras el proceso está en ejecución
-curl -X POST http://localhost:9090/api/mensajes/publicar \
-  -H "Content-Type: application/json" \
-  -d '{
-    "messageName": "tarjeta-proporcionada",
-    "correlationKey": "550e8400-e29b-41d4-a716-446655440000",
-    "variables": {
-      "nuevaTarjeta": "5555-4444-3333-2222",
-      "fechaExpiracion": "12/2026"
-    }
-  }'
+Con el proceso en ejecución (esperando un User Task), publicar el mensaje desde **Zeebe Swagger** (http://localhost:8088/swagger-ui/index.html), endpoint `POST /v2/messages/publication`:
+
+```json
+{
+  "messageName": "tarjeta-proporcionada",
+  "correlationKey": "<processInstanceKey>",
+  "variables": {
+    "nuevaTarjeta": "5555-4444-3333-2222",
+    "fechaExpiracion": "12/2026"
+  }
+}
 ```
 
 ### Comportamiento
 
 - ✅ El proceso principal **NO se interrumpe**
 - 🔄 Se activa el subproceso "Actualizar Información Tarjeta Crédito"
-- 💾 Se actualiza la información en paralelo
+- 💾 La tarjeta se actualiza en paralelo
 - ✅ El proceso principal continúa normalmente
 
 ### Logs Esperados
@@ -350,63 +408,15 @@ curl -X POST http://localhost:9090/api/mensajes/publicar \
 
 ---
 
-## 📊 Tabla de Datos de Prueba
+## 📚 Recursos
 
-### Clientes Precargados
-
-| ID | Nombre | Email | Tarjeta | Resultado Esperado |
-|----|--------|-------|---------|-------------------|
-| CLI-001 | Vicente Priego | vicente@example.com | ✅ Válida | Reserva exitosa |
-| CLI-002 | Verónica Lesmes | veronica@example.com | ✅ Válida | Reserva exitosa |
-| CLI-003 | Juan Pérez | juan@example.com | ❌ Inválida | Error tarjeta |
-| CLI-999 | - | - | - | Cliente no encontrado |
-
-### Escenarios por Monto
-
-| Monto | Comportamiento |
-|-------|----------------|
-| < 5000 | ✅ Proceso normal |
-| 5000 - 10000 | ⚠️ Genera advertencia si falla actualización |
-| > 10000 | ❌ Simula error de pago → Compensación |
+- [Quick Start](doc_quick_start.md) — Guía de arranque del sistema
+- [Procesos BPMN](doc_procesos_bpmn.md) — Documentación de workflows
+- 📖 Swagger microservicio reservas: http://localhost:9090/swagger-ui.html
+- 📖 Swagger Zeebe REST API: http://localhost:8088/swagger-ui/index.html
+- 🔍 Camunda Operate: http://localhost:8080
+- ✅ Camunda Tasklist: http://localhost:8081
 
 ---
 
-## 🧪 Testing de Escenarios
-
-### Script de Prueba Automatizado
-
-```bash
-#!/bin/bash
-
-echo "🧪 Ejecutando suite de casos de uso..."
-
-# Caso 1: Éxito
-echo "✅ Test 1: Reserva exitosa"
-curl -X POST http://localhost:9090/api/Pagos/iniciar \
-  -H "Content-Type: application/json" \
-  -d '{"clienteId":"CLI-001","origen":"Madrid","destino":"Barcelona","fechaInicio":"2025-12-01","fechaFin":"2025-12-05","monto":1500}' \
-  -w "\nStatus: %{http_code}\n"
-
-sleep 2
-
-# Caso 2: Cliente no encontrado
-echo "❌ Test 2: Cliente no encontrado"
-curl -X POST http://localhost:9090/api/Pagos/iniciar \
-  -H "Content-Type: application/json" \
-  -d '{"clienteId":"CLI-999","origen":"Madrid","destino":"Barcelona","fechaInicio":"2025-12-01","fechaFin":"2025-12-05","monto":1500}' \
-  -w "\nStatus: %{http_code}\n"
-
-# ... más casos
-```
-
----
-
-## 📚 Recursos Adicionales
-
-- [Quick Start](01-quick-start.md) - Guía rápida
-- [Procesos BPMN](05-procesos-bpmn.md) - Documentación de workflows
-- [API Documentation](http://localhost:9090/swagger-ui.html) - OpenAPI
-
----
-
-**Última actualización**: Diciembre 2024
+**Última actualización**: Junio 2026
