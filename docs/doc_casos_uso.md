@@ -528,6 +528,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 ✅ ClienteId validado: 0e3e4567-e89b-12d3-a456-426655440015
 🔍 Obteniendo datos del cliente: 0e3e4567-e89b-12d3-a456-426655440015
 🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
 ✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015
 ✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015 - Estado: ACTIVO - Email: raquel.iglesias@example.com
 ✅ Output construido con 13 variables
@@ -537,6 +538,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 🔍 Variables recibidas: {..., tieneTarjetasValidas=false, puedeRealizarPagos=false}
 ⚠️ No se proporcionó montoReserva, usando monto por defecto para validación
 💳 Validando tarjeta de crédito para cliente: 0e3e4567-e89b-12d3-a456-426655440015
+🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
 🔍 Buscando cliente por ID: 0e3e4567-e89b-12d3-a456-426655440015
 ✅ Cliente encontrado: 0e3e4567-e89b-12d3-a456-426655440015
 ❌ El cliente 0e3e4567-e89b-12d3-a456-426655440015 no tiene tarjetas válidas
