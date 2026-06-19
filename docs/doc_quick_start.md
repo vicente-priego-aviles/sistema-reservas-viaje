@@ -210,10 +210,7 @@ Zeebe expone su propia Swagger UI con la API REST de orquestación de Camunda:
 **Pasos para usarla:**
 1. Abre http://localhost:8088/swagger-ui/index.html
 2. Localiza el campo `port` en la parte superior y cámbialo a `8088`
-3. Haz click en **"Authorize"** e introduce las credenciales:
-   - **Username**: `demo`
-   - **Password**: `demo`
-4. Ya puedes ejecutar peticiones contra la API de Zeebe (crear instancias de proceso, completar jobs, publicar mensajes, etc.)
+3. Ya puedes ejecutar peticiones directamente — en la configuración local Self-Managed con perfil `demo`, la autenticación está desactivada y los endpoints funcionan sin necesidad de token.
 
 Esta API permite, entre otras cosas, iniciar instancias de procesos BPMN directamente sin pasar por Tasklist.
 
