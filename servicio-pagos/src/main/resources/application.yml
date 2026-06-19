@@ -41,6 +41,11 @@ camunda:
       password: demo
     deployment:
       enabled: true  # opcional, si quieres desplegar BPMN al iniciar
+    # DEV: stream-enabled elimina el polling de job workers (~100ms por ciclo) usando push vía gRPC.
+    # Valor por defecto: false. Revertir (o eliminar este bloque) antes de producción.
+    worker:
+      defaults:
+        stream-enabled: true
 
 management:
   endpoints:

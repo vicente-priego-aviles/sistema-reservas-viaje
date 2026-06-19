@@ -19,6 +19,7 @@
     </bpmn:serviceTask>
     <bpmn:userTask id="revisar-reserva-vuelo" name="✈️ Revisar Reserva de Vuelo">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-a-revisar-vuelo</bpmn:incoming>
@@ -38,6 +39,7 @@
     </bpmn:serviceTask>
     <bpmn:userTask id="revisar-reserva-hotel" name="🏨 Revisar Reserva de Hotel">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-a-revisar-hotel</bpmn:incoming>
@@ -57,6 +59,7 @@
     </bpmn:serviceTask>
     <bpmn:userTask id="revisar-reserva-coche" name="🚗 Revisar Reserva de Coche">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-a-revisar-coche</bpmn:incoming>
