@@ -199,7 +199,31 @@ Usuario: `sa` / Contraseña: (vacía)
 
 ## 🌐 Documentación API (Swagger)
 
-> ⚠️ **Pendiente de implementar.** Los controladores REST aún no existen, por lo que Swagger muestra "No operations defined in spec!" en todos los microservicios. Las URLs estarán disponibles una vez se implementen los endpoints REST.
+### Camunda 8 REST API (disponible ahora)
+
+Zeebe expone su propia Swagger UI con la API REST de orquestación de Camunda:
+
+**URL**: http://localhost:8088/swagger-ui/index.html
+
+> ⚠️ **Problema conocido**: el campo `port` viene prerelleno con `8080`. Hay que cambiarlo manualmente a `8088` para que las peticiones funcionen correctamente.
+
+**Pasos para usarla:**
+1. Abre http://localhost:8088/swagger-ui/index.html
+2. Localiza el campo `port` en la parte superior y cámbialo a `8088`
+3. Haz click en **"Authorize"** e introduce las credenciales:
+   - **Username**: `demo`
+   - **Password**: `demo`
+4. Ya puedes ejecutar peticiones contra la API de Zeebe (crear instancias de proceso, completar jobs, publicar mensajes, etc.)
+
+Esta API permite, entre otras cosas, iniciar instancias de procesos BPMN directamente sin pasar por Tasklist.
+
+> 📖 Referencia oficial (Self-Managed): https://docs.camunda.io/docs/apis-tools/orchestration-cluster-api-rest/orchestration-cluster-api-rest-swagger/
+
+---
+
+### Microservicios (pendiente de implementar)
+
+> ⚠️ Los controladores REST de los microservicios aún no existen, por lo que Swagger muestra "No operations defined in spec!" en todos ellos. Las URLs estarán disponibles una vez se implemente la capa REST.
 
 | Servicio | URL (disponible cuando se implemente la capa REST) |
 |---------|-----|
