@@ -195,6 +195,16 @@ Microservicios:  9080 (clientes), 9081 (vuelos), 9082 (hoteles),
                  9083 (coches), 9084 (pagos), 9090 (reservas)
 ```
 
+### ⚠️ Paso obligatorio antes del primer arranque
+
+`docker-compose-camunda.yml` requiere un archivo `connector-secrets.txt` para el servicio de Connectors. Este archivo no está en el repositorio (contiene secretos). Créalo a partir de la plantilla incluida:
+
+```bash
+cp connector-secrets.txt.example connector-secrets.txt
+```
+
+Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si usas Camunda Connectors con servicios externos (Slack, HTTP, etc.), añade ahí las variables de entorno necesarias.
+
 ---
 
 ## 🚀 Inicio Rápido

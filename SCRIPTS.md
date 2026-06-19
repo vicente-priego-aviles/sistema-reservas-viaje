@@ -17,6 +17,18 @@ Guía completa de los scripts disponibles para gestionar el ciclo de vida del si
 
 ---
 
+## ⚠️ Requisito previo al primer uso
+
+`docker-compose-camunda.yml` requiere el archivo `connector-secrets.txt` para arrancar el servicio de Connectors. Este archivo **no está en el repositorio** (está en `.gitignore` por contener posibles secretos). Créalo a partir de la plantilla incluida:
+
+```bash
+cp connector-secrets.txt.example connector-secrets.txt
+```
+
+Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si usas Camunda Connectors con servicios externos (Slack, HTTP, etc.), añade las variables de entorno necesarias en ese archivo.
+
+---
+
 ## 🚀 build-and-run.sh
 
 **Script principal de arranque.** Ejecuta el flujo completo desde cero: compilación, construcción de imágenes y despliegue de toda la plataforma.
