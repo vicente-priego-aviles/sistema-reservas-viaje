@@ -38,13 +38,14 @@ public class BpmnDeploymentService {
     /**
      * Orden de despliegue de procesos BPMN.
      * Los subprocesos DEBEN desplegarse primero.
+     * proceso-principal.bpmn e iniciar-reserva.form se despliegan juntos en un
+     * único batch (ver desplegarFormYProcesoPrincipal) para que Tasklist
+     * Self-Managed pueda resolver la referencia del start event form.
      */
     private static final List<String> ORDEN_DESPLIEGUE = Arrays.asList(
             "bpmn/subproceso-gestion-cliente.bpmn",
             "bpmn/subproceso-reserva.bpmn",
             "bpmn/subproceso-pago.bpmn",
-            "bpmn/proceso-principal.bpmn",
-            "bpmn/forms/iniciar-reserva.form",
             "bpmn/forms/gestionar-reserva-vuelo.form",
             "bpmn/forms/gestionar-reserva-hotel.form",
             "bpmn/forms/gestionar-reserva-coche.form"
@@ -72,6 +73,7 @@ public class BpmnDeploymentService {
 
         int procesosExitosos = 0;
         int procesosFallidos = 0;
+        int total = ORDEN_DESPLIEGUE.size() + 1; // +1 por el batch form+proceso-principal
 
         for (String rutaProceso : ORDEN_DESPLIEGUE) {
             try {
@@ -86,19 +88,32 @@ public class BpmnDeploymentService {
             }
         }
 
+        // Desplegar proceso-principal junto con su start event form en un único batch.
+        // En Camunda 8 Self-Managed, la linked form del start event solo se resuelve
+        // si form y BPMN pertenecen al mismo deployment.
+        try {
+            if (desplegarFormYProcesoPrincipalConReintentos()) {
+                procesosExitosos++;
+            } else {
+                procesosFallidos++;
+            }
+        } catch (Exception e) {
+            log.error("❌ Error crítico al desplegar batch form+proceso-principal: {}", e.getMessage(), e);
+            procesosFallidos++;
+        }
+
         // Resumen final
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         log.info("📊 Resumen de despliegue:");
         log.info("   ✅ Exitosos: {}", procesosExitosos);
         log.info("   ❌ Fallidos:  {}", procesosFallidos);
-        log.info("   📋 Total:     {}", ORDEN_DESPLIEGUE.size());
+        log.info("   📋 Total:     {}", total);
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        if (procesosExitosos == ORDEN_DESPLIEGUE.size()) {
+        if (procesosExitosos == total) {
             log.info("✅ Todos los procesos BPMN desplegados correctamente");
         } else if (procesosExitosos > 0) {
-            log.warn("⚠️  Despliegue parcial: {}/{} procesos desplegados",
-                    procesosExitosos, ORDEN_DESPLIEGUE.size());
+            log.warn("⚠️  Despliegue parcial: {}/{} procesos desplegados", procesosExitosos, total);
         } else {
             log.error("❌ Ningún proceso BPMN pudo ser desplegado");
         }
@@ -214,6 +229,59 @@ public class BpmnDeploymentService {
                     process.getBpmnProcessId(),
                     process.getVersion(),
                     process.getProcessDefinitionKey());
+        }
+    }
+
+    /**
+     * Despliega iniciar-reserva.form y proceso-principal.bpmn en un único batch.
+     * En Camunda 8 Self-Managed, la linked form del start event solo se resuelve
+     * en Tasklist si form y proceso pertenecen al mismo deployment.
+     */
+    private boolean desplegarFormYProcesoPrincipalConReintentos() {
+        for (int intento = 1; intento <= MAX_REINTENTOS; intento++) {
+            try {
+                desplegarFormYProcesoPrincipal();
+                return true;
+            } catch (Exception e) {
+                if (intento < MAX_REINTENTOS) {
+                    log.warn("⚠️  Intento {}/{} fallido para batch form+proceso-principal: {}. Reintentando en {}ms...",
+                            intento, MAX_REINTENTOS, e.getMessage(), TIEMPO_ESPERA_REINTENTO_MS);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(TIEMPO_ESPERA_REINTENTO_MS);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        log.error("❌ Reintentos interrumpidos para batch form+proceso-principal");
+                        return false;
+                    }
+                } else {
+                    log.error("❌ Todos los intentos fallaron para batch form+proceso-principal: {}", e.getMessage());
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void desplegarFormYProcesoPrincipal() throws IOException {
+        log.info("📋 Desplegando batch: iniciar-reserva.form + proceso-principal.bpmn");
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        Resource form = resolver.getResource("classpath:bpmn/forms/iniciar-reserva.form");
+        Resource bpmn = resolver.getResource("classpath:bpmn/proceso-principal.bpmn");
+
+        if (!form.exists()) throw new IOException("Archivo no encontrado: bpmn/forms/iniciar-reserva.form");
+        if (!bpmn.exists()) throw new IOException("Archivo no encontrado: bpmn/proceso-principal.bpmn");
+
+        DeploymentEvent deployment = zeebeClient.newDeployResourceCommand()
+                .addResourceStream(form.getInputStream(), form.getFilename())
+                .addResourceStream(bpmn.getInputStream(), bpmn.getFilename())
+                .send()
+                .join();
+
+        log.info("✅ Batch desplegado — key: {}", deployment.getKey());
+        for (Process process : deployment.getProcesses()) {
+            log.info("   🔧 Proceso: {} (versión: {}, key: {})",
+                    process.getBpmnProcessId(), process.getVersion(), process.getProcessDefinitionKey());
         }
     }
 
