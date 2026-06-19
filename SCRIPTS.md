@@ -61,8 +61,8 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 
 | Servicio | URL |
 |---------|-----|
-| 📊 Camunda Operate | http://localhost:8080 (demo/demo) |
-| 📋 Camunda Tasklist | http://localhost:8081 (demo/demo) |
+| 📊 Camunda Operate | http://localhost:8081 (demo/demo) |
+| 📋 Camunda Tasklist | http://localhost:8082 (demo/demo) |
 | 👥 Clientes | http://localhost:9080 |
 | ✈️ Vuelos | http://localhost:9081 |
 | 🏨 Hoteles | http://localhost:9082 |

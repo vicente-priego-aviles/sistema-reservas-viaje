@@ -59,8 +59,8 @@
                     ┌─────────────────────┐
                     │  Camunda Platform 8 │
                     │   - Zeebe (26500)   │
-                    │   - Operate (8080)  │
-                    │   - Tasklist (8081) │
+                    │   - Operate (8081)  │
+                    │   - Tasklist (8082) │
                     └──────────┬──────────┘
                                │
          ┌─────────────────────┼─────────────────────┐
@@ -111,8 +111,8 @@
 
 | Puerto | Componente | Acceso |
 |--------|-----------|--------|
-| **8080** | Camunda Operate | `http://localhost:8080` (demo/demo) |
-| **8081** | Camunda Tasklist | `http://localhost:8081` (demo/demo) |
+| **8081** | Camunda Operate | `http://localhost:8081` (demo/demo) |
+| **8082** | Camunda Tasklist | `http://localhost:8082` (demo/demo) |
 | **26500** | Zeebe gRPC | Workers de los microservicios |
 
 ### Arquitectura Hexagonal
@@ -190,7 +190,7 @@ docker --version # Docker con Compose
 **Puertos necesarios:**
 
 ```
-Camunda:         8080 (Operate), 8081 (Tasklist), 26500 (Zeebe gRPC)
+Camunda:         8081 (Operate), 8082 (Tasklist), 26500 (Zeebe gRPC)
 Microservicios:  9080 (clientes), 9081 (vuelos), 9082 (hoteles),
                  9083 (coches), 9084 (pagos), 9090 (reservas)
 ```
@@ -241,8 +241,8 @@ Cada microservicio expone además su propia API REST documentada en `/swagger-ui
 
 ## 📊 Monitoreo
 
-- **Camunda Operate** (http://localhost:8080) — visualización de instancias de proceso, incidents y variables
-- **Camunda Tasklist** (http://localhost:8081) — completar User Tasks del flujo
+- **Camunda Operate** (http://localhost:8081) — visualización de instancias de proceso, incidents y variables
+- **Camunda Tasklist** (http://localhost:8082) — completar User Tasks del flujo
 - **H2 Console** — cada servicio en `http://localhost:908X/h2-console` (usuario `sa`, sin contraseña)
 
 > 📖 **Logs, consolas H2 y monitoreo detallado**: [docs/doc_quick_start.md](docs/doc_quick_start.md)

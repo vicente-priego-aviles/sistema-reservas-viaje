@@ -21,8 +21,9 @@ docker --version
 **Puertos que deben estar libres:**
 
 ```
-8080  — Camunda Operate
-8081  — Camunda Tasklist
+8081  — Camunda Operate
+8082  — Camunda Tasklist
+8088  — Zeebe REST
 26500 — Zeebe gRPC
 9080  — servicio-clientes
 9081  — servicio-vuelos
@@ -79,8 +80,8 @@ Este script hace todo automáticamente:
 ## ✅ Verificar que Todo Funciona
 
 ```bash
-# Camunda
-curl http://localhost:8080/actuator/health
+# Camunda Operate
+curl http://localhost:8081/actuator/health
 
 # Microservicios
 curl http://localhost:9090/actuator/health   # Reservas (API principal)
@@ -97,8 +98,8 @@ Todos deben devolver `{"status":"UP"}`.
 
 | Componente | URL | Credenciales |
 |-----------|-----|-------------|
-| 📊 Camunda Operate | http://localhost:8080 | demo / demo |
-| 📋 Camunda Tasklist | http://localhost:8081 | demo / demo |
+| 📊 Camunda Operate | http://localhost:8081 | demo / demo |
+| 📋 Camunda Tasklist | http://localhost:8082 | demo / demo |
 
 ---
 
@@ -132,7 +133,7 @@ curl -X POST http://localhost:9090/api/Pagos \
 
 ### Opción 2: Camunda Tasklist
 
-1. Abre http://localhost:8081 (demo/demo)
+1. Abre http://localhost:8082 (demo/demo)
 2. Click en **"Start Process"**
 3. Selecciona **"proceso-principal"**
 4. Rellena el formulario con los datos del cliente
@@ -186,11 +187,11 @@ El sistema incluye datos precargados para facilitar las pruebas.
 
 ## 📊 Monitorear el Proceso
 
-### Camunda Operate (http://localhost:8080)
+### Camunda Operate (http://localhost:8081)
 
 Permite ver el progreso visual de cada instancia de proceso:
 
-1. Abre http://localhost:8080 y haz login con demo/demo
+1. Abre http://localhost:8081 y haz login con demo/demo
 2. Ve a **Processes → proceso-principal**
 3. Haz click en una instancia activa para ver el flujo en tiempo real
 4. Navega a los Call Activities para ver los subprocesos
