@@ -40,7 +40,7 @@ camunda:
     # Valor por defecto: false. Revertir (o eliminar este bloque) antes de producción.
     worker:
       defaults:
-        stream-enabled: true
+        stream-enabled: false
 
 management:
   endpoints:

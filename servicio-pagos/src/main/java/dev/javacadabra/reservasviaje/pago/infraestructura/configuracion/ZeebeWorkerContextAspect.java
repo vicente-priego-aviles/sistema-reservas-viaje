@@ -15,7 +15,7 @@ import java.util.Arrays;
 @Slf4j
 public class ZeebeWorkerContextAspect {
 
-    @Around("execution(* dev.javacadabra.reservasviaje.pago.infraestructura.adaptador.entrada.camunda.*.*(..))")
+    @Around("@annotation(io.camunda.zeebe.spring.client.annotation.JobWorker)")
     public Object enriquecerContextoLog(ProceedingJoinPoint joinPoint) throws Throwable {
         ActivatedJob job = Arrays.stream(joinPoint.getArgs())
                 .filter(arg -> arg instanceof ActivatedJob)
