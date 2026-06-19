@@ -172,6 +172,7 @@
     </bpmn:parallelGateway>
     <bpmn:userTask id="gestionar-reserva-vuelo" name="✈️ Gestionar Reserva de Vuelo">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
         <zeebe:formDefinition formId="gestionar-reserva-vuelo" />
       </bpmn:extensionElements>
@@ -182,6 +183,7 @@
     <bpmn:sequenceFlow id="flujo-vuelo-completado" sourceRef="reservar-vuelo" targetRef="gateway-fin-paralelo" />
     <bpmn:userTask id="gestionar-reserva-hotel" name="🏨 Gestionar Reserva de Hotel">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
         <zeebe:formDefinition formId="gestionar-reserva-hotel" />
       </bpmn:extensionElements>
@@ -191,6 +193,7 @@
     <bpmn:sequenceFlow id="flujo-a-reservar-hotel" sourceRef="gestionar-reserva-hotel" targetRef="reservar-hotel" />
     <bpmn:userTask id="gestionar-reserva-coche" name="🚗 Gestionar Reserva de Coche">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
         <zeebe:formDefinition formId="gestionar-reserva-coche" />
       </bpmn:extensionElements>
