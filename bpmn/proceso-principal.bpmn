@@ -28,6 +28,7 @@
     <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
       <bpmn:extensionElements>
         <zeebe:ioMapping>
+          <zeebe:output source="=motivoFallo" target="motivoFallo" />
           <zeebe:output source="=error.code" target="codigoError" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>

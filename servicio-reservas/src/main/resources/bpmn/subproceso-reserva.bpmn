@@ -60,6 +60,11 @@
     </bpmn:boundaryEvent>
     <bpmn:subProcess id="subproceso-manejo-errores" name="Manejar Error Reserva" triggeredByEvent="true">
       <bpmn:startEvent id="error-reserva-inicio" name="Error Reserva 1">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:output source="=error.message" target="motivoFallo" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
         <bpmn:outgoing>flujo-error-a-gateway</bpmn:outgoing>
         <bpmn:errorEventDefinition id="ErrorEventDef_ErrorReserva1" />
       </bpmn:startEvent>
