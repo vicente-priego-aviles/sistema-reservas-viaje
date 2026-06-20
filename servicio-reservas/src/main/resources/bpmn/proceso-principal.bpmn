@@ -45,13 +45,218 @@
     <bpmn:endEvent id="evento-fin-reserva-fallida" name="❌ Reserva Fallida">
       <bpmn:incoming>flujo-notificar-a-fin-reserva-fallida</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:callActivity id="call-activity-proceso-reserva" name="🎟️ Proceso de Reserva">
-      <bpmn:extensionElements>
-        <zeebe:calledElement processId="subproceso-proceso-reserva" propagateAllChildVariables="true" />
-      </bpmn:extensionElements>
+    <bpmn:subProcess id="call-activity-proceso-reserva" name="🎟️ Proceso de Reserva">
       <bpmn:incoming>flujo-revisar-datos-a-proceso-reserva</bpmn:incoming>
       <bpmn:outgoing>flujo-proceso-reserva-a-pago</bpmn:outgoing>
-    </bpmn:callActivity>
+      <bpmn:startEvent id="reserva-inicio" name="Comenzar Proceso de Reserva">
+        <bpmn:outgoing>flujo-a-gateway-paralelo</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:parallelGateway id="gateway-inicio-paralelo">
+        <bpmn:incoming>flujo-a-gateway-paralelo</bpmn:incoming>
+        <bpmn:outgoing>flujo-a-gestionar-reservar-vuelo</bpmn:outgoing>
+        <bpmn:outgoing>flujo-a-gestionar-reservar-hotel</bpmn:outgoing>
+        <bpmn:outgoing>flujo-a-gestionar-reservar-coche</bpmn:outgoing>
+      </bpmn:parallelGateway>
+      <bpmn:userTask id="gestionar-reserva-vuelo" name="✈️ Gestionar Reserva de Vuelo">
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:assignmentDefinition assignee="demo" />
+          <zeebe:formDefinition formId="gestionar-reserva-vuelo" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-a-gestionar-reservar-vuelo</bpmn:incoming>
+        <bpmn:outgoing>flujo-a-reservar-vuelo</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="reservar-vuelo" name="Reservar Vuelo">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="reservar-vuelo" retries="3" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-a-reservar-vuelo</bpmn:incoming>
+        <bpmn:outgoing>flujo-vuelo-completado</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="cancelar-vuelo" name="Cancelar Vuelo" isForCompensation="true">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="cancelar-vuelo" />
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="gestionar-reserva-hotel" name="🏨 Gestionar Reserva de Hotel">
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:assignmentDefinition assignee="demo" />
+          <zeebe:formDefinition formId="gestionar-reserva-hotel" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-a-gestionar-reservar-hotel</bpmn:incoming>
+        <bpmn:outgoing>flujo-a-reservar-hotel</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="reservar-hotel" name="Reservar Hotel">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="reservar-hotel" retries="3" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-a-reservar-hotel</bpmn:incoming>
+        <bpmn:outgoing>flujo-hotel-completado</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="cancelar-hotel" name="Cancelar Hotel" isForCompensation="true">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="cancelar-hotel" />
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:userTask id="gestionar-reserva-coche" name="🚗 Gestionar Reserva de Coche">
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:assignmentDefinition assignee="demo" />
+          <zeebe:formDefinition formId="gestionar-reserva-coche" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-a-gestionar-reservar-coche</bpmn:incoming>
+        <bpmn:outgoing>flujo-a-reservar-coche</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:serviceTask id="reservar-coche" name="Reservar Coche">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="reservar-coche" retries="3" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-a-reservar-coche</bpmn:incoming>
+        <bpmn:outgoing>flujo-coche-completado</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:serviceTask id="cancelar-coche" name="Cancelar Coche" isForCompensation="true">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="cancelar-coche" />
+        </bpmn:extensionElements>
+      </bpmn:serviceTask>
+      <bpmn:parallelGateway id="gateway-fin-paralelo">
+        <bpmn:incoming>flujo-vuelo-completado</bpmn:incoming>
+        <bpmn:incoming>flujo-hotel-completado</bpmn:incoming>
+        <bpmn:incoming>flujo-coche-completado</bpmn:incoming>
+        <bpmn:outgoing>flujo-reserva-completado</bpmn:outgoing>
+      </bpmn:parallelGateway>
+      <bpmn:endEvent id="fin-reserva-completada" name="Reserva Completada">
+        <bpmn:incoming>flujo-reserva-completado</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:boundaryEvent id="evento-compensacion-vuelo" attachedToRef="reservar-vuelo">
+        <bpmn:compensateEventDefinition id="CompensateEventDef_Vuelo" />
+      </bpmn:boundaryEvent>
+      <bpmn:boundaryEvent id="evento-compensacion-hotel" attachedToRef="reservar-hotel">
+        <bpmn:compensateEventDefinition id="CompensateEventDef_Hotel" />
+      </bpmn:boundaryEvent>
+      <bpmn:boundaryEvent id="evento-compensacion-coche" attachedToRef="reservar-coche">
+        <bpmn:compensateEventDefinition id="CompensateEventDef_Coche" />
+      </bpmn:boundaryEvent>
+      <bpmn:subProcess id="subproceso-manejo-errores" name="Manejar Error Reserva" triggeredByEvent="true">
+        <bpmn:startEvent id="error-reserva-inicio" name="Error Reserva 1">
+          <bpmn:extensionElements>
+            <zeebe:ioMapping>
+              <zeebe:output source="=motivoFallo" target="motivoFallo" />
+            </zeebe:ioMapping>
+          </bpmn:extensionElements>
+          <bpmn:outgoing>flujo-error-a-gateway</bpmn:outgoing>
+          <bpmn:errorEventDefinition id="ErrorEventDef_ErrorReserva1" />
+        </bpmn:startEvent>
+        <bpmn:parallelGateway id="gateway-compensar-inicio">
+          <bpmn:incoming>flujo-error-a-gateway</bpmn:incoming>
+          <bpmn:outgoing>flujo-a-compensar-vuelo</bpmn:outgoing>
+          <bpmn:outgoing>flujo-a-compensar-hotel</bpmn:outgoing>
+          <bpmn:outgoing>flujo-a-compensar-coche</bpmn:outgoing>
+        </bpmn:parallelGateway>
+        <bpmn:intermediateThrowEvent id="evento-compensar-vuelo" name="Vuelo">
+          <bpmn:incoming>flujo-a-compensar-vuelo</bpmn:incoming>
+          <bpmn:outgoing>flujo-vuelo-compensado</bpmn:outgoing>
+          <bpmn:compensateEventDefinition id="CompensateThrow_Vuelo" />
+        </bpmn:intermediateThrowEvent>
+        <bpmn:intermediateThrowEvent id="evento-compensar-hotel" name="Hotel">
+          <bpmn:incoming>flujo-a-compensar-hotel</bpmn:incoming>
+          <bpmn:outgoing>flujo-hotel-compensado</bpmn:outgoing>
+          <bpmn:compensateEventDefinition id="CompensateThrow_Hotel" />
+        </bpmn:intermediateThrowEvent>
+        <bpmn:intermediateThrowEvent id="evento-compensar-coche" name="Coche">
+          <bpmn:incoming>flujo-a-compensar-coche</bpmn:incoming>
+          <bpmn:outgoing>flujo-coche-compensado</bpmn:outgoing>
+          <bpmn:compensateEventDefinition id="CompensateThrow_Coche" />
+        </bpmn:intermediateThrowEvent>
+        <bpmn:parallelGateway id="gateway-compensar-fin">
+          <bpmn:incoming>flujo-vuelo-compensado</bpmn:incoming>
+          <bpmn:incoming>flujo-hotel-compensado</bpmn:incoming>
+          <bpmn:incoming>flujo-coche-compensado</bpmn:incoming>
+          <bpmn:outgoing>flujo-a-error-fin</bpmn:outgoing>
+        </bpmn:parallelGateway>
+        <bpmn:endEvent id="error-reserva-fin" name="Error Reserva 2">
+          <bpmn:incoming>flujo-a-error-fin</bpmn:incoming>
+          <bpmn:errorEventDefinition id="ErrorEventDef_ErrorReserva2" errorRef="Error_ReservaFallida" />
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="flujo-error-a-gateway" sourceRef="error-reserva-inicio" targetRef="gateway-compensar-inicio" />
+        <bpmn:sequenceFlow id="flujo-a-compensar-vuelo" sourceRef="gateway-compensar-inicio" targetRef="evento-compensar-vuelo" />
+        <bpmn:sequenceFlow id="flujo-a-compensar-hotel" sourceRef="gateway-compensar-inicio" targetRef="evento-compensar-hotel" />
+        <bpmn:sequenceFlow id="flujo-a-compensar-coche" sourceRef="gateway-compensar-inicio" targetRef="evento-compensar-coche" />
+        <bpmn:sequenceFlow id="flujo-vuelo-compensado" sourceRef="evento-compensar-vuelo" targetRef="gateway-compensar-fin" />
+        <bpmn:sequenceFlow id="flujo-hotel-compensado" sourceRef="evento-compensar-hotel" targetRef="gateway-compensar-fin" />
+        <bpmn:sequenceFlow id="flujo-coche-compensado" sourceRef="evento-compensar-coche" targetRef="gateway-compensar-fin" />
+        <bpmn:sequenceFlow id="flujo-a-error-fin" sourceRef="gateway-compensar-fin" targetRef="error-reserva-fin" />
+      </bpmn:subProcess>
+      <bpmn:subProcess id="subproceso-compensacion-manual" name="Manejar Compensación" triggeredByEvent="true">
+        <bpmn:startEvent id="compensacion-manual-inicio" name="Compensar Reserva">
+          <bpmn:outgoing>flujo-manual-a-compensar-vuelo</bpmn:outgoing>
+          <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" messageRef="Message_CompensarReserva" />
+        </bpmn:startEvent>
+        <bpmn:intermediateThrowEvent id="evento-manual-compensar-vuelo" name="Vuelo">
+          <bpmn:incoming>flujo-manual-a-compensar-vuelo</bpmn:incoming>
+          <bpmn:outgoing>flujo-manual-a-compensar-hotel</bpmn:outgoing>
+          <bpmn:compensateEventDefinition id="CompensateManual_Vuelo" />
+        </bpmn:intermediateThrowEvent>
+        <bpmn:intermediateThrowEvent id="evento-manual-compensar-hotel" name="Hotel">
+          <bpmn:incoming>flujo-manual-a-compensar-hotel</bpmn:incoming>
+          <bpmn:outgoing>flujo-manual-a-compensar-coche</bpmn:outgoing>
+          <bpmn:compensateEventDefinition id="CompensateManual_Hotel" />
+        </bpmn:intermediateThrowEvent>
+        <bpmn:intermediateThrowEvent id="evento-manual-compensar-coche" name="Coche">
+          <bpmn:incoming>flujo-manual-a-compensar-coche</bpmn:incoming>
+          <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
+          <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
+        </bpmn:intermediateThrowEvent>
+        <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="actualizar-registro-cliente" />
+          </bpmn:extensionElements>
+          <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
+          <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:endEvent id="compensacion-manual-fin" name="Reserva Compensada">
+          <bpmn:incoming>flujo-manual-a-fin</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="flujo-manual-a-compensar-vuelo" sourceRef="compensacion-manual-inicio" targetRef="evento-manual-compensar-vuelo" />
+        <bpmn:sequenceFlow id="flujo-manual-a-compensar-hotel" sourceRef="evento-manual-compensar-vuelo" targetRef="evento-manual-compensar-hotel" />
+        <bpmn:sequenceFlow id="flujo-manual-a-compensar-coche" sourceRef="evento-manual-compensar-hotel" targetRef="evento-manual-compensar-coche" />
+        <bpmn:sequenceFlow id="flujo-manual-a-actualizar" sourceRef="evento-manual-compensar-coche" targetRef="actualizar-registro-cliente" />
+        <bpmn:sequenceFlow id="flujo-manual-a-fin" sourceRef="actualizar-registro-cliente" targetRef="compensacion-manual-fin" />
+      </bpmn:subProcess>
+      <bpmn:subProcess id="subproceso-actualizar-tarjeta" name="Actualizar Información Tarjeta Crédito" triggeredByEvent="true">
+        <bpmn:startEvent id="actualizar-tarjeta-inicio" name="Tarjeta Proporcionada" isInterrupting="false">
+          <bpmn:outgoing>flujo-tarjeta-a-actualizar</bpmn:outgoing>
+          <bpmn:messageEventDefinition id="MessageEventDef_ActualizarTarjeta" messageRef="Message_TarjetaProporcionada" />
+        </bpmn:startEvent>
+        <bpmn:serviceTask id="actualizar-informacion-tarjeta" name="Actualizar Información de Tarjeta de Crédito">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="actualizar-informacion-tarjeta" />
+          </bpmn:extensionElements>
+          <bpmn:incoming>flujo-tarjeta-a-actualizar</bpmn:incoming>
+          <bpmn:outgoing>flujo-tarjeta-a-fin</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:endEvent id="actualizar-tarjeta-fin" name="Información Actualizada">
+          <bpmn:incoming>flujo-tarjeta-a-fin</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="flujo-tarjeta-a-actualizar" sourceRef="actualizar-tarjeta-inicio" targetRef="actualizar-informacion-tarjeta" />
+        <bpmn:sequenceFlow id="flujo-tarjeta-a-fin" sourceRef="actualizar-informacion-tarjeta" targetRef="actualizar-tarjeta-fin" />
+      </bpmn:subProcess>
+      <bpmn:association id="asociacion-compensar-vuelo" associationDirection="One" sourceRef="evento-compensacion-vuelo" targetRef="cancelar-vuelo" />
+      <bpmn:association id="asociacion-compensar-hotel" associationDirection="One" sourceRef="evento-compensacion-hotel" targetRef="cancelar-hotel" />
+      <bpmn:association id="asociacion-compensar-coche" associationDirection="One" sourceRef="evento-compensacion-coche" targetRef="cancelar-coche" />
+      <bpmn:sequenceFlow id="flujo-a-gateway-paralelo" sourceRef="reserva-inicio" targetRef="gateway-inicio-paralelo" />
+      <bpmn:sequenceFlow id="flujo-a-gestionar-reservar-vuelo" sourceRef="gateway-inicio-paralelo" targetRef="gestionar-reserva-vuelo" />
+      <bpmn:sequenceFlow id="flujo-a-reservar-vuelo" sourceRef="gestionar-reserva-vuelo" targetRef="reservar-vuelo" />
+      <bpmn:sequenceFlow id="flujo-vuelo-completado" sourceRef="reservar-vuelo" targetRef="gateway-fin-paralelo" />
+      <bpmn:sequenceFlow id="flujo-a-gestionar-reservar-hotel" sourceRef="gateway-inicio-paralelo" targetRef="gestionar-reserva-hotel" />
+      <bpmn:sequenceFlow id="flujo-a-reservar-hotel" sourceRef="gestionar-reserva-hotel" targetRef="reservar-hotel" />
+      <bpmn:sequenceFlow id="flujo-hotel-completado" sourceRef="reservar-hotel" targetRef="gateway-fin-paralelo" />
+      <bpmn:sequenceFlow id="flujo-a-gestionar-reservar-coche" sourceRef="gateway-inicio-paralelo" targetRef="gestionar-reserva-coche" />
+      <bpmn:sequenceFlow id="flujo-a-reservar-coche" sourceRef="gestionar-reserva-coche" targetRef="reservar-coche" />
+      <bpmn:sequenceFlow id="flujo-coche-completado" sourceRef="reservar-coche" targetRef="gateway-fin-paralelo" />
+      <bpmn:sequenceFlow id="flujo-reserva-completado" sourceRef="gateway-fin-paralelo" targetRef="fin-reserva-completada" />
+    </bpmn:subProcess>
     <bpmn:callActivity id="call-activity-gestion-cliente" name="👤 Gestión de Cliente">
       <bpmn:extensionElements>
         <zeebe:calledElement processId="subproceso-gestion-cliente" propagateAllChildVariables="true" />
@@ -103,6 +308,16 @@
   </bpmn:process>
   <bpmn:error id="Error_ValidacionDatos" name="Error Datos Iválidos" errorCode="ERROR_DATOS_INVALIDOS" />
   <bpmn:error id="Error_ReservaFallida" name="Error Reserva Fallida" errorCode="ERROR_RESERVA_FALLIDA" />
+  <bpmn:message id="Message_CompensarReserva" name="compensar-reserva">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=reservaId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_TarjetaProporcionada" name="tarjeta-proporcionada">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=clienteId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_ProcesoPrincipal">
     <bpmndi:BPMNPlane id="BPMNPlane_ProcesoPrincipal" bpmnElement="proceso-principal">
       <bpmndi:BPMNShape id="Shape_evento-inicio-solicitud-reserva" bpmnElement="evento-inicio-solicitud-reserva">
@@ -129,7 +344,7 @@
       <bpmndi:BPMNShape id="Shape_revisar-datos-entrada" bpmnElement="revisar-datos-entrada">
         <dc:Bounds x="560" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_call-activity-proceso-reserva" bpmnElement="call-activity-proceso-reserva">
+      <bpmndi:BPMNShape id="Shape_call-activity-proceso-reserva" bpmnElement="call-activity-proceso-reserva" isExpanded="false">
         <dc:Bounds x="710" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_notificar-cliente-reserva-fallida" bpmnElement="notificar-cliente-reserva-fallida">
