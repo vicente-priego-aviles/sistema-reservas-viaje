@@ -242,9 +242,6 @@
         <bpmn:sequenceFlow id="flujo-tarjeta-a-actualizar" sourceRef="actualizar-tarjeta-inicio" targetRef="actualizar-informacion-tarjeta" />
         <bpmn:sequenceFlow id="flujo-tarjeta-a-fin" sourceRef="actualizar-informacion-tarjeta" targetRef="actualizar-tarjeta-fin" />
       </bpmn:subProcess>
-      <bpmn:association id="asociacion-compensar-vuelo" associationDirection="One" sourceRef="evento-compensacion-vuelo" targetRef="cancelar-vuelo" />
-      <bpmn:association id="asociacion-compensar-hotel" associationDirection="One" sourceRef="evento-compensacion-hotel" targetRef="cancelar-hotel" />
-      <bpmn:association id="asociacion-compensar-coche" associationDirection="One" sourceRef="evento-compensacion-coche" targetRef="cancelar-coche" />
       <bpmn:sequenceFlow id="flujo-a-gateway-paralelo" sourceRef="reserva-inicio" targetRef="gateway-inicio-paralelo" />
       <bpmn:sequenceFlow id="flujo-a-gestionar-reservar-vuelo" sourceRef="gateway-inicio-paralelo" targetRef="gestionar-reserva-vuelo" />
       <bpmn:sequenceFlow id="flujo-a-reservar-vuelo" sourceRef="gestionar-reserva-vuelo" targetRef="reservar-vuelo" />
@@ -256,6 +253,9 @@
       <bpmn:sequenceFlow id="flujo-a-reservar-coche" sourceRef="gestionar-reserva-coche" targetRef="reservar-coche" />
       <bpmn:sequenceFlow id="flujo-coche-completado" sourceRef="reservar-coche" targetRef="gateway-fin-paralelo" />
       <bpmn:sequenceFlow id="flujo-reserva-completado" sourceRef="gateway-fin-paralelo" targetRef="fin-reserva-completada" />
+      <bpmn:association id="asociacion-compensar-vuelo" associationDirection="One" sourceRef="evento-compensacion-vuelo" targetRef="cancelar-vuelo" />
+      <bpmn:association id="asociacion-compensar-hotel" associationDirection="One" sourceRef="evento-compensacion-hotel" targetRef="cancelar-hotel" />
+      <bpmn:association id="asociacion-compensar-coche" associationDirection="One" sourceRef="evento-compensacion-coche" targetRef="cancelar-coche" />
     </bpmn:subProcess>
     <bpmn:callActivity id="call-activity-gestion-cliente" name="👤 Gestión de Cliente">
       <bpmn:extensionElements>
