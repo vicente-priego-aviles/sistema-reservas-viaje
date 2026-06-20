@@ -567,7 +567,7 @@ Los datos de entrada y la gestión de cliente son válidos, pero al procesar la 
 2. Gestión de Cliente ✅       → Juan Pérez García, ACTIVO → EN_PROCESO_RESERVA
 3. Revisar Datos de Entrada (User Task) 👤
 4. Proceso de Reserva (Paralelo)
-   - Gestionar Reserva Vuelo (User Task) 👤 → completar con pasajeros=[]
+   - Introducir Datos del Vuelo (User Task) 👤 → completar con pasajeros=[]
    - Reservar Vuelo ❌  → ERROR_VALIDACION_VUELO (lista de pasajeros vacía)
    - Error event subprocess se activa:
      - Compensar Vuelo 🔄  → no hay reservaVueloId (no llegó a reservarse)
@@ -579,6 +579,12 @@ Los datos de entrada y la gestión de cliente son válidos, pero al procesar la 
 ```
 
 ### Paso 1: Iniciar el proceso
+
+Hay tres formas equivalentes de iniciar el proceso:
+
+---
+
+**Opción A — API de `servicio-reservas` (curl)**
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -605,6 +611,36 @@ Respuesta:
 }
 ```
 
+---
+
+**Opción B — Camunda REST API (Swagger)**
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+---
+
+**Opción C — Tasklist**
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía. El proceso arranca directamente desde la interfaz sin necesidad de curl ni Swagger.
+
 ### Paso 2: Completar "Revisar Datos de Entrada"
 
 En **Tasklist** (http://localhost:8082): aparecerá el User Task "Revisar Datos de Entrada". Complétalo con los datos que aparecen pre-rellenos.
@@ -616,13 +652,13 @@ Tras completar el paso anterior, el proceso avanza al subproceso de reserva y qu
 **Opción A — Tasklist** (http://localhost:8082):
 
 1. Ve a la sección **Tasks**
-2. Localiza "✈️ Gestionar Reserva de Vuelo"
+2. Localiza "✈️ Introducir Datos del Vuelo"
 3. El `userTaskKey` es el número que aparece en la URL al hacer click sobre el task: `.../tasks/<userTaskKey>`
 
 **Opción B — Operate** (http://localhost:8081):
 
 1. Entra en la instancia del proceso activa
-2. Haz click sobre el nodo "✈️ Gestionar Reserva de Vuelo" (aparece resaltado en azul)
+2. Haz click sobre el nodo "✈️ Introducir Datos del Vuelo" (aparece resaltado en azul)
 3. Se abre un popup — haz click en el enlace **View**
 4. En la vista de detalle del nodo verás la metadata; el campo **Key** es el `userTaskKey`
 
@@ -651,7 +687,7 @@ curl -X PATCH "http://localhost:8088/v2/user-tasks/<userTaskKey>/completion" \
 
 > También puedes usar el Swagger de Zeebe en http://localhost:8088/swagger-ui/index.html, endpoint `PATCH /v2/user-tasks/{userTaskKey}/completion`.
 
-**Alternativa — formulario en Tasklist**: abre el task "✈️ Gestionar Reserva de Vuelo" en Tasklist (http://localhost:8082), rellena el formulario con los datos del vuelo y deja el campo **Pasajeros** vacío (sin añadir ningún pasajero). Al enviar, el formulario completará el task con `pasajeros: []` con el mismo efecto.
+**Alternativa — formulario en Tasklist**: abre el task "✈️ Introducir Datos del Vuelo" en Tasklist (http://localhost:8082), rellena el formulario con los datos del vuelo y deja el campo **Pasajeros** vacío (sin añadir ningún pasajero). Al enviar, el formulario completará el task con `pasajeros: []` con el mismo efecto.
 
 Esto provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`, que activa el Saga de compensación.
 

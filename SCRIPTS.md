@@ -13,6 +13,7 @@ Guía completa de los scripts disponibles para gestionar el ciclo de vida del si
 | [`stop.sh`](#-stopsh) | Parar solo los microservicios | Cuando quieres mantener Camunda activo |
 | [`stop-all.sh`](#-stop-allsh) | Parar todo el sistema | Parada completa, incluyendo Camunda |
 | [`build-all.sh`](#-build-allsh) | Compilar + levantar microservicios | Si Camunda ya está corriendo |
+| [`redeploy-bpmn.sh`](#-redeploy-bpmnsh) | Recompilar y redesplegar solo los BPMN | Tras modificar archivos BPMN |
 | [`limpieza.sh`](#-limpiezash) | Limpiar todo el entorno Docker | Resolver problemas o liberar recursos |
 
 ---
@@ -183,6 +184,43 @@ Camunda Platform debe estar corriendo. Si no lo está, usa `./build-and-run.sh`.
 
 ---
 
+## 🔄 redeploy-bpmn.sh
+
+**Recompila y redespliega los archivos BPMN** sin tocar el resto de microservicios. Es el script a usar cada vez que modificas un archivo `.bpmn` y quieres que Zeebe reciba la nueva versión.
+
+```bash
+./redeploy-bpmn.sh
+```
+
+### Qué hace paso a paso
+
+1. ✅ Verifica que Maven y Zeebe están disponibles
+2. 🔧 Compila **todos** los módulos con `mvn clean package -DskipTests`
+   > La compilación completa es necesaria para que MapStruct genere correctamente los mapeadores de `servicio-reservas`. Construir solo ese módulo con `-pl` puede dejar beans sin registrar.
+3. 🐳 Reconstruye y reinicia **únicamente** el contenedor `servicio-reservas`
+4. ⏳ Espera a que el servicio esté listo (`/actuator/health`)
+5. ✅ Al arrancar, `BpmnDeploymentService` despliega automáticamente los BPMN actualizados en Zeebe
+
+### Cuándo usarlo
+
+- ✅ Tras modificar cualquier archivo en `servicio-reservas/src/main/resources/bpmn/`
+- ✅ Camunda y el resto de microservicios siguen corriendo sin interrupciones
+
+### Flujo típico de edición BPMN
+
+```bash
+# 1. Edita el BPMN en Camunda Modeler (carpeta bpmn/)
+# 2. Redesplegar (sincroniza automáticamente bpmn/ → runtime y reconstruye):
+./redeploy-bpmn.sh
+# 3. Verificar nueva versión en Operate: http://localhost:8081
+```
+
+### Tiempo estimado
+
+⏱️ ~30 segundos
+
+---
+
 ## 🧹 limpieza.sh
 
 **Limpieza total del entorno Docker.** ⚠️ Operación destructiva: elimina todos los contenedores y redes del sistema Docker.
@@ -223,7 +261,7 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 ./build-and-run.sh
 ```
 
-### Ciclo de desarrollo normal
+### Ciclo de desarrollo normal (código Java)
 
 ```bash
 # Parar microservicios
@@ -233,6 +271,14 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 
 # Recompilar y levantar (Camunda sigue activo)
 ./build-all.sh
+```
+
+### Cambio solo en archivos BPMN
+
+```bash
+# Editar BPMN en Camunda Modeler (carpeta bpmn/)
+# El script sincroniza automáticamente al runtime y redespliega:
+./redeploy-bpmn.sh
 ```
 
 ### Parada y reinicio completo
