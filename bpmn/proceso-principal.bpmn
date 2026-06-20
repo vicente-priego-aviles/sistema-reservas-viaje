@@ -25,7 +25,7 @@
       <bpmn:outgoing>flujo-error-pago-a-fin</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDef_ProcesoPago" />
     </bpmn:boundaryEvent>
-    <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="call-activity-proceso-reserva">
+    <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="subprocess-proceso-reserva">
       <bpmn:extensionElements>
         <zeebe:ioMapping>
           <zeebe:output source="=motivoFallo" target="motivoFallo" />
@@ -45,7 +45,7 @@
     <bpmn:endEvent id="evento-fin-reserva-fallida" name="❌ Reserva Fallida">
       <bpmn:incoming>flujo-notificar-a-fin-reserva-fallida</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:subProcess id="call-activity-proceso-reserva" name="🎟️ Proceso de Reserva">
+    <bpmn:subProcess id="subprocess-proceso-reserva" name="🎟️ Proceso de Reserva">
       <bpmn:incoming>flujo-revisar-datos-a-proceso-reserva</bpmn:incoming>
       <bpmn:outgoing>flujo-proceso-reserva-a-pago</bpmn:outgoing>
       <bpmn:startEvent id="reserva-inicio" name="Comenzar Proceso de Reserva">
@@ -302,8 +302,8 @@
     <bpmn:sequenceFlow id="flujo-inicio-a-validar-datos" sourceRef="evento-inicio-solicitud-reserva" targetRef="validar-datos-entrada" />
     <bpmn:sequenceFlow id="flujo-notificar-a-fin-reserva-fallida" sourceRef="notificar-cliente-reserva-fallida" targetRef="evento-fin-reserva-fallida" />
     <bpmn:sequenceFlow id="flujo-pago-a-fin-exitoso" sourceRef="call-activity-proceso-pago" targetRef="evento-fin-solicitud-completada" />
-    <bpmn:sequenceFlow id="flujo-proceso-reserva-a-pago" sourceRef="call-activity-proceso-reserva" targetRef="call-activity-proceso-pago" />
-    <bpmn:sequenceFlow id="flujo-revisar-datos-a-proceso-reserva" sourceRef="revisar-datos-entrada" targetRef="call-activity-proceso-reserva" />
+    <bpmn:sequenceFlow id="flujo-proceso-reserva-a-pago" sourceRef="subprocess-proceso-reserva" targetRef="call-activity-proceso-pago" />
+    <bpmn:sequenceFlow id="flujo-revisar-datos-a-proceso-reserva" sourceRef="revisar-datos-entrada" targetRef="subprocess-proceso-reserva" />
     <bpmn:sequenceFlow id="flujo-validar-a-gestion-cliente" sourceRef="validar-datos-entrada" targetRef="call-activity-gestion-cliente" />
   </bpmn:process>
   <bpmn:error id="Error_ValidacionDatos" name="Error Datos Iválidos" errorCode="ERROR_DATOS_INVALIDOS" />
@@ -353,7 +353,7 @@
           <dc:Bounds x="1001" y="355" width="60" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_call-activity-proceso-reserva" bpmnElement="call-activity-proceso-reserva" isExpanded="false">
+      <bpmndi:BPMNShape id="Shape_subprocess-proceso-reserva" bpmnElement="subprocess-proceso-reserva" isExpanded="false">
         <dc:Bounds x="710" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_call-activity-gestion-cliente" bpmnElement="call-activity-gestion-cliente">
