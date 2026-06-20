@@ -25,16 +25,11 @@
       <bpmn:outgoing>flujo-error-pago-a-fin</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDef_ProcesoPago" />
     </bpmn:boundaryEvent>
-    <bpmn:boundaryEvent id="evento-compensar-reserva" name="❌ Error Reserva" attachedToRef="subprocess-proceso-reserva">
-      <bpmn:extensionElements>
-        <zeebe:ioMapping>
-          <zeebe:output source="=motivoFallo" target="motivoFallo" />
-          <zeebe:output source="=error.code" target="codigoError" />
-        </zeebe:ioMapping>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>flujo-error-reserva-a-notificar</bpmn:outgoing>
-      <bpmn:errorEventDefinition id="ErrorEventDefinition_1bfojac" />
-    </bpmn:boundaryEvent>
+    <bpmn:exclusiveGateway id="gateway-resultado-reserva" name="¿Reserva exitosa?">
+      <bpmn:incoming>flujo-proceso-reserva-a-gateway</bpmn:incoming>
+      <bpmn:outgoing>flujo-reserva-exitosa-a-pago</bpmn:outgoing>
+      <bpmn:outgoing>flujo-reserva-fallida-a-notificar</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:boundaryEvent id="evento-error-datos-invalidos" name="❌ Error Validación" attachedToRef="validar-datos-entrada">
       <bpmn:outgoing>flujo-error-validacion-a-fin</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDef_ValidacionDatos" errorRef="Error_ValidacionDatos" />
@@ -46,8 +41,13 @@
       <bpmn:incoming>flujo-notificar-a-fin-reserva-fallida</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:subProcess id="subprocess-proceso-reserva" name="🎟️ Proceso de Reserva">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="=motivoFallo" target="motivoFallo" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>flujo-revisar-datos-a-proceso-reserva</bpmn:incoming>
-      <bpmn:outgoing>flujo-proceso-reserva-a-pago</bpmn:outgoing>
+      <bpmn:outgoing>flujo-proceso-reserva-a-gateway</bpmn:outgoing>
       <bpmn:startEvent id="reserva-inicio" name="Comenzar Proceso de Reserva">
         <bpmn:outgoing>flujo-a-gateway-paralelo</bpmn:outgoing>
       </bpmn:startEvent>
@@ -139,6 +139,11 @@
         <bpmn:compensateEventDefinition id="CompensateEventDef_Coche" />
       </bpmn:boundaryEvent>
       <bpmn:subProcess id="subproceso-manejo-errores" name="Manejar Error Reserva" triggeredByEvent="true">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:output source="=motivoFallo" target="motivoFallo" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
         <bpmn:startEvent id="error-reserva-inicio" name="Error Reserva 1">
           <bpmn:extensionElements>
             <zeebe:ioMapping>
@@ -175,9 +180,8 @@
           <bpmn:incoming>flujo-coche-compensado</bpmn:incoming>
           <bpmn:outgoing>flujo-a-error-fin</bpmn:outgoing>
         </bpmn:parallelGateway>
-        <bpmn:endEvent id="error-reserva-fin" name="Error Reserva 2">
+        <bpmn:endEvent id="error-reserva-fin" name="Reserva Fallida">
           <bpmn:incoming>flujo-a-error-fin</bpmn:incoming>
-          <bpmn:errorEventDefinition id="ErrorEventDef_ErrorReserva2" errorRef="Error_ReservaFallida" />
         </bpmn:endEvent>
         <bpmn:sequenceFlow id="flujo-error-a-gateway" sourceRef="error-reserva-inicio" targetRef="gateway-compensar-inicio" />
         <bpmn:sequenceFlow id="flujo-a-compensar-vuelo" sourceRef="gateway-compensar-inicio" targetRef="evento-compensar-vuelo" />
@@ -282,7 +286,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="notificar-reserva-fallida" />
       </bpmn:extensionElements>
-      <bpmn:incoming>flujo-error-reserva-a-notificar</bpmn:incoming>
+      <bpmn:incoming>flujo-reserva-fallida-a-notificar</bpmn:incoming>
       <bpmn:outgoing>flujo-notificar-a-fin-reserva-fallida</bpmn:outgoing>
     </bpmn:sendTask>
     <bpmn:startEvent id="evento-inicio-solicitud-reserva" name="📩 Solicitud de Reserva de Viaje">
@@ -296,13 +300,18 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="flujo-error-cliente-a-fin" sourceRef="evento-error-gestion-cliente" targetRef="evento-fin-error-gestion-cliente" />
     <bpmn:sequenceFlow id="flujo-error-pago-a-fin" sourceRef="evento-error-proceso-pago" targetRef="evento-fin-error-pago" />
-    <bpmn:sequenceFlow id="flujo-error-reserva-a-notificar" sourceRef="evento-compensar-reserva" targetRef="notificar-cliente-reserva-fallida" />
+    <bpmn:sequenceFlow id="flujo-proceso-reserva-a-gateway" sourceRef="subprocess-proceso-reserva" targetRef="gateway-resultado-reserva" />
+    <bpmn:sequenceFlow id="flujo-reserva-exitosa-a-pago" sourceRef="gateway-resultado-reserva" targetRef="call-activity-proceso-pago">
+      <bpmn:conditionExpression>=motivoFallo = null</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flujo-reserva-fallida-a-notificar" sourceRef="gateway-resultado-reserva" targetRef="notificar-cliente-reserva-fallida">
+      <bpmn:conditionExpression>=motivoFallo != null</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="flujo-error-validacion-a-fin" sourceRef="evento-error-datos-invalidos" targetRef="evento-fin-datos-invalidos" />
     <bpmn:sequenceFlow id="flujo-gestion-cliente-a-revisar-datos" sourceRef="call-activity-gestion-cliente" targetRef="revisar-datos-entrada" />
     <bpmn:sequenceFlow id="flujo-inicio-a-validar-datos" sourceRef="evento-inicio-solicitud-reserva" targetRef="validar-datos-entrada" />
     <bpmn:sequenceFlow id="flujo-notificar-a-fin-reserva-fallida" sourceRef="notificar-cliente-reserva-fallida" targetRef="evento-fin-reserva-fallida" />
     <bpmn:sequenceFlow id="flujo-pago-a-fin-exitoso" sourceRef="call-activity-proceso-pago" targetRef="evento-fin-solicitud-completada" />
-    <bpmn:sequenceFlow id="flujo-proceso-reserva-a-pago" sourceRef="subprocess-proceso-reserva" targetRef="call-activity-proceso-pago" />
     <bpmn:sequenceFlow id="flujo-revisar-datos-a-proceso-reserva" sourceRef="revisar-datos-entrada" targetRef="subprocess-proceso-reserva" />
     <bpmn:sequenceFlow id="flujo-validar-a-gestion-cliente" sourceRef="validar-datos-entrada" targetRef="call-activity-gestion-cliente" />
   </bpmn:process>
@@ -374,10 +383,10 @@
       <bpmndi:BPMNShape id="Shape_call-activity-gestion-cliente" bpmnElement="call-activity-gestion-cliente">
         <dc:Bounds x="410" y="100" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1mp78mk_di" bpmnElement="evento-compensar-reserva">
-        <dc:Bounds x="772" y="162" width="36" height="36" />
+      <bpmndi:BPMNShape id="Shape_gateway-resultado-reserva" bpmnElement="gateway-resultado-reserva" isMarkerVisible="true">
+        <dc:Bounds x="820" y="115" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="806" y="203" width="88" height="14" />
+          <dc:Bounds x="806" y="172" width="78" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-error-proceso-pago" bpmnElement="evento-error-proceso-pago">
@@ -414,9 +423,18 @@
         <di:waypoint x="660" y="140" />
         <di:waypoint x="710" y="140" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-proceso-reserva-a-pago" bpmnElement="flujo-proceso-reserva-a-pago">
+      <bpmndi:BPMNEdge id="Edge_flujo-proceso-reserva-a-gateway" bpmnElement="flujo-proceso-reserva-a-gateway">
         <di:waypoint x="810" y="140" />
+        <di:waypoint x="820" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-reserva-exitosa-a-pago" bpmnElement="flujo-reserva-exitosa-a-pago">
+        <di:waypoint x="870" y="140" />
         <di:waypoint x="860" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-reserva-fallida-a-notificar" bpmnElement="flujo-reserva-fallida-a-notificar">
+        <di:waypoint x="845" y="165" />
+        <di:waypoint x="845" y="330" />
+        <di:waypoint x="750" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-pago-a-fin-exitoso" bpmnElement="flujo-pago-a-fin-exitoso">
         <di:waypoint x="960" y="140" />
@@ -440,10 +458,6 @@
         <di:waypoint x="960" y="198" />
         <di:waypoint x="960" y="250" />
         <di:waypoint x="1012" y="250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1l0ivq1_di" bpmnElement="flujo-error-reserva-a-notificar">
-        <di:waypoint x="790" y="198" />
-        <di:waypoint x="790" y="290" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
