@@ -27,9 +27,25 @@ public class PagoWorker {
         String reservaId = (String) job.getVariablesAsMap().get("reservaId");
         String clienteId = (String) job.getVariablesAsMap().get("clienteId");
 
-        Double montoVuelo = ((Number) job.getVariablesAsMap().get("precioVueloFinal")).doubleValue();
-        Double montoHotel = ((Number) job.getVariablesAsMap().get("precioHotelFinal")).doubleValue();
-        Double montoCoche = ((Number) job.getVariablesAsMap().get("precioCocheFinal")).doubleValue();
+        Map<String, Object> variables = job.getVariablesAsMap();
+        log.debug("🔍 Variables recibidas en procesar-pago: {}", variables);
+
+        Number rawVuelo = (Number) variables.get("precioVueloFinal");
+        Number rawHotel = (Number) variables.get("precioHotelFinal");
+        Number rawCoche = (Number) variables.get("precioCocheFinal");
+
+        if (rawVuelo == null || rawHotel == null || rawCoche == null) {
+            String faltantes = (rawVuelo == null ? "precioVueloFinal " : "")
+                    + (rawHotel == null ? "precioHotelFinal " : "")
+                    + (rawCoche == null ? "precioCocheFinal" : "");
+            log.error("❌ Variables de precio faltantes en procesar-pago: [{}]", faltantes.trim());
+            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO",
+                    "Faltan variables de precio requeridas: " + faltantes.trim(), Map.of());
+        }
+
+        Double montoVuelo = rawVuelo.doubleValue();
+        Double montoHotel = rawHotel.doubleValue();
+        Double montoCoche = rawCoche.doubleValue();
         Double monto = montoVuelo + montoHotel + montoCoche;
 
         log.info("🔄 Worker: procesar-pago - Reserva: {} - Monto: {}€", reservaId, monto);
