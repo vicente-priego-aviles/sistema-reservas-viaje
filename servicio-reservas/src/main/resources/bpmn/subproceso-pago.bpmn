@@ -15,7 +15,7 @@
     </bpmn:serviceTask>
     <bpmn:intermediateThrowEvent id="evento-compensar-reserva" name="Compensar Reserva">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="compensar-reserva" />
+        <zeebe:publishMessage messageName="compensar-reserva" correlationKey="=reservaId" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-pago-desde-error-pago</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-notificar-tarjeta-invalida</bpmn:outgoing>

@@ -138,8 +138,6 @@
       <bpmn:endEvent id="fin-reserva-completada" name="Reserva Completada">
         <bpmn:incoming>flujo-reserva-completado</bpmn:incoming>
       </bpmn:endEvent>
-      <!-- Event subprocess: captura errores de service tasks, compensa y termina normalmente.
-           El subprocess padre termina normalmente; el gateway posterior enruta según motivoFallo. -->
       <bpmn:subProcess id="subproceso-manejo-errores" name="Manejar Error Reserva" triggeredByEvent="true">
         <bpmn:extensionElements>
           <zeebe:ioMapping>
@@ -182,8 +180,6 @@
           <bpmn:incoming>flujo-coche-compensado</bpmn:incoming>
           <bpmn:outgoing>flujo-a-error-fin</bpmn:outgoing>
         </bpmn:parallelGateway>
-        <!-- End event NORMAL: el subprocess padre sale por su flujo normal,
-             y el gateway posterior detecta motivoFallo para enrutar. -->
         <bpmn:endEvent id="error-reserva-fin" name="Compensación Completada">
           <bpmn:incoming>flujo-a-error-fin</bpmn:incoming>
         </bpmn:endEvent>
@@ -195,42 +191,6 @@
         <bpmn:sequenceFlow id="flujo-hotel-compensado" sourceRef="evento-compensar-hotel" targetRef="gateway-compensar-fin" />
         <bpmn:sequenceFlow id="flujo-coche-compensado" sourceRef="evento-compensar-coche" targetRef="gateway-compensar-fin" />
         <bpmn:sequenceFlow id="flujo-a-error-fin" sourceRef="gateway-compensar-fin" targetRef="error-reserva-fin" />
-      </bpmn:subProcess>
-      <bpmn:subProcess id="subproceso-compensacion-manual" name="Manejar Compensación" triggeredByEvent="true">
-        <bpmn:startEvent id="compensacion-manual-inicio" name="Compensar Reserva">
-          <bpmn:outgoing>flujo-manual-a-compensar-vuelo</bpmn:outgoing>
-          <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" messageRef="Message_CompensarReserva" />
-        </bpmn:startEvent>
-        <bpmn:intermediateThrowEvent id="evento-manual-compensar-vuelo" name="Vuelo">
-          <bpmn:incoming>flujo-manual-a-compensar-vuelo</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-compensar-hotel</bpmn:outgoing>
-          <bpmn:compensateEventDefinition id="CompensateManual_Vuelo" />
-        </bpmn:intermediateThrowEvent>
-        <bpmn:intermediateThrowEvent id="evento-manual-compensar-hotel" name="Hotel">
-          <bpmn:incoming>flujo-manual-a-compensar-hotel</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-compensar-coche</bpmn:outgoing>
-          <bpmn:compensateEventDefinition id="CompensateManual_Hotel" />
-        </bpmn:intermediateThrowEvent>
-        <bpmn:intermediateThrowEvent id="evento-manual-compensar-coche" name="Coche">
-          <bpmn:incoming>flujo-manual-a-compensar-coche</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
-          <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
-        </bpmn:intermediateThrowEvent>
-        <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
-          <bpmn:extensionElements>
-            <zeebe:taskDefinition type="actualizar-registro-cliente" />
-          </bpmn:extensionElements>
-          <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
-        </bpmn:serviceTask>
-        <bpmn:endEvent id="compensacion-manual-fin" name="Reserva Compensada">
-          <bpmn:incoming>flujo-manual-a-fin</bpmn:incoming>
-        </bpmn:endEvent>
-        <bpmn:sequenceFlow id="flujo-manual-a-compensar-vuelo" sourceRef="compensacion-manual-inicio" targetRef="evento-manual-compensar-vuelo" />
-        <bpmn:sequenceFlow id="flujo-manual-a-compensar-hotel" sourceRef="evento-manual-compensar-vuelo" targetRef="evento-manual-compensar-hotel" />
-        <bpmn:sequenceFlow id="flujo-manual-a-compensar-coche" sourceRef="evento-manual-compensar-hotel" targetRef="evento-manual-compensar-coche" />
-        <bpmn:sequenceFlow id="flujo-manual-a-actualizar" sourceRef="evento-manual-compensar-coche" targetRef="actualizar-registro-cliente" />
-        <bpmn:sequenceFlow id="flujo-manual-a-fin" sourceRef="actualizar-registro-cliente" targetRef="compensacion-manual-fin" />
       </bpmn:subProcess>
       <bpmn:subProcess id="subproceso-actualizar-tarjeta" name="Actualizar Información Tarjeta Crédito" triggeredByEvent="true">
         <bpmn:startEvent id="actualizar-tarjeta-inicio" name="Tarjeta Proporcionada" isInterrupting="false">
@@ -265,9 +225,42 @@
       <bpmn:association id="asociacion-compensar-hotel" associationDirection="One" sourceRef="evento-compensacion-hotel" targetRef="cancelar-hotel" />
       <bpmn:association id="asociacion-compensar-coche" associationDirection="One" sourceRef="evento-compensacion-coche" targetRef="cancelar-coche" />
     </bpmn:subProcess>
-    <!-- Gateway exclusivo: enruta según motivoFallo.
-         Si el event subprocess de error se ejecutó, motivoFallo tendrá valor → notificar.
-         Si todo fue bien, motivoFallo es null → pago. -->
+    <bpmn:subProcess id="subproceso-compensacion-manual" name="Manejar Compensación" triggeredByEvent="true">
+      <bpmn:startEvent id="compensacion-manual-inicio" name="Compensar Reserva" isInterrupting="false">
+        <bpmn:outgoing>flujo-manual-a-compensar-vuelo</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" messageRef="Message_CompensarReserva" />
+      </bpmn:startEvent>
+      <bpmn:intermediateThrowEvent id="evento-manual-compensar-vuelo" name="Vuelo">
+        <bpmn:incoming>flujo-manual-a-compensar-vuelo</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-compensar-hotel</bpmn:outgoing>
+        <bpmn:compensateEventDefinition id="CompensateManual_Vuelo" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:intermediateThrowEvent id="evento-manual-compensar-hotel" name="Hotel">
+        <bpmn:incoming>flujo-manual-a-compensar-hotel</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-compensar-coche</bpmn:outgoing>
+        <bpmn:compensateEventDefinition id="CompensateManual_Hotel" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:intermediateThrowEvent id="evento-manual-compensar-coche" name="Coche">
+        <bpmn:incoming>flujo-manual-a-compensar-coche</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
+        <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="actualizar-registro-cliente" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="compensacion-manual-fin" name="Reserva Compensada">
+        <bpmn:incoming>flujo-manual-a-fin</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="flujo-manual-a-compensar-vuelo" sourceRef="compensacion-manual-inicio" targetRef="evento-manual-compensar-vuelo" />
+      <bpmn:sequenceFlow id="flujo-manual-a-compensar-hotel" sourceRef="evento-manual-compensar-vuelo" targetRef="evento-manual-compensar-hotel" />
+      <bpmn:sequenceFlow id="flujo-manual-a-compensar-coche" sourceRef="evento-manual-compensar-hotel" targetRef="evento-manual-compensar-coche" />
+      <bpmn:sequenceFlow id="flujo-manual-a-actualizar" sourceRef="evento-manual-compensar-coche" targetRef="actualizar-registro-cliente" />
+      <bpmn:sequenceFlow id="flujo-manual-a-fin" sourceRef="actualizar-registro-cliente" targetRef="compensacion-manual-fin" />
+    </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway-resultado-reserva" name="¿Reserva Exitosa?" default="flujo-gateway-a-pago">
       <bpmn:incoming>flujo-proceso-reserva-a-gateway</bpmn:incoming>
       <bpmn:outgoing>flujo-gateway-a-notificar</bpmn:outgoing>
@@ -330,21 +323,27 @@
     <bpmndi:BPMNPlane id="BPMNPlane_ProcesoPrincipal" bpmnElement="proceso-principal">
       <bpmndi:BPMNShape id="Shape_evento-inicio-solicitud-reserva" bpmnElement="evento-inicio-solicitud-reserva">
         <dc:Bounds x="172" y="382" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="148" y="425" width="84" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="148" y="425" width="84" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_validar-datos-entrada" bpmnElement="validar-datos-entrada">
         <dc:Bounds x="260" y="360" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-datos-invalidos" bpmnElement="evento-fin-datos-invalidos">
         <dc:Bounds x="362" y="522" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="357" y="563" width="47" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="357" y="563" width="47" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_call-activity-gestion-cliente" bpmnElement="call-activity-gestion-cliente">
         <dc:Bounds x="410" y="360" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-error-gestion-cliente" bpmnElement="evento-fin-error-gestion-cliente">
         <dc:Bounds x="548" y="522" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="538" y="566" width="57" height="40" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="538" y="566" width="57" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_revisar-datos-entrada" bpmnElement="revisar-datos-entrada">
         <dc:Bounds x="560" y="360" width="100" height="80" />
@@ -354,17 +353,12 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_reserva-inicio" bpmnElement="reserva-inicio">
         <dc:Bounds x="757" y="382" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="747" y="425" width="56" height="40" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="747" y="425" width="56" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_gateway-inicio-paralelo" bpmnElement="gateway-inicio-paralelo">
         <dc:Bounds x="850" y="375" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_gateway-fin-paralelo" bpmnElement="gateway-fin-paralelo">
-        <dc:Bounds x="1285" y="375" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_fin-reserva-completada" bpmnElement="fin-reserva-completada">
-        <dc:Bounds x="1379" y="382" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1366" y="426" width="61" height="27" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_introducir-datos-vuelo" bpmnElement="introducir-datos-vuelo">
         <dc:Bounds x="920" y="130" width="100" height="80" />
@@ -375,9 +369,6 @@
       <bpmndi:BPMNShape id="Shape_cancelar-vuelo" bpmnElement="cancelar-vuelo">
         <dc:Bounds x="1190" y="250" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-compensacion-vuelo" bpmnElement="evento-compensacion-vuelo">
-        <dc:Bounds x="1112" y="192" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_introducir-datos-hotel" bpmnElement="introducir-datos-hotel">
         <dc:Bounds x="920" y="360" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -386,9 +377,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_cancelar-hotel" bpmnElement="cancelar-hotel">
         <dc:Bounds x="1190" y="490" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-compensacion-hotel" bpmnElement="evento-compensacion-hotel">
-        <dc:Bounds x="1122" y="422" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_introducir-datos-coche" bpmnElement="introducir-datos-coche">
         <dc:Bounds x="920" y="600" width="100" height="80" />
@@ -399,247 +387,346 @@
       <bpmndi:BPMNShape id="Shape_cancelar-coche" bpmnElement="cancelar-coche">
         <dc:Bounds x="1190" y="720" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-compensacion-coche" bpmnElement="evento-compensacion-coche">
-        <dc:Bounds x="1122" y="662" width="36" height="36" />
+      <bpmndi:BPMNShape id="Shape_gateway-fin-paralelo" bpmnElement="gateway-fin-paralelo">
+        <dc:Bounds x="1285" y="375" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <!-- Event subprocess: Manejar Error Reserva -->
+      <bpmndi:BPMNShape id="Shape_fin-reserva-completada" bpmnElement="fin-reserva-completada">
+        <dc:Bounds x="1379" y="382" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1366" y="426" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_subproceso-manejo-errores" bpmnElement="subproceso-manejo-errores" isExpanded="true">
         <dc:Bounds x="765" y="870" width="590" height="250" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_error-reserva-inicio" bpmnElement="error-reserva-inicio">
         <dc:Bounds x="797" y="977" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="781" y="1020" width="70" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="781" y="1020" width="70" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_gateway-compensar-inicio" bpmnElement="gateway-compensar-inicio">
         <dc:Bounds x="890" y="970" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-compensar-vuelo" bpmnElement="evento-compensar-vuelo">
         <dc:Bounds x="1027" y="912" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1032" y="953" width="28" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1032" y="953" width="28" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-compensar-hotel" bpmnElement="evento-compensar-hotel">
         <dc:Bounds x="1027" y="977" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1032" y="1020" width="26" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1032" y="1020" width="26" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-compensar-coche" bpmnElement="evento-compensar-coche">
         <dc:Bounds x="1027" y="1045" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1029" y="1088" width="32" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1029" y="1088" width="32" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_gateway-compensar-fin" bpmnElement="gateway-compensar-fin">
         <dc:Bounds x="1140" y="970" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_error-reserva-fin" bpmnElement="error-reserva-fin">
         <dc:Bounds x="1277" y="977" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1247" y="1020" width="98" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1247" y="1020" width="98" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <!-- Event subprocess: Compensación Manual -->
+      <bpmndi:BPMNEdge id="Edge_flujo-error-a-gateway" bpmnElement="flujo-error-a-gateway">
+        <di:waypoint x="833" y="995" />
+        <di:waypoint x="890" y="995" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-compensar-vuelo" bpmnElement="flujo-a-compensar-vuelo">
+        <di:waypoint x="915" y="970" />
+        <di:waypoint x="915" y="930" />
+        <di:waypoint x="1027" y="930" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-compensar-hotel" bpmnElement="flujo-a-compensar-hotel">
+        <di:waypoint x="940" y="995" />
+        <di:waypoint x="1027" y="995" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-compensar-coche" bpmnElement="flujo-a-compensar-coche">
+        <di:waypoint x="915" y="1020" />
+        <di:waypoint x="915" y="1063" />
+        <di:waypoint x="1027" y="1063" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-vuelo-compensado" bpmnElement="flujo-vuelo-compensado">
+        <di:waypoint x="1063" y="930" />
+        <di:waypoint x="1165" y="930" />
+        <di:waypoint x="1165" y="970" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-hotel-compensado" bpmnElement="flujo-hotel-compensado">
+        <di:waypoint x="1063" y="995" />
+        <di:waypoint x="1140" y="995" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-coche-compensado" bpmnElement="flujo-coche-compensado">
+        <di:waypoint x="1063" y="1063" />
+        <di:waypoint x="1165" y="1063" />
+        <di:waypoint x="1165" y="1020" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-error-fin" bpmnElement="flujo-a-error-fin">
+        <di:waypoint x="1190" y="995" />
+        <di:waypoint x="1277" y="995" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_subproceso-compensacion-manual" bpmnElement="subproceso-compensacion-manual" isExpanded="true">
         <dc:Bounds x="765" y="1150" width="590" height="200" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_compensacion-manual-inicio" bpmnElement="compensacion-manual-inicio">
         <dc:Bounds x="797" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="787" y="1275" width="58" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="787" y="1275" width="58" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-manual-compensar-vuelo" bpmnElement="evento-manual-compensar-vuelo">
         <dc:Bounds x="887" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="892" y="1275" width="28" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="892" y="1275" width="28" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-manual-compensar-hotel" bpmnElement="evento-manual-compensar-hotel">
         <dc:Bounds x="967" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="972" y="1275" width="26" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="972" y="1275" width="26" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-manual-compensar-coche" bpmnElement="evento-manual-compensar-coche">
         <dc:Bounds x="1047" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1049" y="1275" width="32" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1049" y="1275" width="32" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_actualizar-registro-cliente" bpmnElement="actualizar-registro-cliente">
         <dc:Bounds x="1127" y="1210" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_compensacion-manual-fin" bpmnElement="compensacion-manual-fin">
         <dc:Bounds x="1277" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1262" y="1275" width="67" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1262" y="1275" width="67" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <!-- Event subprocess: Actualizar Tarjeta -->
+      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-vuelo" bpmnElement="flujo-manual-a-compensar-vuelo">
+        <di:waypoint x="833" y="1250" />
+        <di:waypoint x="887" y="1250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-hotel" bpmnElement="flujo-manual-a-compensar-hotel">
+        <di:waypoint x="923" y="1250" />
+        <di:waypoint x="967" y="1250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-coche" bpmnElement="flujo-manual-a-compensar-coche">
+        <di:waypoint x="1003" y="1250" />
+        <di:waypoint x="1047" y="1250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-actualizar" bpmnElement="flujo-manual-a-actualizar">
+        <di:waypoint x="1083" y="1250" />
+        <di:waypoint x="1127" y="1250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-fin" bpmnElement="flujo-manual-a-fin">
+        <di:waypoint x="1227" y="1250" />
+        <di:waypoint x="1277" y="1250" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_subproceso-actualizar-tarjeta" bpmnElement="subproceso-actualizar-tarjeta" isExpanded="true">
         <dc:Bounds x="765" y="1380" width="350" height="150" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_actualizar-tarjeta-inicio" bpmnElement="actualizar-tarjeta-inicio">
         <dc:Bounds x="797" y="1437" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="779" y="1480" width="73" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="779" y="1480" width="73" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_actualizar-informacion-tarjeta" bpmnElement="actualizar-informacion-tarjeta">
         <dc:Bounds x="885" y="1415" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_actualizar-tarjeta-fin" bpmnElement="actualizar-tarjeta-fin">
         <dc:Bounds x="1037" y="1437" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1027" y="1480" width="58" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1027" y="1480" width="58" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <!-- Boundary events externos al subprocess -->
-      <bpmndi:BPMNShape id="Shape_evento-error-datos-invalidos" bpmnElement="evento-error-datos-invalidos">
-        <dc:Bounds x="292" y="422" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="325" y="456" width="50" height="27" /></bpmndi:BPMNLabel>
+      <bpmndi:BPMNEdge id="Edge_flujo-tarjeta-a-actualizar" bpmnElement="flujo-tarjeta-a-actualizar">
+        <di:waypoint x="833" y="1455" />
+        <di:waypoint x="885" y="1455" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-tarjeta-a-fin" bpmnElement="flujo-tarjeta-a-fin">
+        <di:waypoint x="985" y="1455" />
+        <di:waypoint x="1037" y="1455" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Shape_evento-compensacion-coche" bpmnElement="evento-compensacion-coche">
+        <dc:Bounds x="1122" y="662" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-error-gestion-cliente" bpmnElement="evento-error-gestion-cliente">
-        <dc:Bounds x="492" y="422" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="527" y="463" width="79" height="14" /></bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Shape_evento-compensacion-hotel" bpmnElement="evento-compensacion-hotel">
+        <dc:Bounds x="1122" y="422" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <!-- Gateway resultado reserva -->
+      <bpmndi:BPMNShape id="Shape_evento-compensacion-vuelo" bpmnElement="evento-compensacion-vuelo">
+        <dc:Bounds x="1112" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-gateway-paralelo" bpmnElement="flujo-a-gateway-paralelo">
+        <di:waypoint x="793" y="400" />
+        <di:waypoint x="850" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-introducir-vuelo" bpmnElement="flujo-a-introducir-vuelo">
+        <di:waypoint x="875" y="375" />
+        <di:waypoint x="875" y="170" />
+        <di:waypoint x="920" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-introducir-a-reservar-vuelo" bpmnElement="flujo-introducir-a-reservar-vuelo">
+        <di:waypoint x="1020" y="170" />
+        <di:waypoint x="1080" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-vuelo-completado" bpmnElement="flujo-vuelo-completado">
+        <di:waypoint x="1180" y="170" />
+        <di:waypoint x="1310" y="170" />
+        <di:waypoint x="1310" y="375" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-introducir-hotel" bpmnElement="flujo-a-introducir-hotel">
+        <di:waypoint x="900" y="400" />
+        <di:waypoint x="920" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-introducir-a-reservar-hotel" bpmnElement="flujo-introducir-a-reservar-hotel">
+        <di:waypoint x="1020" y="400" />
+        <di:waypoint x="1090" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-hotel-completado" bpmnElement="flujo-hotel-completado">
+        <di:waypoint x="1190" y="400" />
+        <di:waypoint x="1285" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-a-introducir-coche" bpmnElement="flujo-a-introducir-coche">
+        <di:waypoint x="875" y="425" />
+        <di:waypoint x="875" y="640" />
+        <di:waypoint x="920" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-introducir-a-reservar-coche" bpmnElement="flujo-introducir-a-reservar-coche">
+        <di:waypoint x="1020" y="640" />
+        <di:waypoint x="1090" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-coche-completado" bpmnElement="flujo-coche-completado">
+        <di:waypoint x="1190" y="640" />
+        <di:waypoint x="1310" y="640" />
+        <di:waypoint x="1310" y="425" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-reserva-completado" bpmnElement="flujo-reserva-completado">
+        <di:waypoint x="1335" y="400" />
+        <di:waypoint x="1379" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_asociacion-compensar-vuelo" bpmnElement="asociacion-compensar-vuelo">
+        <di:waypoint x="1130" y="228" />
+        <di:waypoint x="1130" y="290" />
+        <di:waypoint x="1190" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_asociacion-compensar-hotel" bpmnElement="asociacion-compensar-hotel">
+        <di:waypoint x="1140" y="458" />
+        <di:waypoint x="1140" y="550" />
+        <di:waypoint x="1190" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_asociacion-compensar-coche" bpmnElement="asociacion-compensar-coche">
+        <di:waypoint x="1140" y="698" />
+        <di:waypoint x="1140" y="760" />
+        <di:waypoint x="1190" y="760" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_gateway-resultado-reserva" bpmnElement="gateway-resultado-reserva" isMarkerVisible="true">
         <dc:Bounds x="1475" y="375" width="50" height="50" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1458" y="432" width="84" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1475" y="340" width="49" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_call-activity-proceso-pago" bpmnElement="call-activity-proceso-pago">
         <dc:Bounds x="1560" y="360" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-error-proceso-pago" bpmnElement="evento-error-proceso-pago">
-        <dc:Bounds x="1642" y="422" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1665" y="463" width="70" height="14" /></bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_notificar-cliente-reserva-fallida" bpmnElement="notificar-cliente-reserva-fallida">
         <dc:Bounds x="1560" y="660" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-solicitud-completada" bpmnElement="evento-fin-solicitud-completada">
         <dc:Bounds x="1782" y="382" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1756" y="346" width="88" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1756" y="346" width="88" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-error-pago" bpmnElement="evento-fin-error-pago">
         <dc:Bounds x="1782" y="472" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1759" y="515" width="78" height="14" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1759" y="515" width="78" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-reserva-fallida" bpmnElement="evento-fin-reserva-fallida">
         <dc:Bounds x="1782" y="682" width="36" height="36" />
-        <bpmndi:BPMNLabel><dc:Bounds x="1772" y="725" width="59" height="27" /></bpmndi:BPMNLabel>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1772" y="725" width="59" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <!-- Edges proceso principal -->
+      <bpmndi:BPMNShape id="Shape_evento-error-proceso-pago" bpmnElement="evento-error-proceso-pago">
+        <dc:Bounds x="1642" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1665" y="463" width="70" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-error-gestion-cliente" bpmnElement="evento-error-gestion-cliente">
+        <dc:Bounds x="492" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="527" y="463" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_evento-error-datos-invalidos" bpmnElement="evento-error-datos-invalidos">
+        <dc:Bounds x="292" y="422" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="325" y="456" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_flujo-inicio-a-validar-datos" bpmnElement="flujo-inicio-a-validar-datos">
-        <di:waypoint x="208" y="400" /><di:waypoint x="260" y="400" />
+        <di:waypoint x="208" y="400" />
+        <di:waypoint x="260" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-error-validacion-a-fin" bpmnElement="flujo-error-validacion-a-fin">
-        <di:waypoint x="310" y="458" /><di:waypoint x="310" y="540" /><di:waypoint x="362" y="540" />
+        <di:waypoint x="310" y="458" />
+        <di:waypoint x="310" y="540" />
+        <di:waypoint x="362" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-validar-a-gestion-cliente" bpmnElement="flujo-validar-a-gestion-cliente">
-        <di:waypoint x="360" y="400" /><di:waypoint x="410" y="400" />
+        <di:waypoint x="360" y="400" />
+        <di:waypoint x="410" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-error-cliente-a-fin" bpmnElement="flujo-error-cliente-a-fin">
-        <di:waypoint x="510" y="458" /><di:waypoint x="510" y="540" /><di:waypoint x="548" y="540" />
+        <di:waypoint x="510" y="458" />
+        <di:waypoint x="510" y="540" />
+        <di:waypoint x="548" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-gestion-cliente-a-revisar-datos" bpmnElement="flujo-gestion-cliente-a-revisar-datos">
-        <di:waypoint x="510" y="400" /><di:waypoint x="560" y="400" />
+        <di:waypoint x="510" y="400" />
+        <di:waypoint x="560" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-revisar-datos-a-proceso-reserva" bpmnElement="flujo-revisar-datos-a-proceso-reserva">
-        <di:waypoint x="660" y="400" /><di:waypoint x="710" y="400" />
+        <di:waypoint x="660" y="400" />
+        <di:waypoint x="710" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-proceso-reserva-a-gateway" bpmnElement="flujo-proceso-reserva-a-gateway">
-        <di:waypoint x="1450" y="400" /><di:waypoint x="1475" y="400" />
+        <di:waypoint x="1450" y="400" />
+        <di:waypoint x="1475" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-gateway-a-pago" bpmnElement="flujo-gateway-a-pago">
-        <di:waypoint x="1525" y="400" /><di:waypoint x="1560" y="400" />
+        <di:waypoint x="1525" y="400" />
+        <di:waypoint x="1560" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-gateway-a-notificar" bpmnElement="flujo-gateway-a-notificar">
-        <di:waypoint x="1500" y="425" /><di:waypoint x="1500" y="700" /><di:waypoint x="1560" y="700" />
+        <di:waypoint x="1500" y="425" />
+        <di:waypoint x="1500" y="700" />
+        <di:waypoint x="1560" y="700" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-pago-a-fin-exitoso" bpmnElement="flujo-pago-a-fin-exitoso">
-        <di:waypoint x="1660" y="400" /><di:waypoint x="1782" y="400" />
+        <di:waypoint x="1660" y="400" />
+        <di:waypoint x="1782" y="400" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-error-pago-a-fin" bpmnElement="flujo-error-pago-a-fin">
-        <di:waypoint x="1660" y="458" /><di:waypoint x="1660" y="490" /><di:waypoint x="1782" y="490" />
+        <di:waypoint x="1660" y="458" />
+        <di:waypoint x="1660" y="490" />
+        <di:waypoint x="1782" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-notificar-a-fin-reserva-fallida" bpmnElement="flujo-notificar-a-fin-reserva-fallida">
-        <di:waypoint x="1660" y="700" /><di:waypoint x="1782" y="700" />
-      </bpmndi:BPMNEdge>
-      <!-- Edges internos del subprocess -->
-      <bpmndi:BPMNEdge id="Edge_flujo-a-gateway-paralelo" bpmnElement="flujo-a-gateway-paralelo">
-        <di:waypoint x="793" y="400" /><di:waypoint x="850" y="400" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-introducir-vuelo" bpmnElement="flujo-a-introducir-vuelo">
-        <di:waypoint x="875" y="375" /><di:waypoint x="875" y="170" /><di:waypoint x="920" y="170" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-introducir-a-reservar-vuelo" bpmnElement="flujo-introducir-a-reservar-vuelo">
-        <di:waypoint x="1020" y="170" /><di:waypoint x="1080" y="170" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-vuelo-completado" bpmnElement="flujo-vuelo-completado">
-        <di:waypoint x="1180" y="170" /><di:waypoint x="1310" y="170" /><di:waypoint x="1310" y="375" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-introducir-hotel" bpmnElement="flujo-a-introducir-hotel">
-        <di:waypoint x="900" y="400" /><di:waypoint x="920" y="400" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-introducir-a-reservar-hotel" bpmnElement="flujo-introducir-a-reservar-hotel">
-        <di:waypoint x="1020" y="400" /><di:waypoint x="1090" y="400" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-hotel-completado" bpmnElement="flujo-hotel-completado">
-        <di:waypoint x="1190" y="400" /><di:waypoint x="1285" y="400" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-introducir-coche" bpmnElement="flujo-a-introducir-coche">
-        <di:waypoint x="875" y="425" /><di:waypoint x="875" y="640" /><di:waypoint x="920" y="640" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-introducir-a-reservar-coche" bpmnElement="flujo-introducir-a-reservar-coche">
-        <di:waypoint x="1020" y="640" /><di:waypoint x="1090" y="640" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-coche-completado" bpmnElement="flujo-coche-completado">
-        <di:waypoint x="1190" y="640" /><di:waypoint x="1310" y="640" /><di:waypoint x="1310" y="425" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-reserva-completado" bpmnElement="flujo-reserva-completado">
-        <di:waypoint x="1335" y="400" /><di:waypoint x="1379" y="400" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_asociacion-compensar-vuelo" bpmnElement="asociacion-compensar-vuelo">
-        <di:waypoint x="1130" y="228" /><di:waypoint x="1130" y="290" /><di:waypoint x="1190" y="290" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_asociacion-compensar-hotel" bpmnElement="asociacion-compensar-hotel">
-        <di:waypoint x="1140" y="458" /><di:waypoint x="1140" y="550" /><di:waypoint x="1190" y="550" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_asociacion-compensar-coche" bpmnElement="asociacion-compensar-coche">
-        <di:waypoint x="1140" y="698" /><di:waypoint x="1140" y="760" /><di:waypoint x="1190" y="760" />
-      </bpmndi:BPMNEdge>
-      <!-- Edges event subprocess manejo errores -->
-      <bpmndi:BPMNEdge id="Edge_flujo-error-a-gateway" bpmnElement="flujo-error-a-gateway">
-        <di:waypoint x="833" y="995" /><di:waypoint x="890" y="995" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-compensar-vuelo" bpmnElement="flujo-a-compensar-vuelo">
-        <di:waypoint x="915" y="970" /><di:waypoint x="915" y="930" /><di:waypoint x="1027" y="930" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-compensar-hotel" bpmnElement="flujo-a-compensar-hotel">
-        <di:waypoint x="940" y="995" /><di:waypoint x="1027" y="995" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-compensar-coche" bpmnElement="flujo-a-compensar-coche">
-        <di:waypoint x="915" y="1020" /><di:waypoint x="915" y="1063" /><di:waypoint x="1027" y="1063" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-vuelo-compensado" bpmnElement="flujo-vuelo-compensado">
-        <di:waypoint x="1063" y="930" /><di:waypoint x="1165" y="930" /><di:waypoint x="1165" y="970" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-hotel-compensado" bpmnElement="flujo-hotel-compensado">
-        <di:waypoint x="1063" y="995" /><di:waypoint x="1140" y="995" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-coche-compensado" bpmnElement="flujo-coche-compensado">
-        <di:waypoint x="1063" y="1063" /><di:waypoint x="1165" y="1063" /><di:waypoint x="1165" y="1020" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-a-error-fin" bpmnElement="flujo-a-error-fin">
-        <di:waypoint x="1190" y="995" /><di:waypoint x="1277" y="995" />
-      </bpmndi:BPMNEdge>
-      <!-- Edges event subprocess compensación manual -->
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-vuelo" bpmnElement="flujo-manual-a-compensar-vuelo">
-        <di:waypoint x="833" y="1250" /><di:waypoint x="887" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-hotel" bpmnElement="flujo-manual-a-compensar-hotel">
-        <di:waypoint x="923" y="1250" /><di:waypoint x="967" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-coche" bpmnElement="flujo-manual-a-compensar-coche">
-        <di:waypoint x="1003" y="1250" /><di:waypoint x="1047" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-actualizar" bpmnElement="flujo-manual-a-actualizar">
-        <di:waypoint x="1083" y="1250" /><di:waypoint x="1127" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-fin" bpmnElement="flujo-manual-a-fin">
-        <di:waypoint x="1227" y="1250" /><di:waypoint x="1277" y="1250" />
-      </bpmndi:BPMNEdge>
-      <!-- Edges event subprocess actualizar tarjeta -->
-      <bpmndi:BPMNEdge id="Edge_flujo-tarjeta-a-actualizar" bpmnElement="flujo-tarjeta-a-actualizar">
-        <di:waypoint x="833" y="1455" /><di:waypoint x="885" y="1455" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-tarjeta-a-fin" bpmnElement="flujo-tarjeta-a-fin">
-        <di:waypoint x="985" y="1455" /><di:waypoint x="1037" y="1455" />
+        <di:waypoint x="1660" y="700" />
+        <di:waypoint x="1782" y="700" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
