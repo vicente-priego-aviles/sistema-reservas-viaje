@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")/.."  # Asegurar ejecución desde la raíz del proyecto
 # ===========================================================
 # Script: stop.sh
 # Descripción: Para los microservicios (Camunda sigue corriendo)
@@ -12,4 +13,4 @@ echo -e "${YELLOW}🛑 Parando microservicios...${RESET}"
 docker-compose down
 
 echo -e "${GREEN}✅ Microservicios parados. Camunda sigue activo.${RESET}"
-echo -e "${GREEN}   Para volver a levantarlos: ./start.sh${RESET}"
+echo -e "${GREEN}   Para volver a levantarlos: ./scripts/start.sh${RESET}"

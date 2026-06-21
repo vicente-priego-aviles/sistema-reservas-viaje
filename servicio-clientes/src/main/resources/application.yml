@@ -62,7 +62,10 @@ spring:
       enabled: ${H2_CONSOLE_ENABLED:true}
       path: /h2-console
       settings:
-        web-allow-others: false
+        # true: permite acceder a /h2-console desde el host cuando el servicio corre en Docker.
+        # Necesario para poder resetear manualmente el estado de un cliente que haya quedado
+        # en EN_PROCESO_RESERVA tras cancelar una prueba a mitad del flujo.
+        web-allow-others: true
 
   # ============================================================================
   # JACKSON - Serialización JSON
