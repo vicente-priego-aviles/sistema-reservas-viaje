@@ -222,47 +222,6 @@
       <bpmn:association id="asociacion-compensar-hotel" associationDirection="One" sourceRef="evento-compensacion-hotel" targetRef="cancelar-hotel" />
       <bpmn:association id="asociacion-compensar-coche" associationDirection="One" sourceRef="evento-compensacion-coche" targetRef="cancelar-coche" />
     </bpmn:subProcess>
-    <bpmn:subProcess id="subproceso-compensacion-manual" name="Manejar Compensación" triggeredByEvent="true">
-      <bpmn:startEvent id="compensacion-manual-inicio" name="Compensar Reserva" isInterrupting="false">
-        <bpmn:outgoing>flujo-manual-a-compensar-vuelo</bpmn:outgoing>
-        <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" messageRef="Message_CompensarReserva" />
-      </bpmn:startEvent>
-      <bpmn:intermediateThrowEvent id="evento-manual-compensar-vuelo" name="Vuelo">
-        <bpmn:incoming>flujo-manual-a-compensar-vuelo</bpmn:incoming>
-        <bpmn:outgoing>flujo-manual-a-compensar-hotel</bpmn:outgoing>
-        <bpmn:compensateEventDefinition id="CompensateManual_Vuelo" />
-      </bpmn:intermediateThrowEvent>
-      <bpmn:intermediateThrowEvent id="evento-manual-compensar-hotel" name="Hotel">
-        <bpmn:incoming>flujo-manual-a-compensar-hotel</bpmn:incoming>
-        <bpmn:outgoing>flujo-manual-a-compensar-coche</bpmn:outgoing>
-        <bpmn:compensateEventDefinition id="CompensateManual_Hotel" />
-      </bpmn:intermediateThrowEvent>
-      <bpmn:intermediateThrowEvent id="evento-manual-compensar-coche" name="Coche">
-        <bpmn:incoming>flujo-manual-a-compensar-coche</bpmn:incoming>
-        <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
-        <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
-      </bpmn:intermediateThrowEvent>
-      <bpmn:serviceTask id="actualizar-registro-cliente" name="Revertir Estado del Cliente">
-        <bpmn:extensionElements>
-          <zeebe:taskDefinition type="actualizar-estado-cliente" />
-          <zeebe:ioMapping>
-            <zeebe:input source="=&quot;ACTIVO&quot;" target="nuevoEstado" />
-            <zeebe:input source="=clienteId" target="clienteId" />
-            <zeebe:input source="=reservaId" target="reservaId" />
-          </zeebe:ioMapping>
-        </bpmn:extensionElements>
-        <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
-        <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
-      </bpmn:serviceTask>
-      <bpmn:endEvent id="compensacion-manual-fin" name="Reserva Compensada">
-        <bpmn:incoming>flujo-manual-a-fin</bpmn:incoming>
-      </bpmn:endEvent>
-      <bpmn:sequenceFlow id="flujo-manual-a-compensar-vuelo" sourceRef="compensacion-manual-inicio" targetRef="evento-manual-compensar-vuelo" />
-      <bpmn:sequenceFlow id="flujo-manual-a-compensar-hotel" sourceRef="evento-manual-compensar-vuelo" targetRef="evento-manual-compensar-hotel" />
-      <bpmn:sequenceFlow id="flujo-manual-a-compensar-coche" sourceRef="evento-manual-compensar-hotel" targetRef="evento-manual-compensar-coche" />
-      <bpmn:sequenceFlow id="flujo-manual-a-actualizar" sourceRef="evento-manual-compensar-coche" targetRef="actualizar-registro-cliente" />
-      <bpmn:sequenceFlow id="flujo-manual-a-fin" sourceRef="actualizar-registro-cliente" targetRef="compensacion-manual-fin" />
-    </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway-resultado-reserva" name="¿Reserva Exitosa?" default="flujo-gateway-a-pago">
       <bpmn:incoming>flujo-proceso-reserva-a-gateway</bpmn:incoming>
       <bpmn:outgoing>flujo-gateway-a-notificar</bpmn:outgoing>
@@ -276,9 +235,26 @@
       <bpmn:outgoing>flujo-pago-a-fin-exitoso</bpmn:outgoing>
     </bpmn:callActivity>
     <bpmn:boundaryEvent id="evento-error-proceso-pago" name="❌ Error Pago" attachedToRef="call-activity-proceso-pago">
-      <bpmn:outgoing>flujo-error-pago-a-fin</bpmn:outgoing>
+      <bpmn:outgoing>flujo-error-pago-a-compensar</bpmn:outgoing>
       <bpmn:errorEventDefinition id="ErrorEventDef_ProcesoPago" />
     </bpmn:boundaryEvent>
+    <bpmn:intermediateThrowEvent id="evento-compensar-reservas-pago" name="Compensar Reservas">
+      <bpmn:incoming>flujo-error-pago-a-compensar</bpmn:incoming>
+      <bpmn:outgoing>flujo-compensar-a-revertir-cliente</bpmn:outgoing>
+      <bpmn:compensateEventDefinition id="CompensateEventDef_PagoFallido" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:serviceTask id="revertir-estado-cliente-pago" name="Revertir Estado del Cliente">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="actualizar-estado-cliente" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&quot;ACTIVO&quot;" target="nuevoEstado" />
+          <zeebe:input source="=clienteId" target="clienteId" />
+          <zeebe:input source="=reservaId" target="reservaId" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>flujo-compensar-a-revertir-cliente</bpmn:incoming>
+      <bpmn:outgoing>flujo-revertir-cliente-a-fin-error</bpmn:outgoing>
+    </bpmn:serviceTask>
     <bpmn:sendTask id="notificar-cliente-reserva-fallida" name="📧 Notificar Cliente: Reserva Fallida">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="notificar-reserva-fallida" />
@@ -290,7 +266,7 @@
       <bpmn:incoming>flujo-pago-a-fin-exitoso</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:endEvent id="evento-fin-error-pago" name="❌ Pago Fallido">
-      <bpmn:incoming>flujo-error-pago-a-fin</bpmn:incoming>
+      <bpmn:incoming>flujo-revertir-cliente-a-fin-error</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:endEvent id="evento-fin-reserva-fallida" name="❌ Reserva Fallida">
       <bpmn:incoming>flujo-notificar-a-fin-reserva-fallida</bpmn:incoming>
@@ -307,15 +283,12 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=motivoFallo != null</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="flujo-pago-a-fin-exitoso" sourceRef="call-activity-proceso-pago" targetRef="evento-fin-solicitud-completada" />
-    <bpmn:sequenceFlow id="flujo-error-pago-a-fin" sourceRef="evento-error-proceso-pago" targetRef="evento-fin-error-pago" />
+    <bpmn:sequenceFlow id="flujo-error-pago-a-compensar" sourceRef="evento-error-proceso-pago" targetRef="evento-compensar-reservas-pago" />
+    <bpmn:sequenceFlow id="flujo-compensar-a-revertir-cliente" sourceRef="evento-compensar-reservas-pago" targetRef="revertir-estado-cliente-pago" />
+    <bpmn:sequenceFlow id="flujo-revertir-cliente-a-fin-error" sourceRef="revertir-estado-cliente-pago" targetRef="evento-fin-error-pago" />
     <bpmn:sequenceFlow id="flujo-notificar-a-fin-reserva-fallida" sourceRef="notificar-cliente-reserva-fallida" targetRef="evento-fin-reserva-fallida" />
   </bpmn:process>
   <bpmn:error id="Error_ValidacionDatos" name="Error Datos Inválidos" errorCode="ERROR_DATOS_INVALIDOS" />
-  <bpmn:message id="Message_CompensarReserva" name="compensar-reserva">
-    <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=reservaId" />
-    </bpmn:extensionElements>
-  </bpmn:message>
   <bpmn:message id="Message_TarjetaProporcionada" name="tarjeta-proporcionada">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=clienteId" />
@@ -474,54 +447,6 @@
         <di:waypoint x="1190" y="995" />
         <di:waypoint x="1277" y="995" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Shape_subproceso-compensacion-manual" bpmnElement="subproceso-compensacion-manual" isExpanded="true">
-        <dc:Bounds x="765" y="1150" width="740" height="200" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_compensacion-manual-inicio" bpmnElement="compensacion-manual-inicio">
-        <dc:Bounds x="797" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="787" y="1275" width="58" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-manual-compensar-vuelo" bpmnElement="evento-manual-compensar-vuelo">
-        <dc:Bounds x="883" y="1210" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-manual-compensar-hotel" bpmnElement="evento-manual-compensar-hotel">
-        <dc:Bounds x="1003" y="1210" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-manual-compensar-coche" bpmnElement="evento-manual-compensar-coche">
-        <dc:Bounds x="1123" y="1210" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_actualizar-registro-cliente" bpmnElement="actualizar-registro-cliente">
-        <dc:Bounds x="1243" y="1210" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_compensacion-manual-fin" bpmnElement="compensacion-manual-fin">
-        <dc:Bounds x="1387" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1262" y="1275" width="67" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-vuelo" bpmnElement="flujo-manual-a-compensar-vuelo">
-        <di:waypoint x="833" y="1250" />
-        <di:waypoint x="883" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-hotel" bpmnElement="flujo-manual-a-compensar-hotel">
-        <di:waypoint x="983" y="1250" />
-        <di:waypoint x="1003" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-coche" bpmnElement="flujo-manual-a-compensar-coche">
-        <di:waypoint x="1103" y="1250" />
-        <di:waypoint x="1123" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-actualizar" bpmnElement="flujo-manual-a-actualizar">
-        <di:waypoint x="1223" y="1250" />
-        <di:waypoint x="1243" y="1250" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-manual-a-fin" bpmnElement="flujo-manual-a-fin">
-        <di:waypoint x="1343" y="1250" />
-        <di:waypoint x="1387" y="1250" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_subproceso-actualizar-tarjeta" bpmnElement="subproceso-actualizar-tarjeta" isExpanded="true">
         <dc:Bounds x="765" y="1380" width="350" height="150" />
         <bpmndi:BPMNLabel />
@@ -640,9 +565,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-error-pago" bpmnElement="evento-fin-error-pago">
-        <dc:Bounds x="1782" y="472" width="36" height="36" />
+        <dc:Bounds x="1845" y="472" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1759" y="515" width="78" height="14" />
+          <dc:Bounds x="1822" y="515" width="78" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-fin-reserva-fallida" bpmnElement="evento-fin-reserva-fallida">
@@ -712,10 +637,26 @@
         <di:waypoint x="1660" y="400" />
         <di:waypoint x="1782" y="400" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-error-pago-a-fin" bpmnElement="flujo-error-pago-a-fin">
+      <bpmndi:BPMNShape id="Shape_evento-compensar-reservas-pago" bpmnElement="evento-compensar-reservas-pago">
+        <dc:Bounds x="1642" y="472" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1618" y="515" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_revertir-estado-cliente-pago" bpmnElement="revertir-estado-cliente-pago">
+        <dc:Bounds x="1710" y="452" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flujo-error-pago-a-compensar" bpmnElement="flujo-error-pago-a-compensar">
         <di:waypoint x="1660" y="458" />
-        <di:waypoint x="1660" y="490" />
-        <di:waypoint x="1782" y="490" />
+        <di:waypoint x="1660" y="472" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-compensar-a-revertir-cliente" bpmnElement="flujo-compensar-a-revertir-cliente">
+        <di:waypoint x="1678" y="490" />
+        <di:waypoint x="1710" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flujo-revertir-cliente-a-fin-error" bpmnElement="flujo-revertir-cliente-a-fin-error">
+        <di:waypoint x="1810" y="490" />
+        <di:waypoint x="1845" y="490" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-notificar-a-fin-reserva-fallida" bpmnElement="flujo-notificar-a-fin-reserva-fallida">
         <di:waypoint x="1660" y="700" />

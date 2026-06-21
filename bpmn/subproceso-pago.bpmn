@@ -13,13 +13,6 @@
       <bpmn:incoming>flujo-pago-a-actualizar-estado-confirmado</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-reserva-exitosa</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="evento-compensar-reserva" name="Publicar Compensación de Reserva">
-      <bpmn:extensionElements>
-        <zeebe:taskDefinition type="publicar-compensacion-reserva" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>flujo-pago-desde-error-pago</bpmn:incoming>
-      <bpmn:outgoing>flujo-pago-a-notificar-tarjeta-invalida</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:serviceTask id="confirmar-reserva-completa" name="Confirmar Reserva Completa">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="confirmar-reserva" />
@@ -39,12 +32,11 @@
     <bpmn:sequenceFlow id="flujo-pago-a-confirmar-reserva" sourceRef="procesar-pago" targetRef="confirmar-reserva-completa" />
     <bpmn:sequenceFlow id="flujo-pago-a-fin-con-advertencia" sourceRef="marcar-reserva-advertencia" targetRef="fin-reserva-con-advertencia" />
     <bpmn:sequenceFlow id="flujo-pago-a-marcar-advertencia" sourceRef="revertir-estado-cliente" targetRef="marcar-reserva-advertencia" />
-    <bpmn:sequenceFlow id="flujo-pago-a-notificar-tarjeta-invalida" sourceRef="evento-compensar-reserva" targetRef="notificar-tarjeta-invalida" />
     <bpmn:sequenceFlow id="flujo-pago-a-procesar" sourceRef="pago-inicio" targetRef="procesar-pago" />
     <bpmn:sequenceFlow id="flujo-pago-a-reserva-exitosa" sourceRef="actualizar-estado-confirmado" targetRef="fin-reserva-exitosa" />
     <bpmn:sequenceFlow id="flujo-pago-a-reserva-no-completada" sourceRef="notificar-tarjeta-invalida" targetRef="fin-reserva-no-completada" />
     <bpmn:sequenceFlow id="flujo-pago-desde-error-actualizacion" sourceRef="evento-error-actualizacion" targetRef="revertir-estado-cliente" />
-    <bpmn:sequenceFlow id="flujo-pago-desde-error-pago" sourceRef="evento-error-pago" targetRef="evento-compensar-reserva" />
+    <bpmn:sequenceFlow id="flujo-pago-desde-error-pago" sourceRef="evento-error-pago" targetRef="notificar-tarjeta-invalida" />
     <bpmn:startEvent id="pago-inicio" name="Iniciar Proceso de Pago">
       <bpmn:outgoing>flujo-pago-a-procesar</bpmn:outgoing>
     </bpmn:startEvent>
@@ -64,7 +56,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="notificar-tarjeta-invalida" />
       </bpmn:extensionElements>
-      <bpmn:incoming>flujo-pago-a-notificar-tarjeta-invalida</bpmn:incoming>
+      <bpmn:incoming>flujo-pago-desde-error-pago</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-reserva-no-completada</bpmn:outgoing>
     </bpmn:sendTask>
     <bpmn:serviceTask id="procesar-pago" name="Procesar Pago">
@@ -77,8 +69,9 @@
     <bpmn:endEvent id="fin-reserva-con-advertencia" name="Reserva Confirmada con Advertencia">
       <bpmn:incoming>flujo-pago-a-fin-con-advertencia</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:endEvent id="fin-reserva-no-completada" name="Reserva No Completada">
+    <bpmn:endEvent id="fin-reserva-no-completada" name="Pago No Completado">
       <bpmn:incoming>flujo-pago-a-reserva-no-completada</bpmn:incoming>
+      <bpmn:errorEventDefinition id="ErrorEventDef_PagoFallido" errorRef="Error_PagoFallido" />
     </bpmn:endEvent>
     <bpmn:serviceTask id="revertir-estado-cliente" name="Revertir Estado del Cliente">
       <bpmn:extensionElements>
@@ -97,16 +90,11 @@
   </bpmn:process>
   <bpmn:error id="Error_ProcesarPago" name="Error Procesar Pago" errorCode="ERROR_PROCESAR_PAGO" />
   <bpmn:error id="Error_ActualizacionCliente" name="Error Actualización Cliente Fallida" errorCode="ERROR_ACTUALIZACION_CLIENTE" />
+  <bpmn:error id="Error_PagoFallido" name="Pago Fallido" errorCode="ERROR_PAGO_FALLIDO" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_ProcesoPago">
     <bpmndi:BPMNPlane id="BPMNPlane_ProcesoPago" bpmnElement="subproceso-pago">
       <bpmndi:BPMNShape id="Shape_actualizar-estado-confirmado" bpmnElement="actualizar-estado-confirmado">
         <dc:Bounds x="540" y="250" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_evento-compensar-reserva" bpmnElement="evento-compensar-reserva">
-        <dc:Bounds x="272" y="392" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="248" y="435" width="84" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_confirmar-reserva-completa" bpmnElement="confirmar-reserva-completa">
         <dc:Bounds x="390" y="250" width="100" height="80" />
@@ -121,7 +109,7 @@
         <dc:Bounds x="760" y="85" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_notificar-tarjeta-invalida" bpmnElement="notificar-tarjeta-invalida">
-        <dc:Bounds x="390" y="370" width="100" height="80" />
+        <dc:Bounds x="310" y="370" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_procesar-pago" bpmnElement="procesar-pago">
         <dc:Bounds x="240" y="250" width="100" height="80" />
@@ -133,9 +121,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_fin-reserva-no-completada" bpmnElement="fin-reserva-no-completada">
-        <dc:Bounds x="572" y="392" width="36" height="36" />
+        <dc:Bounds x="472" y="392" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="561" y="435" width="61" height="27" />
+          <dc:Bounds x="459" y="435" width="61" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_revertir-estado-cliente" bpmnElement="revertir-estado-cliente">
@@ -175,10 +163,6 @@
         <di:waypoint x="720" y="125" />
         <di:waypoint x="760" y="125" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Edge_flujo-pago-a-notificar-tarjeta-invalida" bpmnElement="flujo-pago-a-notificar-tarjeta-invalida">
-        <di:waypoint x="308" y="410" />
-        <di:waypoint x="390" y="410" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-pago-a-procesar" bpmnElement="flujo-pago-a-procesar">
         <di:waypoint x="188" y="290" />
         <di:waypoint x="240" y="290" />
@@ -188,8 +172,8 @@
         <di:waypoint x="692" y="290" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-pago-a-reserva-no-completada" bpmnElement="flujo-pago-a-reserva-no-completada">
-        <di:waypoint x="490" y="410" />
-        <di:waypoint x="572" y="410" />
+        <di:waypoint x="410" y="410" />
+        <di:waypoint x="472" y="410" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-pago-desde-error-actualizacion" bpmnElement="flujo-pago-desde-error-actualizacion">
         <di:waypoint x="590" y="232" />
@@ -198,7 +182,8 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-pago-desde-error-pago" bpmnElement="flujo-pago-desde-error-pago">
         <di:waypoint x="290" y="348" />
-        <di:waypoint x="290" y="392" />
+        <di:waypoint x="290" y="410" />
+        <di:waypoint x="310" y="410" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
