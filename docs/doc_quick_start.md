@@ -52,7 +52,7 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 ### Primera vez (o tras cambios en el código)
 
 ```bash
-./build-and-run.sh
+./scripts/build-and-run.sh
 ```
 
 Este script hace todo automáticamente:
@@ -68,12 +68,12 @@ Este script hace todo automáticamente:
 ### Reinicio rápido (sin recompilar)
 
 ```bash
-./start.sh
+./scripts/start.sh
 ```
 
 Útil cuando el código no ha cambiado y las imágenes Docker ya existen.
 
-> Para una referencia completa de todos los scripts disponibles, consulta [SCRIPTS.md](../SCRIPTS.md).
+> Para una referencia completa de todos los scripts disponibles, consulta [doc_scripts.md](doc_scripts.md).
 
 ---
 
@@ -242,8 +242,8 @@ Esta API permite, entre otras cosas, iniciar instancias de procesos BPMN directa
 ## 🛑 Parar el Sistema
 
 ```bash
-./stop-all.sh      # Para todo (microservicios + Camunda)
-./stop.sh          # Para solo los microservicios (Camunda sigue activo)
+./scripts/stop-all.sh      # Para todo (microservicios + Camunda)
+./scripts/stop.sh          # Para solo los microservicios (Camunda sigue activo)
 ```
 
 ---
@@ -256,4 +256,4 @@ Esta API permite, entre otras cosas, iniciar instancias de procesos BPMN directa
 - ⚙️ [Configuración](doc_configuracion.md)
 - 🧪 [Testing](doc_testing.md)
 - 🐳 [Deployment](doc_deployment.md)
-- 📜 [Scripts disponibles](../SCRIPTS.md)
+- 📜 [Scripts disponibles](doc_scripts.md)

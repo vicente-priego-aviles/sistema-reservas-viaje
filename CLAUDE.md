@@ -24,10 +24,10 @@ mvn test -pl servicio-clientes -Dtest=ClienteServicioTest
 mvn verify -pl servicio-clientes
 
 # Build Docker images and start everything
-./build-all.sh
+./scripts/build-all.sh
 
 # Start full system (Camunda + microservices)
-./start.sh
+./scripts/start.sh
 
 # Start only Camunda infrastructure
 docker-compose -f docker-compose-camunda.yml up -d
@@ -36,7 +36,7 @@ docker-compose -f docker-compose-camunda.yml up -d
 docker-compose up -d
 
 # View logs for a specific service
-./logs.sh clientes   # or vuelos, hoteles, coches, pagos, reservas
+./scripts/logs.sh clientes   # or vuelos, hoteles, coches, pagos, reservas
 ```
 
 ## Architecture Overview

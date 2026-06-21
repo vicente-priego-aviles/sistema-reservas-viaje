@@ -160,7 +160,7 @@ mvn checkstyle:check
 mvn verify
 
 # Levanta el sistema completo
-./start.sh
+./scripts/start.sh
 ```
 
 ---
@@ -401,7 +401,7 @@ BREAKING CHANGE: El campo 'id' ahora es 'reservaId'"
 - ✅ Todos los tests pasan
 - ✅ El código compila sin warnings
 - ✅ Has ejecutado `mvn clean install`
-- ✅ Has probado localmente con `./start.sh`
+- ✅ Has probado localmente con `./scripts/start.sh`
 
 ### Crear el PR
 

@@ -33,7 +33,31 @@ Este JSON acumula 4 errores simultáneos: `destino` de 1 carácter, formato de `
    (el proceso termina aquí — no se consulta el cliente ni se crea reserva)
 ```
 
-## Ejecutar con cURL
+## Iniciar el proceso
+
+### Opción A — Camunda REST API (Swagger)
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "X",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027/06/08",
+    "numeroPasajeros": 11,
+    "emailContacto": "no-es-un-email",
+    "telefonoContacto": "+34600123456"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+### Opción B — API de `servicio-reservas` (cURL)
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -50,6 +74,10 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   }'
 ```
 
+### Opción C — Tasklist
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos inválidos del caso y envía.
+
 ## Respuesta Esperada
 
 ```json
@@ -64,7 +92,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ## Logs a consultar
 
-**`./logs.sh clientes`** — el worker de validación rechaza los datos:
+**`./scripts/logs.sh clientes`** — el worker de validación rechaza los datos:
 ```
 ✅ Iniciando validación de datos de entrada - Job: ...
 ❌ Datos de entrada inválidos - 4 errores encontrados
@@ -74,7 +102,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 ❌ El 'emailContacto' tiene un formato inválido
 ```
 
-> No habrá trazas en `./logs.sh reservas` ni `./logs.sh pagos` — el proceso no avanza.
+> No habrá trazas en `./scripts/logs.sh reservas` ni `./scripts/logs.sh pagos` — el proceso no avanza.
 
 ## Verificar en Camunda
 

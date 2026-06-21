@@ -256,7 +256,7 @@ docker-compose logs -f servicio-clientes
 chmod +x start.sh
 
 # Ejecutar script completo
-./start.sh
+./scripts/start.sh
 ```
 
 **El script realiza**:
@@ -579,7 +579,7 @@ docker system df
 # Eliminar todo y reconstruir
 docker-compose down -v
 docker system prune -a --volumes
-./start.sh
+./scripts/start.sh
 ```
 
 ### Problema: Tests fallan

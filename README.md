@@ -214,13 +214,13 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 cp connector-secrets.txt.example connector-secrets.txt
 
 # 2. Compilar y levantar todo el sistema
-./build-and-run.sh
+./scripts/build-and-run.sh
 ```
 
-Para reiniciar sin recompilar: `./start.sh` · Para parar todo: `./stop-all.sh`
+Para reiniciar sin recompilar: `./scripts/start.sh` · Para parar todo: `./scripts/stop-all.sh`
 
 > 📖 **Guía completa paso a paso**: [docs/doc_quick_start.md](docs/doc_quick_start.md)  
-> 📜 **Referencia de todos los scripts**: [SCRIPTS.md](SCRIPTS.md)
+> 📜 **Referencia de todos los scripts**: [docs/doc_scripts.md](docs/doc_scripts.md)
 
 ---
 
@@ -305,9 +305,11 @@ sistema-reservas-viaje/
 ├── 🎯 servicio-reservas/                  # Puerto 9090 (Orquestador)
 │   └── src/main/resources/bpmn/          # Procesos BPMN desplegados al arrancar
 │
-├── 🔧 build-and-run.sh                    # Inicio completo (compilar + levantar todo)
-├── 🔧 start.sh                            # Reinicio rápido (sin recompilar)
-├── 🧹 limpieza.sh                         # Limpiar entorno Docker
+├── 📁 scripts/                            # Scripts de gestión del ciclo de vida
+│   ├── build-and-run.sh                   # Inicio completo (compilar + levantar todo)
+│   ├── start.sh                           # Reinicio rápido (sin recompilar)
+│   ├── limpieza.sh                        # Limpiar entorno Docker
+│   └── ...                               # Ver docs/doc_scripts.md para referencia completa
 └── 📦 pom.xml                             # Parent POM (multi-módulo)
 ```
 
@@ -325,8 +327,8 @@ docker logs zeebe
 docker-compose -f docker-compose-camunda.yml restart
 
 # Si persiste, limpiar y volver a levantar
-./limpieza.sh
-./build-and-run.sh
+./scripts/limpieza.sh
+./scripts/build-and-run.sh
 ```
 
 ### Proceso BPMN no encontrado

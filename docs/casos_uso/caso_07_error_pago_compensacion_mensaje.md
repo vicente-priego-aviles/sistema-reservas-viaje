@@ -23,7 +23,7 @@ El error de pago se simula cuando la suma de los precios calculados por los work
 }
 ```
 
-Para forzar el error: al completar los User Tasks de revisión de vuelo/hotel/coche en Tasklist, introducir precios que sumen más de €10.000 (ej. vuelo: €4.001, hotel: €3.000, coche: €3.000 → total €10.001).
+Los datos de inicio son los mismos que el Caso 1. El error se fuerza en los User Tasks de reserva introduciendo precios altos — ver sección [Forzar el error](#forzar-el-error-completar-los-user-tasks-con-precios-altos) más abajo.
 
 ## Flujo del Proceso
 
@@ -49,7 +49,31 @@ Para forzar el error: al completar los User Tasks de revisión de vuelo/hotel/co
 7. Fin: Reserva No Completada ❌
 ```
 
-## Ejecutar con cURL
+## Iniciar el proceso
+
+### Opción A — Camunda REST API (Swagger)
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+### Opción B — API de `servicio-reservas` (cURL)
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -66,7 +90,9 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   }'
 ```
 
-Completar los User Tasks en **Tasklist** (http://localhost:8081) introduciendo precios altos para superar el límite de €10.000.
+### Opción C — Tasklist
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
 
 ## Respuesta Esperada
 
@@ -78,15 +104,33 @@ Completar los User Tasks en **Tasklist** (http://localhost:8081) introduciendo p
 }
 ```
 
+## Forzar el error: completar los User Tasks con precios altos
+
+> ⚠️ **Sin este paso el proceso terminará con éxito** (como el Caso 1). El error de pago solo se activa si los precios introducidos en los User Tasks superan el límite de €10.000.
+
+En **Tasklist** (http://localhost:8081) aparecerán tres User Tasks en paralelo una vez avanzado el proceso. Completa cada uno con los precios indicados:
+
+| User Task | Campo de precio | Valor sugerido |
+|-----------|----------------|----------------|
+| ✈️ Introducir Datos del Vuelo | `precioVuelo` | `4001.0` |
+| 🏨 Introducir Datos del Hotel | `precioHotel` | `3000.0` |
+| 🚗 Introducir Datos del Coche | `precioCoche` | `3000.0` |
+
+**Total: €10.001** → supera el límite → `MontoExcedeLimiteException` → `ERROR_PROCESAR_PAGO` → compensación por mensaje.
+
+El resto de campos (fechas, destinos, clase de vuelo, etc.) puedes dejarlos con los valores por defecto del formulario.
+
+---
+
 ## Logs a consultar
 
-**`./logs.sh pagos`** — el fallo del pago:
+**`./scripts/logs.sh pagos`** — el fallo del pago:
 ```
 🔄 Worker: procesar-pago - Reserva: ... - Monto: 10001.0€
 ❌ Monto excede límite: 10001.0€
 ```
 
-**`./logs.sh reservas`** — las compensaciones que se disparan a continuación:
+**`./scripts/logs.sh reservas`** — las compensaciones que se disparan a continuación:
 ```
 🛑 Iniciando worker de cancelación de vuelo (compensación) - Job Key: ...
 ❌ Cancelando reserva de vuelo: ... - Motivo: ...
