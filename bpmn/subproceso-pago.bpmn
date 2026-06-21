@@ -13,14 +13,13 @@
       <bpmn:incoming>flujo-pago-a-actualizar-estado-confirmado</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-reserva-exitosa</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:intermediateThrowEvent id="evento-compensar-reserva" name="Compensar Reserva">
+    <bpmn:serviceTask id="evento-compensar-reserva" name="Publicar Compensación de Reserva">
       <bpmn:extensionElements>
-        <zeebe:publishMessage messageName="compensar-reserva" correlationKey="=reservaId" />
+        <zeebe:taskDefinition type="publicar-compensacion-reserva" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-pago-desde-error-pago</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-notificar-tarjeta-invalida</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" />
-    </bpmn:intermediateThrowEvent>
+    </bpmn:serviceTask>
     <bpmn:serviceTask id="confirmar-reserva-completa" name="Confirmar Reserva Completa">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="confirmar-reserva" />
@@ -106,7 +105,7 @@
       <bpmndi:BPMNShape id="Shape_evento-compensar-reserva" bpmnElement="evento-compensar-reserva">
         <dc:Bounds x="272" y="392" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="262" y="435" width="58" height="27" />
+          <dc:Bounds x="248" y="435" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_confirmar-reserva-completa" bpmnElement="confirmar-reserva-completa">

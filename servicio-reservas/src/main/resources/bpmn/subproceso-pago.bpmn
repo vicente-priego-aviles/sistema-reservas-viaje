@@ -105,7 +105,7 @@
       <bpmndi:BPMNShape id="Shape_evento-compensar-reserva" bpmnElement="evento-compensar-reserva">
         <dc:Bounds x="272" y="392" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="262" y="435" width="58" height="27" />
+          <dc:Bounds x="248" y="435" width="84" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_confirmar-reserva-completa" bpmnElement="confirmar-reserva-completa">

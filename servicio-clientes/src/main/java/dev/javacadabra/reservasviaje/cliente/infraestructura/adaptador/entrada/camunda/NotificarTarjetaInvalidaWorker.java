@@ -2,7 +2,6 @@ package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.
 
 import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.client.annotation.JobWorker;
-import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -159,21 +158,12 @@ public class NotificarTarjetaInvalidaWorker {
 
             return resultado;
 
-        } catch (IllegalArgumentException e) {
-            log.error("❌ Error en datos de entrada: {}", e.getMessage());
-            throw BpmnError.bpmnError(
-                    "ERROR_NOTIFICACION_FALLIDA",
-                    "Error al procesar notificación de tarjeta inválida: " + e.getMessage(),
-                    Map.of("notificacionEnviada", false)
-            );
-
         } catch (Exception e) {
-            log.error("❌ Error inesperado al notificar tarjeta inválida: {}", e.getMessage(), e);
-            throw BpmnError.bpmnError(
-                    "ERROR_NOTIFICACION_FALLIDA",
-                    "Error inesperado al procesar notificación: " + e.getMessage(),
-                    Map.of("notificacionEnviada", false)
-            );
+            log.error("❌ Error al notificar tarjeta inválida: {}", e.getMessage(), e);
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("notificacionEnviada", false);
+            resultado.put("errorNotificacion", e.getMessage());
+            return resultado;
         }
     }
 
@@ -202,25 +192,16 @@ public class NotificarTarjetaInvalidaWorker {
 
     /**
      * Extrae el motivo de invalidez de las variables del proceso.
+     * Si no está presente, usa "motivoFallo" como fallback (flujo de error de pago).
      */
     private String extraerMotivoInvalidez(Map<String, Object> variables) {
-        if (!variables.containsKey("motivoInvalidez")) {
-            throw new IllegalArgumentException("La variable 'motivoInvalidez' es obligatoria");
+        for (String clave : new String[]{"motivoInvalidez", "motivoFallo"}) {
+            Object valor = variables.get(clave);
+            if (valor != null && StringUtils.isNotBlank(valor.toString())) {
+                return valor.toString().trim();
+            }
         }
-
-        Object motivoObj = variables.get("motivoInvalidez");
-
-        if (motivoObj == null) {
-            throw new IllegalArgumentException("El 'motivoInvalidez' no puede ser nulo");
-        }
-
-        String motivo = motivoObj.toString().trim();
-
-        if (StringUtils.isBlank(motivo)) {
-            throw new IllegalArgumentException("El 'motivoInvalidez' no puede estar vacío");
-        }
-
-        return motivo;
+        return "Error en el proceso de pago";
     }
 
     /**
