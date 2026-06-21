@@ -35,7 +35,31 @@ El cliente existe pero está en estado BLOQUEADO. La validación de tarjeta pasa
 3. Fin: Error en Gestión de Cliente ❌
 ```
 
-## Ejecutar con cURL
+## Iniciar el proceso
+
+### Opción A — Camunda REST API (Swagger)
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "b23e4567-e89b-12d3-a456-426655440010",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 1,
+    "emailContacto": "roberto.morales@example.com",
+    "telefonoContacto": "+34611234567"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+### Opción B — API de `servicio-reservas` (cURL)
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -52,6 +76,10 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   }'
 ```
 
+### Opción C — Tasklist
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con el `clienteId` de Roberto Morales (bloqueado) y envía.
+
 ## Respuesta Esperada
 
 ```json
@@ -64,7 +92,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ## Logs a consultar
 
-**`./logs.sh clientes`**:
+**`./scripts/logs.sh clientes`**:
 ```
 🚀 Iniciando worker obtener-datos-cliente - Job Key: ...
 🔍 Obteniendo datos del cliente: b23e4567-...

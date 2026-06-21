@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")/.."  # Asegurar ejecución desde la raíz del proyecto
 # ===========================================================
 # Script: build-and-run.sh
 # Autor: Vicente Priego

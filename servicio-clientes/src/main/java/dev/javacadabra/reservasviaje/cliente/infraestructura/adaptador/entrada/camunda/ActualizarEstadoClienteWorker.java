@@ -261,7 +261,8 @@ public class ActualizarEstadoClienteWorker {
     private void validarTransicion(String estadoActual, String nuevoEstado) {
         boolean transicionValida = switch (estadoActual) {
             case "ACTIVO" -> "EN_PROCESO_RESERVA".equals(nuevoEstado);
-            case "EN_PROCESO_RESERVA" -> "RESERVA_CONFIRMADA".equals(nuevoEstado);
+            // EN_PROCESO_RESERVA → ACTIVO se permite en flujos de compensación (pago fallido)
+            case "EN_PROCESO_RESERVA" -> "RESERVA_CONFIRMADA".equals(nuevoEstado) || "ACTIVO".equals(nuevoEstado);
             case "RESERVA_CONFIRMADA" -> "ACTIVO".equals(nuevoEstado);
             default -> false;
         };
@@ -286,7 +287,14 @@ public class ActualizarEstadoClienteWorker {
         switch (nuevoEstado) {
             case "EN_PROCESO_RESERVA" -> clienteServicio.iniciarProcesoReservaConId(clienteId, reservaId);
             case "RESERVA_CONFIRMADA" -> clienteServicio.confirmarReservaConId(clienteId, reservaId);
-            case "ACTIVO" -> clienteServicio.finalizarReservaConId(clienteId, reservaId);
+            case "ACTIVO" -> {
+                String estadoActual = clienteServicio.obtenerEstadoCliente(clienteId);
+                if ("EN_PROCESO_RESERVA".equals(estadoActual)) {
+                    clienteServicio.cancelarProcesoReservaConId(clienteId, reservaId);
+                } else {
+                    clienteServicio.finalizarReservaConId(clienteId, reservaId);
+                }
+            }
             default -> throw new IllegalArgumentException("Estado no soportado: " + nuevoEstado);
         }
     }

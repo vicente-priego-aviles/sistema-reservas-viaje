@@ -30,6 +30,30 @@ La clave de correlación del mensaje es el `clienteId` (no el `processInstanceKe
 
 ## Paso 1: Iniciar el proceso
 
+### Opción A — Camunda REST API (Swagger)
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+### Opción B — API de `servicio-reservas` (cURL)
+
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
   -H "Content-Type: application/json" \
@@ -54,6 +78,10 @@ Respuesta:
   "mensaje": "Reserva iniciada correctamente"
 }
 ```
+
+### Opción C — Tasklist
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
 
 ---
 
@@ -95,7 +123,7 @@ curl -X POST http://localhost:8088/v2/messages/publication \
 
 ## Logs a consultar
 
-**`./logs.sh clientes`** — cuando el subproceso paralelo se activa y actualiza la tarjeta:
+**`./scripts/logs.sh clientes`** — cuando el subproceso paralelo se activa y actualiza la tarjeta:
 ```
 💳 Iniciando actualización de información de tarjeta - Job: ...
 🔍 Actualizando tarjeta 11111111-... del cliente 123e4567-...

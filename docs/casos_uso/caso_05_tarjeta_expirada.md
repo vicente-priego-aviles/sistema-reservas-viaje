@@ -34,7 +34,31 @@ Cliente activo pero con tarjeta de crédito expirada. El worker `validar-tarjeta
 3. Fin: Error en Gestión de Cliente ❌
 ```
 
-## Ejecutar con cURL
+## Iniciar el proceso
+
+### Opción A — Camunda REST API (Swagger)
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "0e3e4567-e89b-12d3-a456-426655440015",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 1,
+    "emailContacto": "raquel.iglesias@example.com",
+    "telefonoContacto": "+34666789012"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+### Opción B — API de `servicio-reservas` (cURL)
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -50,6 +74,10 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
     "telefonoContacto": "+34666789012"
   }'
 ```
+
+### Opción C — Tasklist
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con el `clienteId` de Raquel Iglesias (tarjeta expirada) y envía.
 
 ## Respuesta Esperada
 

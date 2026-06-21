@@ -41,7 +41,31 @@ Mismos datos que el Caso 1. El error se fuerza **manipulando la base de datos de
 6. Fin: Reserva Confirmada con Advertencia ⚠️
 ```
 
-## Ejecutar con cURL
+## Iniciar el proceso
+
+### Opción A — Camunda REST API (Swagger)
+
+Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+
+```json
+{
+  "processDefinitionId": "proceso-principal",
+  "variables": {
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }
+}
+```
+
+> `processDefinitionId` es el `id` del elemento `<bpmn:process>` — en este caso `proceso-principal`. Lanza siempre la última versión desplegada. No uses `processDefinitionKey` (numérico) a la vez que `processDefinitionId`; son alternativos.
+
+### Opción B — API de `servicio-reservas` (cURL)
 
 ```bash
 curl -X POST http://localhost:9090/api/reservas/iniciar \
@@ -57,6 +81,10 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
     "telefonoContacto": "+34600123456"
   }'
 ```
+
+### Opción C — Tasklist
+
+Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
 
 ## Respuesta Esperada
 
@@ -80,7 +108,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ## Logs a consultar
 
-**`./logs.sh pagos`** — pago y confirmación exitosos, seguidos del fallo de actualización y compensación parcial:
+**`./scripts/logs.sh pagos`** — pago y confirmación exitosos, seguidos del fallo de actualización y compensación parcial:
 ```
 🔄 Worker: procesar-pago - Reserva: ... - Monto: ...€
 ✅ Pago procesado - Transacción: ...
@@ -92,7 +120,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 ⚠️ Reserva marcada con advertencia
 ```
 
-**`./logs.sh clientes`** — el error en la actualización de estado que desencadena el boundary event:
+**`./scripts/logs.sh clientes`** — el error en la actualización de estado que desencadena el boundary event:
 ```
 🔄 Iniciando actualización de estado de cliente - Job: ...
 ❌ Transición de estado inválida: ...

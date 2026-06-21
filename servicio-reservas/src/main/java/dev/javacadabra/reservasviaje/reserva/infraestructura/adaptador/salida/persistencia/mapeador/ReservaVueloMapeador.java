@@ -12,9 +12,7 @@ import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.List;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReservaVueloMapeador {
 
     // =================== DOMINIO → ENTIDAD ===================
@@ -51,13 +49,6 @@ public interface ReservaVueloMapeador {
                 entidad.getFechaCreacion(),
                 entidad.getFechaModificacion()
         );
-    }
-
-    @AfterMapping
-    default void asignarId(@MappingTarget ReservaVuelo reserva, ReservaVueloEntidad entidad) {
-        if (entidad.getReservaId() != null) {
-            reserva.asignarId(ReservaId.de(entidad.getReservaId()));
-        }
     }
 
     // =================== PASAJEROS ===================

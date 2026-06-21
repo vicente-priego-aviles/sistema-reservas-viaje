@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")/.."  # Asegurar ejecución desde la raíz del proyecto
 
 # 1. Crear la red (si no existe)
 docker network create camunda-network

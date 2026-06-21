@@ -192,42 +192,6 @@
         <bpmn:sequenceFlow id="flujo-coche-compensado" sourceRef="evento-compensar-coche" targetRef="gateway-compensar-fin" />
         <bpmn:sequenceFlow id="flujo-a-error-fin" sourceRef="gateway-compensar-fin" targetRef="error-reserva-fin" />
       </bpmn:subProcess>
-      <bpmn:subProcess id="subproceso-compensacion-manual" name="Manejar Compensación" triggeredByEvent="true">
-        <bpmn:startEvent id="compensacion-manual-inicio" name="Compensar Reserva">
-          <bpmn:outgoing>flujo-manual-a-compensar-vuelo</bpmn:outgoing>
-          <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" messageRef="Message_CompensarReserva" />
-        </bpmn:startEvent>
-        <bpmn:intermediateThrowEvent id="evento-manual-compensar-vuelo" name="Vuelo">
-          <bpmn:incoming>flujo-manual-a-compensar-vuelo</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-compensar-hotel</bpmn:outgoing>
-          <bpmn:compensateEventDefinition id="CompensateManual_Vuelo" />
-        </bpmn:intermediateThrowEvent>
-        <bpmn:intermediateThrowEvent id="evento-manual-compensar-hotel" name="Hotel">
-          <bpmn:incoming>flujo-manual-a-compensar-hotel</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-compensar-coche</bpmn:outgoing>
-          <bpmn:compensateEventDefinition id="CompensateManual_Hotel" />
-        </bpmn:intermediateThrowEvent>
-        <bpmn:intermediateThrowEvent id="evento-manual-compensar-coche" name="Coche">
-          <bpmn:incoming>flujo-manual-a-compensar-coche</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
-          <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
-        </bpmn:intermediateThrowEvent>
-        <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
-          <bpmn:extensionElements>
-            <zeebe:taskDefinition type="actualizar-registro-cliente" />
-          </bpmn:extensionElements>
-          <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
-          <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
-        </bpmn:serviceTask>
-        <bpmn:endEvent id="compensacion-manual-fin" name="Reserva Compensada">
-          <bpmn:incoming>flujo-manual-a-fin</bpmn:incoming>
-        </bpmn:endEvent>
-        <bpmn:sequenceFlow id="flujo-manual-a-compensar-vuelo" sourceRef="compensacion-manual-inicio" targetRef="evento-manual-compensar-vuelo" />
-        <bpmn:sequenceFlow id="flujo-manual-a-compensar-hotel" sourceRef="evento-manual-compensar-vuelo" targetRef="evento-manual-compensar-hotel" />
-        <bpmn:sequenceFlow id="flujo-manual-a-compensar-coche" sourceRef="evento-manual-compensar-hotel" targetRef="evento-manual-compensar-coche" />
-        <bpmn:sequenceFlow id="flujo-manual-a-actualizar" sourceRef="evento-manual-compensar-coche" targetRef="actualizar-registro-cliente" />
-        <bpmn:sequenceFlow id="flujo-manual-a-fin" sourceRef="actualizar-registro-cliente" targetRef="compensacion-manual-fin" />
-      </bpmn:subProcess>
       <bpmn:subProcess id="subproceso-actualizar-tarjeta" name="Actualizar Información Tarjeta Crédito" triggeredByEvent="true">
         <bpmn:startEvent id="actualizar-tarjeta-inicio" name="Tarjeta Proporcionada" isInterrupting="false">
           <bpmn:outgoing>flujo-tarjeta-a-actualizar</bpmn:outgoing>
@@ -260,6 +224,42 @@
       <bpmn:association id="asociacion-compensar-vuelo" associationDirection="One" sourceRef="evento-compensacion-vuelo" targetRef="cancelar-vuelo" />
       <bpmn:association id="asociacion-compensar-hotel" associationDirection="One" sourceRef="evento-compensacion-hotel" targetRef="cancelar-hotel" />
       <bpmn:association id="asociacion-compensar-coche" associationDirection="One" sourceRef="evento-compensacion-coche" targetRef="cancelar-coche" />
+    </bpmn:subProcess>
+    <bpmn:subProcess id="subproceso-compensacion-manual" name="Manejar Compensación" triggeredByEvent="true">
+      <bpmn:startEvent id="compensacion-manual-inicio" name="Compensar Reserva" isInterrupting="false">
+        <bpmn:outgoing>flujo-manual-a-compensar-vuelo</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" messageRef="Message_CompensarReserva" />
+      </bpmn:startEvent>
+      <bpmn:intermediateThrowEvent id="evento-manual-compensar-vuelo" name="Vuelo">
+        <bpmn:incoming>flujo-manual-a-compensar-vuelo</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-compensar-hotel</bpmn:outgoing>
+        <bpmn:compensateEventDefinition id="CompensateManual_Vuelo" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:intermediateThrowEvent id="evento-manual-compensar-hotel" name="Hotel">
+        <bpmn:incoming>flujo-manual-a-compensar-hotel</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-compensar-coche</bpmn:outgoing>
+        <bpmn:compensateEventDefinition id="CompensateManual_Hotel" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:intermediateThrowEvent id="evento-manual-compensar-coche" name="Coche">
+        <bpmn:incoming>flujo-manual-a-compensar-coche</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
+        <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
+      </bpmn:intermediateThrowEvent>
+      <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="actualizar-registro-cliente" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
+        <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="compensacion-manual-fin" name="Reserva Compensada">
+        <bpmn:incoming>flujo-manual-a-fin</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="flujo-manual-a-compensar-vuelo" sourceRef="compensacion-manual-inicio" targetRef="evento-manual-compensar-vuelo" />
+      <bpmn:sequenceFlow id="flujo-manual-a-compensar-hotel" sourceRef="evento-manual-compensar-vuelo" targetRef="evento-manual-compensar-hotel" />
+      <bpmn:sequenceFlow id="flujo-manual-a-compensar-coche" sourceRef="evento-manual-compensar-hotel" targetRef="evento-manual-compensar-coche" />
+      <bpmn:sequenceFlow id="flujo-manual-a-actualizar" sourceRef="evento-manual-compensar-coche" targetRef="actualizar-registro-cliente" />
+      <bpmn:sequenceFlow id="flujo-manual-a-fin" sourceRef="actualizar-registro-cliente" targetRef="compensacion-manual-fin" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="gateway-resultado-reserva" name="¿Reserva Exitosa?" default="flujo-gateway-a-pago">
       <bpmn:incoming>flujo-proceso-reserva-a-gateway</bpmn:incoming>

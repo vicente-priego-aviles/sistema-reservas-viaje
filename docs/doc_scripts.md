@@ -15,6 +15,7 @@ Guía completa de los scripts disponibles para gestionar el ciclo de vida del si
 | [`build-all.sh`](#-build-allsh) | Compilar + levantar microservicios | Si Camunda ya está corriendo |
 | [`redeploy-bpmn.sh`](#-redeploy-bpmnsh) | Recompilar y redesplegar solo los BPMN | Tras modificar archivos BPMN |
 | [`limpieza.sh`](#-limpiezash) | Limpiar todo el entorno Docker | Resolver problemas o liberar recursos |
+| [`reset-cliente.sh`](#-reset-clientesh) | Resetear estado de un cliente a ACTIVO | Cliente bloqueado en EN_PROCESO_RESERVA tras cancelar una prueba |
 
 ---
 
@@ -35,7 +36,7 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 **Script principal de arranque.** Ejecuta el flujo completo desde cero: compilación, construcción de imágenes y despliegue de toda la plataforma.
 
 ```bash
-./build-and-run.sh
+./scripts/build-and-run.sh
 ```
 
 ### Qué hace paso a paso
@@ -52,7 +53,7 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 
 - ✅ Primera vez que arrancas el sistema
 - ✅ Tras modificar código en cualquier microservicio
-- ✅ Tras un `./stop-all.sh` o `./limpieza.sh`
+- ✅ Tras un `./scripts/stop-all.sh` o `./scripts/limpieza.sh`
 
 ### Tiempo estimado
 
@@ -78,7 +79,7 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 **Arranque rápido sin recompilar.** Levanta Camunda y los microservicios usando las imágenes Docker ya construidas.
 
 ```bash
-./start.sh
+./scripts/start.sh
 ```
 
 ### Qué hace paso a paso
@@ -90,12 +91,12 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 
 ### Cuándo usarlo
 
-- ✅ Reiniciar el sistema tras un `./stop-all.sh`
+- ✅ Reiniciar el sistema tras un `./scripts/stop-all.sh`
 - ✅ Cuando el código no ha cambiado y las imágenes Docker ya están construidas
 
 ### Requisito previo
 
-Las imágenes Docker deben existir (generadas previamente con `./build-and-run.sh`).
+Las imágenes Docker deben existir (generadas previamente con `./scripts/build-and-run.sh`).
 
 ---
 
@@ -104,7 +105,7 @@ Las imágenes Docker deben existir (generadas previamente con `./build-and-run.s
 **Para solo los microservicios**, dejando Camunda Platform activo.
 
 ```bash
-./stop.sh
+./scripts/stop.sh
 ```
 
 ### Qué hace
@@ -120,12 +121,12 @@ Las imágenes Docker deben existir (generadas previamente con `./build-and-run.s
 ### Flujo típico
 
 ```bash
-./stop.sh           # Para microservicios
+./scripts/stop.sh           # Para microservicios
 # ... haces cambios en el código ...
 mvn clean package -DskipTests  # Recompilas
 docker-compose up -d --build    # Reconstruyes y levantas
 # o simplemente:
-./build-all.sh      # Si Camunda ya está corriendo
+./scripts/build-all.sh      # Si Camunda ya está corriendo
 ```
 
 ---
@@ -135,7 +136,7 @@ docker-compose up -d --build    # Reconstruyes y levantas
 **Para todo el sistema**, incluyendo Camunda Platform.
 
 ```bash
-./stop-all.sh
+./scripts/stop-all.sh
 ```
 
 ### Qué hace paso a paso
@@ -152,8 +153,8 @@ docker-compose up -d --build    # Reconstruyes y levantas
 ### Para volver a levantar
 
 ```bash
-./build-and-run.sh  # Si necesitas recompilar
-./start.sh          # Si las imágenes ya están construidas
+./scripts/build-and-run.sh  # Si necesitas recompilar
+./scripts/start.sh          # Si las imágenes ya están construidas
 ```
 
 ---
@@ -163,7 +164,7 @@ docker-compose up -d --build    # Reconstruyes y levantas
 **Compilación y despliegue de microservicios**, asumiendo que Camunda ya está corriendo.
 
 ```bash
-./build-all.sh
+./scripts/build-all.sh
 ```
 
 ### Qué hace paso a paso
@@ -180,7 +181,7 @@ docker-compose up -d --build    # Reconstruyes y levantas
 
 ### Requisito previo
 
-Camunda Platform debe estar corriendo. Si no lo está, usa `./build-and-run.sh`.
+Camunda Platform debe estar corriendo. Si no lo está, usa `./scripts/build-and-run.sh`.
 
 ---
 
@@ -189,7 +190,7 @@ Camunda Platform debe estar corriendo. Si no lo está, usa `./build-and-run.sh`.
 **Recompila y redespliega los archivos BPMN** sin tocar el resto de microservicios. Es el script a usar cada vez que modificas un archivo `.bpmn` y quieres que Zeebe reciba la nueva versión.
 
 ```bash
-./redeploy-bpmn.sh
+./scripts/redeploy-bpmn.sh
 ```
 
 ### Qué hace paso a paso
@@ -211,7 +212,7 @@ Camunda Platform debe estar corriendo. Si no lo está, usa `./build-and-run.sh`.
 ```bash
 # 1. Edita el BPMN en Camunda Modeler (carpeta bpmn/)
 # 2. Redesplegar (sincroniza automáticamente bpmn/ → runtime y reconstruye):
-./redeploy-bpmn.sh
+./scripts/redeploy-bpmn.sh
 # 3. Verificar nueva versión en Operate: http://localhost:8081
 ```
 
@@ -226,7 +227,7 @@ Camunda Platform debe estar corriendo. Si no lo está, usa `./build-and-run.sh`.
 **Limpieza total del entorno Docker.** ⚠️ Operación destructiva: elimina todos los contenedores y redes del sistema Docker.
 
 ```bash
-./limpieza.sh
+./scripts/limpieza.sh
 ```
 
 ### Qué hace
@@ -248,8 +249,37 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 ### Después de limpiar
 
 ```bash
-./build-and-run.sh  # Reconstruye y levanta todo desde cero
+./scripts/build-and-run.sh  # Reconstruye y levanta todo desde cero
 ```
+
+---
+
+## 🔧 reset-cliente.sh
+
+**Resetea el estado de un cliente a `ACTIVO`.** Necesario cuando un proceso BPMN se cancela o falla a mitad del flujo y el cliente queda bloqueado en `EN_PROCESO_RESERVA`, impidiendo lanzar nuevas pruebas.
+
+```bash
+# Resetea el cliente de prueba por defecto (Juan Pérez García)
+./scripts/reset-cliente.sh
+
+# Resetea un cliente concreto pasando su UUID
+./scripts/reset-cliente.sh b23e4567-e89b-12d3-a456-426655440010
+```
+
+### Qué hace
+
+1. Llama a `POST /dev/clientes/{id}/reset-estado` en `servicio-clientes`
+2. El endpoint cambia el estado del cliente a `ACTIVO` directamente en la base de datos
+3. Muestra el estado anterior y confirma el cambio
+
+### Cuándo usarlo
+
+- ✅ El worker `actualizar-estado-en-proceso` falla con "Transición de estado no permitida: EN_PROCESO_RESERVA → EN_PROCESO_RESERVA"
+- ✅ Antes de relanzar una prueba tras cancelar el proceso anterior a mitad del flujo
+
+### Requisito previo
+
+`servicio-clientes` debe estar corriendo. El endpoint `/dev/clientes/...` lo expone `DevAdminController`, que solo existe en este servicio.
 
 ---
 
@@ -258,19 +288,19 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 ### Primer arranque
 
 ```bash
-./build-and-run.sh
+./scripts/build-and-run.sh
 ```
 
 ### Ciclo de desarrollo normal (código Java)
 
 ```bash
 # Parar microservicios
-./stop.sh
+./scripts/stop.sh
 
 # Hacer cambios en el código...
 
 # Recompilar y levantar (Camunda sigue activo)
-./build-all.sh
+./scripts/build-all.sh
 ```
 
 ### Cambio solo en archivos BPMN
@@ -278,20 +308,20 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 ```bash
 # Editar BPMN en Camunda Modeler (carpeta bpmn/)
 # El script sincroniza automáticamente al runtime y redespliega:
-./redeploy-bpmn.sh
+./scripts/redeploy-bpmn.sh
 ```
 
 ### Parada y reinicio completo
 
 ```bash
-./stop-all.sh
+./scripts/stop-all.sh
 # más tarde...
-./start.sh
+./scripts/start.sh
 ```
 
 ### Resolver problemas graves
 
 ```bash
-./limpieza.sh
-./build-and-run.sh
+./scripts/limpieza.sh
+./scripts/build-and-run.sh
 ```

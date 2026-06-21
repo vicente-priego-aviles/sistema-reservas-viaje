@@ -13,14 +13,13 @@
       <bpmn:incoming>flujo-pago-a-actualizar-estado-confirmado</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-reserva-exitosa</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:intermediateThrowEvent id="evento-compensar-reserva" name="Compensar Reserva">
+    <bpmn:serviceTask id="evento-compensar-reserva" name="Publicar Compensación de Reserva">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="compensar-reserva" />
+        <zeebe:taskDefinition type="publicar-compensacion-reserva" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-pago-desde-error-pago</bpmn:incoming>
       <bpmn:outgoing>flujo-pago-a-notificar-tarjeta-invalida</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDef_CompensarReserva" />
-    </bpmn:intermediateThrowEvent>
+    </bpmn:serviceTask>
     <bpmn:serviceTask id="confirmar-reserva-completa" name="Confirmar Reserva Completa">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="confirmar-reserva" />

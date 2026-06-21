@@ -106,19 +106,21 @@ public class ReservaHotelWorker {
 
         } catch (IllegalArgumentException e) {
             log.error("❌ Error de validación en reserva de hotel: {}", e.getMessage());
+            String motivo = "Error de validación en los datos del hotel: " + e.getMessage();
             throw new ZeebeBpmnError(
                     "ERROR_VALIDACION_HOTEL",
-                    "Error de validación en los datos del hotel: " + e.getMessage(),
-                    Map.of()
+                    motivo,
+                    Map.of("motivoFallo", motivo)
             );
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al procesar reserva de hotel: {}",
                     e.getMessage(), e);
+            String motivo = "Error al procesar la reserva de hotel: " + e.getMessage();
             throw new ZeebeBpmnError(
                     "ERROR_RESERVA_HOTEL",
-                    "Error al procesar la reserva de hotel: " + e.getMessage(),
-                    Map.of()
+                    motivo,
+                    Map.of("motivoFallo", motivo)
             );
         }
     }

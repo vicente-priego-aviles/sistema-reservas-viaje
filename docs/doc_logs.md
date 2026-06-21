@@ -59,16 +59,16 @@ Esta línea te dice:
 ## Ver logs por servicio
 
 ```bash
-./logs.sh clientes    # validación, gestión de cliente y tarjeta
-./logs.sh reservas    # reservas de vuelo, hotel y coche (+ compensaciones)
-./logs.sh pagos       # procesamiento de pago y confirmación
+./scripts/logs.sh clientes    # validación, gestión de cliente y tarjeta
+./scripts/logs.sh reservas    # reservas de vuelo, hotel y coche (+ compensaciones)
+./scripts/logs.sh pagos       # procesamiento de pago y confirmación
 ```
 
 Los dos servicios sin workers (`servicio-vuelos`, `servicio-hoteles`, `servicio-alquiler-coches`) solo reciben llamadas REST desde los workers de `servicio-reservas`; sus logs se ven con:
 ```bash
-./logs.sh vuelos
-./logs.sh hoteles
-./logs.sh coches
+./scripts/logs.sh vuelos
+./scripts/logs.sh hoteles
+./scripts/logs.sh coches
 ```
 
 ---

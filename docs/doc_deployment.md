@@ -102,7 +102,7 @@ Estrategias y guías para despliegue del sistema en diferentes entornos.
 
 ```bash
 # Opción 1: Script automatizado
-./start.sh
+./scripts/start.sh
 
 # Opción 2: Manual
 docker-compose -f docker-compose-camunda.yml up -d

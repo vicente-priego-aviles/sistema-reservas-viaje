@@ -107,19 +107,21 @@ public class ReservaCocheWorker {
 
         } catch (IllegalArgumentException e) {
             log.error("❌ Error de validación en reserva de coche: {}", e.getMessage());
+            String motivo = "Error de validación en los datos del coche: " + e.getMessage();
             throw new ZeebeBpmnError(
                     "ERROR_VALIDACION_COCHE",
-                    "Error de validación en los datos del coche: " + e.getMessage(),
-                    Map.of()
+                    motivo,
+                    Map.of("motivoFallo", motivo)
             );
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al procesar reserva de coche: {}",
                     e.getMessage(), e);
+            String motivo = "Error al procesar la reserva de coche: " + e.getMessage();
             throw new ZeebeBpmnError(
                     "ERROR_RESERVA_COCHE",
-                    "Error al procesar la reserva de coche: " + e.getMessage(),
-                    Map.of()
+                    motivo,
+                    Map.of("motivoFallo", motivo)
             );
         }
     }

@@ -376,6 +376,29 @@ public class Cliente extends AbstractAggregateRoot<Cliente> {
     }
 
     /**
+     * Cancela un proceso de reserva en curso, devolviendo al cliente a ACTIVO.
+     * Usado en flujos de compensación cuando el pago falla y las reservas se revierten.
+     *
+     * @param reservaId ID de la reserva cancelada
+     * @throws IllegalStateException si el cliente no está en EN_PROCESO_RESERVA
+     */
+    public void cancelarProcesoReserva(String reservaId) {
+        log.debug("🔍 Cancelando proceso de reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
+
+        if (estado != EstadoCliente.EN_PROCESO_RESERVA) {
+            throw new IllegalStateException(
+                    String.format("Solo se puede cancelar un proceso de reserva en estado EN_PROCESO_RESERVA. Estado actual: %s", estado)
+            );
+        }
+
+        EstadoCliente estadoAnterior = this.estado;
+        this.estado = EstadoCliente.ACTIVO;
+        this.fechaActualizacion = LocalDateTime.now();
+
+        log.info("↩️ Proceso de reserva cancelado para cliente: {} - {} → ACTIVO", clienteId, estadoAnterior);
+    }
+
+    /**
      * Finaliza el proceso de reserva, devolviendo al cliente a estado ACTIVO.
      *
      * @param reservaId ID de la reserva finalizada

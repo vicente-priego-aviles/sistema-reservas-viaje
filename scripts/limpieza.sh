@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")/.."  # Asegurar ejecución desde la raíz del proyecto
 
 # Detener y eliminar TODO
 docker stop $(docker ps -aq) 2>/dev/null || true

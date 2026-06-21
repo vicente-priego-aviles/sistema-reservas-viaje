@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")/.."  # Asegurar ejecución desde la raíz del proyecto
 # ===========================================================
 # Script: redeploy-bpmn.sh
 # Descripción:
@@ -28,7 +29,7 @@ fi
 
 # Verificar que Zeebe esté corriendo
 if ! docker ps --filter "name=zeebe" --filter "status=running" | grep -q zeebe; then
-  echo -e "${RED}❌ Zeebe no está corriendo. Levanta Camunda primero con ./start.sh o ./build-and-run.sh${RESET}"
+  echo -e "${RED}❌ Zeebe no está corriendo. Levanta Camunda primero con ./scripts/start.sh o ./scripts/build-and-run.sh${RESET}"
   exit 1
 fi
 
