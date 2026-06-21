@@ -22,10 +22,13 @@ public class ReservaCocheEntidad {
     @Column(nullable = false)
     private String reservaViajeId;
 
+    private String clienteId;
+
+    private String ciudadRecogida;
+
     @Column(nullable = false)
     private String modeloCoche;
 
-    @Column(nullable = false)
     private String marcaCoche;
 
     @Column(nullable = false)
@@ -37,10 +40,8 @@ public class ReservaCocheEntidad {
     @Column(nullable = false)
     private LocalDate fechaFin;
 
-    @Column(nullable = false)
     private BigDecimal precioPorDia;
 
-    @Column(nullable = false)
     private BigDecimal precioTotal;
 
     @Column(nullable = false)
@@ -49,9 +50,14 @@ public class ReservaCocheEntidad {
     @Column(nullable = false)
     private String lugarDevolucion;
 
+    private String numeroReserva;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoReservaCocheEnum estado;
+
+    @Enumerated(EnumType.STRING)
+    private CategoriaCocheEnum categoriaCoche;
 
     private String observaciones;
 
