@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentacion del proyecto
+    url: https://github.com/vicente-priego-aviles/sistema-reservas-viaje/blob/main/README.md
+    about: Consulta la documentacion antes de abrir un issue

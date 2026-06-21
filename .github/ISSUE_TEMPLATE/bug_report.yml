@@ -1,0 +1,76 @@
+name: Bug Report
+description: Reportar un comportamiento incorrecto o error en el sistema
+title: "fix: "
+labels: ["bug"]
+assignees: ["vicente-priego-aviles"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar un bug. Rellena los campos siguientes con el máximo detalle posible.
+
+  - type: dropdown
+    id: microservicio
+    attributes:
+      label: Microservicio afectado
+      description: ¿En qué microservicio se produce el error?
+      options:
+        - servicio-clientes
+        - servicio-vuelos
+        - servicio-hoteles
+        - servicio-alquiler-coches
+        - servicio-pagos
+        - servicio-reservas
+        - Infraestructura / Camunda
+        - Varios
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del bug
+      description: Explica qué ocurre y qué esperabas que ocurriera.
+      placeholder: |
+        Al llamar al endpoint POST /api/clientes, el sistema devuelve 500 cuando el email ya existe,
+        en lugar del error BPMN ERROR_EMAIL_DUPLICADO esperado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      description: Secuencia exacta de pasos para reproducir el comportamiento.
+      placeholder: |
+        1. Crear un cliente con email 'test@test.com'
+        2. Crear otro cliente con el mismo email
+        3. Observar la respuesta — se espera 409, se obtiene 500
+    validations:
+      required: true
+
+  - type: textarea
+    id: entorno
+    attributes:
+      label: Entorno
+      description: Versión, modo de ejecución y configuración relevante.
+      placeholder: |
+        - Spring Boot: 4.0.6
+        - Camunda: 8.9.6
+        - Java: 21
+        - Modo: local / Docker
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Stack trace
+      description: Pega aquí los logs o stack trace relevantes.
+      render: text
+
+  - type: textarea
+    id: contexto_adicional
+    attributes:
+      label: Contexto adicional
+      description: Cualquier otra información que pueda ayudar (capturas, enlaces a Camunda Operate, etc.)
