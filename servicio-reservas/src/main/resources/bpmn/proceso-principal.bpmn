@@ -245,9 +245,14 @@
         <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
         <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
       </bpmn:intermediateThrowEvent>
-      <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
+      <bpmn:serviceTask id="actualizar-registro-cliente" name="Revertir Estado del Cliente">
         <bpmn:extensionElements>
-          <zeebe:taskDefinition type="actualizar-registro-cliente" />
+          <zeebe:taskDefinition type="actualizar-estado-cliente" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=&quot;ACTIVO&quot;" target="nuevoEstado" />
+            <zeebe:input source="=clienteId" target="clienteId" />
+            <zeebe:input source="=reservaId" target="reservaId" />
+          </zeebe:ioMapping>
         </bpmn:extensionElements>
         <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
         <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>

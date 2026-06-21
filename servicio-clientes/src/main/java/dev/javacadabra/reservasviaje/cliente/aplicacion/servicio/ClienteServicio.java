@@ -494,6 +494,26 @@ public class ClienteServicio implements
     }
 
     /**
+     * Cancela el proceso de reserva en curso, devolviendo al cliente a ACTIVO.
+     * Usado en flujos de compensación cuando el pago falla.
+     *
+     * @param clienteId ID del cliente (UUID)
+     * @param reservaId ID de la reserva cancelada
+     * @throws ClienteNoEncontradoExcepcion si el cliente no existe
+     * @throws IllegalStateException si el cliente no está en EN_PROCESO_RESERVA
+     */
+    @Transactional
+    public void cancelarProcesoReservaConId(String clienteId, String reservaId) {
+        log.info("↩️ Cancelando proceso de reserva para cliente: {} - Reserva: {}", clienteId, reservaId);
+
+        Cliente cliente = buscarClientePorIdOLanzarExcepcion(clienteId);
+        cliente.cancelarProcesoReserva(reservaId);
+        clienteRepositorio.save(cliente);
+
+        log.info("✅ Proceso de reserva cancelado correctamente para cliente: {}", clienteId);
+    }
+
+    /**
      * Finaliza el proceso de reserva, devolviendo al cliente a estado ACTIVO (con reservaId).
      *
      * <p>Este método es utilizado por el worker de Camunda para finalizar

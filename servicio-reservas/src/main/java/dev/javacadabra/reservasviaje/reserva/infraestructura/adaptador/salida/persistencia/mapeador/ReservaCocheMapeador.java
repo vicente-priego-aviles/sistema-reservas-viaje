@@ -9,9 +9,7 @@ import org.mapstruct.*;
 import java.math.BigDecimal;
 import java.util.Currency;
 
-@Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReservaCocheMapeador {
 
     @Mapping(target = "reservaId", source = "reservaId.valor")
@@ -43,13 +41,6 @@ public interface ReservaCocheMapeador {
                 entidad.getFechaCreacion(),
                 entidad.getFechaModificacion()
         );
-    }
-
-    @AfterMapping
-    default void asignarId(@MappingTarget ReservaCoche reserva, ReservaCocheEntidad entidad) {
-        if (entidad.getReservaId() != null) {
-            reserva.asignarId(ReservaId.de(entidad.getReservaId()));
-        }
     }
 
     // =================== AUXILIARES ===================

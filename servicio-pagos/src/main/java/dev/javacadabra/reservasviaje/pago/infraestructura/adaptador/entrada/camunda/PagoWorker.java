@@ -40,7 +40,8 @@ public class PagoWorker {
                     + (rawCoche == null ? "precioCocheFinal" : "");
             log.error("❌ Variables de precio faltantes en procesar-pago: [{}]", faltantes.trim());
             throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO",
-                    "Faltan variables de precio requeridas: " + faltantes.trim(), Map.of());
+                    "Faltan variables de precio requeridas: " + faltantes.trim(),
+                    Map.of("motivoInvalidez", "Error en datos del pago: faltan variables de precio (" + faltantes.trim() + ")"));
         }
 
         Double montoVuelo = rawVuelo.doubleValue();
@@ -62,11 +63,13 @@ public class PagoWorker {
 
         } catch (MontoExcedeLimiteException e) {
             log.error("❌ Monto excede límite: {}€", monto);
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(), Map.of());
+            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(),
+                    Map.of("motivoInvalidez", "Monto excede el límite permitido de 10.000€ (total: " + monto + "€)"));
 
         } catch (Exception e) {
             log.error("❌ Error al procesar pago: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(), Map.of());
+            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(),
+                    Map.of("motivoInvalidez", "Error al procesar el pago: " + e.getMessage()));
         }
     }
 
