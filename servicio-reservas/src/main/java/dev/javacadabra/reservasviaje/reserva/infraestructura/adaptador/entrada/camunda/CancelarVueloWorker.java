@@ -1,8 +1,8 @@
 package dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.entrada.camunda;
 
 import dev.javacadabra.reservasviaje.reserva.aplicacion.puerto.entrada.CancelarVueloCasoUso;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

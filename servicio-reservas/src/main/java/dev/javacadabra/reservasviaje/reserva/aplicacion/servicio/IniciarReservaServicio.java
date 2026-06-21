@@ -3,8 +3,8 @@ package dev.javacadabra.reservasviaje.reserva.aplicacion.servicio;
 import dev.javacadabra.reservasviaje.reserva.aplicacion.dto.entrada.IniciarReservaDTO;
 import dev.javacadabra.reservasviaje.reserva.aplicacion.dto.salida.IniciarReservaRespuestaDTO;
 import dev.javacadabra.reservasviaje.reserva.aplicacion.puerto.entrada.IniciarReservaCasoUso;
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ProcessInstanceEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.Map;
 @Slf4j
 public class IniciarReservaServicio implements IniciarReservaCasoUso {
 
-    private final ZeebeClient zeebeClient;
+    private final CamundaClient camundaClient;
 
     @Override
     public IniciarReservaRespuestaDTO ejecutar(IniciarReservaDTO dto) {
@@ -35,7 +35,7 @@ public class IniciarReservaServicio implements IniciarReservaCasoUso {
             variables.put("origen", dto.getOrigen());
         }
 
-        ProcessInstanceEvent instance = zeebeClient
+        ProcessInstanceEvent instance = camundaClient
                 .newCreateInstanceCommand()
                 .bpmnProcessId("proceso-principal")
                 .latestVersion()

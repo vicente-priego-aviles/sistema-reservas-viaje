@@ -5,9 +5,9 @@ import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.Gestionar
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteBloqueadoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteInactivoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoExcepcion;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -88,7 +88,7 @@ public class IniciarReservaWorker {
 
         } catch (ClienteNoEncontradoExcepcion e) {
             log.error("❌ Cliente no encontrado: {}", clienteId);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_NO_ENCONTRADO",
                     "Cliente no encontrado: " + clienteId,
                     Map.of(
@@ -100,7 +100,7 @@ public class IniciarReservaWorker {
 
         } catch (ClienteBloqueadoExcepcion e) {
             log.error("❌ Cliente bloqueado: {} - Motivo: {}", clienteId, e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_BLOQUEADO",
                     "Cliente bloqueado: " + e.getMessage(),
                     Map.of(
@@ -113,7 +113,7 @@ public class IniciarReservaWorker {
 
         } catch (ClienteInactivoExcepcion e) {
             log.error("❌ Cliente inactivo: {}", clienteId);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_INACTIVO",
                     "Cliente inactivo: " + e.getMessage(),
                     Map.of(
@@ -126,7 +126,7 @@ public class IniciarReservaWorker {
         } catch (IllegalStateException e) {
             log.error("❌ Estado inválido para iniciar reserva en cliente {}: {}",
                     clienteId, e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_ESTADO_INVALIDO",
                     "El cliente no puede iniciar una reserva en su estado actual: " + e.getMessage(),
                     Map.of(
@@ -140,7 +140,7 @@ public class IniciarReservaWorker {
         } catch (Exception e) {
             log.error("❌ Error al iniciar reserva para cliente {}: {}",
                     clienteId, e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_INICIAR_RESERVA",
                     "Error al iniciar proceso de reserva: " + e.getMessage(),
                     Map.of(

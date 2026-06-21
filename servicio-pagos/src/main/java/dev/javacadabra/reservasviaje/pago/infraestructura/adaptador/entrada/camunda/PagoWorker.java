@@ -3,9 +3,9 @@ package dev.javacadabra.reservasviaje.pago.infraestructura.adaptador.entrada.cam
 import dev.javacadabra.reservasviaje.pago.aplicacion.puerto.entrada.*;
 import dev.javacadabra.reservasviaje.pago.dominio.modelo.agregado.Pago;
 import dev.javacadabra.reservasviaje.pago.dominio.excepcion.MontoExcedeLimiteException;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class PagoWorker {
                     + (rawHotel == null ? "precioHotelFinal " : "")
                     + (rawCoche == null ? "precioCocheFinal" : "");
             log.error("❌ Variables de precio faltantes en procesar-pago: [{}]", faltantes.trim());
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO",
+            throw BpmnError.bpmnError("ERROR_PROCESAR_PAGO",
                     "Faltan variables de precio requeridas: " + faltantes.trim(),
                     Map.of("motivoInvalidez", "Error en datos del pago: faltan variables de precio (" + faltantes.trim() + ")"));
         }
@@ -63,12 +63,12 @@ public class PagoWorker {
 
         } catch (MontoExcedeLimiteException e) {
             log.error("❌ Monto excede límite: {}€", monto);
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(),
+            throw BpmnError.bpmnError("ERROR_PROCESAR_PAGO", e.getMessage(),
                     Map.of("motivoInvalidez", "Monto excede el límite permitido de 10.000€ (total: " + monto + "€)"));
 
         } catch (Exception e) {
             log.error("❌ Error al procesar pago: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_PROCESAR_PAGO", e.getMessage(),
+            throw BpmnError.bpmnError("ERROR_PROCESAR_PAGO", e.getMessage(),
                     Map.of("motivoInvalidez", "Error al procesar el pago: " + e.getMessage()));
         }
     }
@@ -91,7 +91,7 @@ public class PagoWorker {
 
         } catch (Exception e) {
             log.error("❌ Error al confirmar reserva: {}", e.getMessage());
-            throw new ZeebeBpmnError("ERROR_CONFIRMAR_RESERVA", e.getMessage(), Map.of());
+            throw BpmnError.bpmnError("ERROR_CONFIRMAR_RESERVA", e.getMessage(), Map.of());
         }
     }
 

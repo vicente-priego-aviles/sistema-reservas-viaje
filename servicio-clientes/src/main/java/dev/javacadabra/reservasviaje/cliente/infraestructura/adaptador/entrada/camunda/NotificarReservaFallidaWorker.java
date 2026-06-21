@@ -1,8 +1,8 @@
 package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.camunda;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +78,7 @@ public class NotificarReservaFallidaWorker {
      *
      * @param job job activado por Camunda
      * @return mapa con variables de salida
-     * @throws ZeebeBpmnError si ocurre un error durante el procesamiento
+     * @throws BpmnError si ocurre un error durante el procesamiento
      */
     @JobWorker(type = "notificar-reserva-fallida", autoComplete = true)
     public Map<String, Object> notificarReservaFallida(ActivatedJob job) {
@@ -142,7 +142,7 @@ public class NotificarReservaFallidaWorker {
 
         } catch (IllegalArgumentException e) {
             log.error("❌ Error en datos de entrada: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_NOTIFICACION_FALLIDA",
                     "Error al procesar notificación: " + e.getMessage(),
                     Map.of("notificacionEnviada", false)
@@ -150,7 +150,7 @@ public class NotificarReservaFallidaWorker {
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al notificar reserva fallida: {}", e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_NOTIFICACION_FALLIDA",
                     "Error inesperado al procesar notificación: " + e.getMessage(),
                     Map.of("notificacionEnviada", false)

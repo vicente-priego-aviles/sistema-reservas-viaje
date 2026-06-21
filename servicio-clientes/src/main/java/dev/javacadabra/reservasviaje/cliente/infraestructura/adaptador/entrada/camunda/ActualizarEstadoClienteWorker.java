@@ -5,9 +5,9 @@ import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteBloqueadoE
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteInactivoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.EstadoCliente;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +67,7 @@ public class ActualizarEstadoClienteWorker {
      *
      * @param job job activado por Camunda
      * @return mapa con variables de salida
-     * @throws ZeebeBpmnError si ocurre algún error durante la actualización
+     * @throws BpmnError si ocurre algún error durante la actualización
      */
     @JobWorker(type = "actualizar-estado-cliente", autoComplete = true)
     public Map<String, Object> actualizarEstado(ActivatedJob job) {
@@ -109,7 +109,7 @@ public class ActualizarEstadoClienteWorker {
 
         } catch (ClienteNoEncontradoExcepcion e) {
             log.error("❌ Cliente no encontrado: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_NO_ENCONTRADO",
                     "El cliente especificado no existe: " + e.getMessage(),
                     Map.of("estadoActualizado", false)
@@ -117,7 +117,7 @@ public class ActualizarEstadoClienteWorker {
 
         } catch (ClienteBloqueadoExcepcion e) {
             log.error("❌ Cliente bloqueado: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_BLOQUEADO",
                     "No se puede actualizar el estado de un cliente bloqueado: " + e.getMessage(),
                     Map.of("estadoActualizado", false)
@@ -125,7 +125,7 @@ public class ActualizarEstadoClienteWorker {
 
         } catch (ClienteInactivoExcepcion e) {
             log.error("❌ Cliente inactivo: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_INACTIVO",
                     "No se puede actualizar el estado de un cliente inactivo: " + e.getMessage(),
                     Map.of("estadoActualizado", false)
@@ -133,7 +133,7 @@ public class ActualizarEstadoClienteWorker {
 
         } catch (IllegalArgumentException e) {
             log.error("❌ Datos de entrada inválidos: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_DATOS_ENTRADA",
                     "Error en los datos de entrada: " + e.getMessage(),
                     Map.of("estadoActualizado", false)
@@ -141,7 +141,7 @@ public class ActualizarEstadoClienteWorker {
 
         } catch (IllegalStateException e) {
             log.error("❌ Transición de estado inválida: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TRANSICION_INVALIDA",
                     "Transición de estado no permitida: " + e.getMessage(),
                     Map.of("estadoActualizado", false)
@@ -149,7 +149,7 @@ public class ActualizarEstadoClienteWorker {
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al actualizar estado de cliente: {}", e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_ACTUALIZAR_ESTADO",
                     "Error inesperado al actualizar estado: " + e.getMessage(),
                     Map.of("estadoActualizado", false)

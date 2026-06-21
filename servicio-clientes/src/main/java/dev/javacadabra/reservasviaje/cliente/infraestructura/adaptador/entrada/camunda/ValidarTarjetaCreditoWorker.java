@@ -4,9 +4,9 @@ import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteDTO;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.TarjetaCreditoDTO;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.ConsultarClienteUseCase;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoExcepcion;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +61,7 @@ import java.util.UUID;
  *
  * <p><strong>Comportamiento en caso de error:</strong>
  * <ul>
- *   <li>Si la validación falla: lanza ZeebeBpmnError con código ERROR_TARJETA_INVALIDA</li>
+ *   <li>Si la validación falla: lanza BpmnError con código ERROR_TARJETA_INVALIDA</li>
  *   <li>El Boundary Event en el BPMN captura este error y redirige al flujo de error</li>
  * </ul>
  *
@@ -96,7 +96,7 @@ public class ValidarTarjetaCreditoWorker {
      *
      * @param job job activado por Zeebe con las variables del proceso
      * @return mapa con las variables de salida para el proceso BPMN
-     * @throws ZeebeBpmnError si la tarjeta es inválida o hay error en la validación
+     * @throws BpmnError si la tarjeta es inválida o hay error en la validación
      */
     @JobWorker(type = "validar-tarjeta-credito", autoComplete = true)
     public Map<String, Object> manejarValidarTarjetaCredito(ActivatedJob job) {
@@ -140,7 +140,7 @@ public class ValidarTarjetaCreditoWorker {
                 log.error("❌ Tarjeta rechazada por pasarela de pago: {}",
                         resultado.motivoRechazo());
 
-                throw new ZeebeBpmnError(
+                throw BpmnError.bpmnError(
                         "ERROR_TARJETA_INVALIDA",
                         "Tarjeta rechazada: " + resultado.motivoRechazo(),
                         Map.of(
@@ -161,13 +161,13 @@ public class ValidarTarjetaCreditoWorker {
 
             return output;
 
-        } catch (ZeebeBpmnError e) {
+        } catch (BpmnError e) {
             // Re-lanzar errores BPMN para que sean capturados por Boundary Event
             throw e;
 
         } catch (ClienteNoEncontradoExcepcion e) {
             log.error("❌ Cliente no encontrado: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TARJETA_INVALIDA",
                     "Cliente no encontrado: " + e.getMessage(),
                     Map.of("motivoRechazo", "Cliente no existe en el sistema")
@@ -175,7 +175,7 @@ public class ValidarTarjetaCreditoWorker {
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al validar tarjeta: {}", e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TARJETA_INVALIDA",
                     "Error al validar tarjeta: " + e.getMessage(),
                     Map.of(
@@ -218,7 +218,7 @@ public class ValidarTarjetaCreditoWorker {
     private void validarClienteTieneTarjetas(ClienteDTO cliente) {
         if (cliente.cantidadTarjetas() == 0) {
             log.error("❌ El cliente {} no tiene tarjetas registradas", cliente.clienteId());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TARJETA_INVALIDA",
                     "El cliente no tiene tarjetas de crédito registradas",
                     Map.of("motivoRechazo", "Sin tarjetas registradas")
@@ -226,7 +226,7 @@ public class ValidarTarjetaCreditoWorker {
         }
         if (!cliente.tieneTarjetasValidas()) {
             log.error("❌ El cliente {} no tiene tarjetas válidas", cliente.clienteId());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TARJETA_INVALIDA",
                     "El cliente no tiene tarjetas válidas (todas expiradas)",
                     Map.of("motivoRechazo", "Todas las tarjetas están expiradas")
@@ -243,7 +243,7 @@ public class ValidarTarjetaCreditoWorker {
                     .orElseThrow(() -> {
                         log.error("❌ Tarjeta {} no encontrada para el cliente {}",
                                 tarjetaIdEspecifica, cliente.clienteId());
-                        return new ZeebeBpmnError(
+                        return BpmnError.bpmnError(
                                 "ERROR_TARJETA_INVALIDA",
                                 "Tarjeta especificada no encontrada",
                                 Map.of("motivoRechazo", "Tarjeta no pertenece al cliente")
@@ -255,7 +255,7 @@ public class ValidarTarjetaCreditoWorker {
                     .findFirst()
                     .orElseThrow(() -> {
                         log.error("❌ No hay tarjetas válidas para el cliente {}", cliente.clienteId());
-                        return new ZeebeBpmnError(
+                        return BpmnError.bpmnError(
                                 "ERROR_TARJETA_INVALIDA",
                                 "No hay tarjetas válidas disponibles",
                                 Map.of("motivoRechazo", "Todas las tarjetas expiradas")
@@ -276,7 +276,7 @@ public class ValidarTarjetaCreditoWorker {
                     tarjeta.tarjetaId(),
                     expiracion.getMonthValue(),
                     expiracion.getYear());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TARJETA_INVALIDA",
                     String.format("Tarjeta expirada (venció en %02d/%d)",
                             expiracion.getMonthValue(), expiracion.getYear()),

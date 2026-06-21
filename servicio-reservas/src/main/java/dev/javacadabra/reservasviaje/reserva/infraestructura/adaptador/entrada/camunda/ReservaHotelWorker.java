@@ -3,9 +3,9 @@ package dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.entrada.
 import dev.javacadabra.reservasviaje.reserva.aplicacion.dto.entrada.ReservarHotelDTO;
 import dev.javacadabra.reservasviaje.reserva.aplicacion.dto.salida.ReservaHotelRespuestaDTO;
 import dev.javacadabra.reservasviaje.reserva.aplicacion.puerto.entrada.ReservarHotelCasoUso;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -63,7 +63,7 @@ public class ReservaHotelWorker {
      *
      * @param job Job activado de Zeebe con las variables del proceso
      * @return Mapa con las variables de salida para el proceso
-     * @throws ZeebeBpmnError Si ocurre un error durante la reserva
+     * @throws BpmnError Si ocurre un error durante la reserva
      */
     @JobWorker(type = "reservar-hotel", autoComplete = true)
     public Map<String, Object> reservarHotel(ActivatedJob job) {
@@ -107,7 +107,7 @@ public class ReservaHotelWorker {
         } catch (IllegalArgumentException e) {
             log.error("❌ Error de validación en reserva de hotel: {}", e.getMessage());
             String motivo = "Error de validación en los datos del hotel: " + e.getMessage();
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_VALIDACION_HOTEL",
                     motivo,
                     Map.of("motivoFallo", motivo)
@@ -117,7 +117,7 @@ public class ReservaHotelWorker {
             log.error("❌ Error inesperado al procesar reserva de hotel: {}",
                     e.getMessage(), e);
             String motivo = "Error al procesar la reserva de hotel: " + e.getMessage();
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_RESERVA_HOTEL",
                     motivo,
                     Map.of("motivoFallo", motivo)

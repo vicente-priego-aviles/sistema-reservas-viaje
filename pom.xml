@@ -31,10 +31,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Spring Boot -->
-        <spring-boot.version>3.5.6</spring-boot.version>
+        <spring-boot.version>4.0.6</spring-boot.version>
 
         <!-- Camunda -->
-        <camunda-spring-boot.version>8.8.0</camunda-spring-boot.version>
+        <camunda-spring-boot.version>8.9.6</camunda-spring-boot.version>
 
         <!-- Base de Datos -->
         <h2.version>2.3.232</h2.version>
@@ -46,7 +46,7 @@
         <commons-lang3.version>3.18.0</commons-lang3.version>
 
         <!-- Documentación -->
-        <springdoc.version>2.7.0</springdoc.version>
+        <springdoc.version>3.0.3</springdoc.version>
 
         <!-- DDD -->
         <jmolecules.version>1.10.0</jmolecules.version>
