@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -66,4 +67,6 @@ public interface ClienteRepositorioSpringData extends JpaRepository<ClienteEntid
      */
     @Query("SELECT c FROM ClienteEntidad c LEFT JOIN FETCH c.tarjetas WHERE c.id = :id")
     Optional<ClienteEntidad> findByIdWithTarjetas(@Param("id") String id);
+
+    List<ClienteEntidad> findByEstado(ClienteEntidad.EstadoClienteEnum estado);
 }
