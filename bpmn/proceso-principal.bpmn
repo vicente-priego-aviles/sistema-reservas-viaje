@@ -59,7 +59,6 @@
       </bpmn:parallelGateway>
       <bpmn:userTask id="introducir-datos-vuelo" name="✈️ Introducir Datos del Vuelo">
         <bpmn:extensionElements>
-          <zeebe:userTask />
           <zeebe:assignmentDefinition assignee="demo" />
           <zeebe:formDefinition formId="gestionar-reserva-vuelo" />
         </bpmn:extensionElements>
@@ -83,7 +82,6 @@
       </bpmn:boundaryEvent>
       <bpmn:userTask id="introducir-datos-hotel" name="🏨 Introducir Datos del Hotel">
         <bpmn:extensionElements>
-          <zeebe:userTask />
           <zeebe:assignmentDefinition assignee="demo" />
           <zeebe:formDefinition formId="gestionar-reserva-hotel" />
         </bpmn:extensionElements>
@@ -107,7 +105,6 @@
       </bpmn:boundaryEvent>
       <bpmn:userTask id="introducir-datos-coche" name="🚗 Introducir Datos del Coche">
         <bpmn:extensionElements>
-          <zeebe:userTask />
           <zeebe:assignmentDefinition assignee="demo" />
           <zeebe:formDefinition formId="gestionar-reserva-coche" />
         </bpmn:extensionElements>
@@ -245,9 +242,14 @@
         <bpmn:outgoing>flujo-manual-a-actualizar</bpmn:outgoing>
         <bpmn:compensateEventDefinition id="CompensateManual_Coche" />
       </bpmn:intermediateThrowEvent>
-      <bpmn:serviceTask id="actualizar-registro-cliente" name="Actualizar Registro del Cliente">
+      <bpmn:serviceTask id="actualizar-registro-cliente" name="Revertir Estado del Cliente">
         <bpmn:extensionElements>
-          <zeebe:taskDefinition type="actualizar-registro-cliente" />
+          <zeebe:taskDefinition type="actualizar-estado-cliente" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=&quot;ACTIVO&quot;" target="nuevoEstado" />
+            <zeebe:input source="=clienteId" target="clienteId" />
+            <zeebe:input source="=reservaId" target="reservaId" />
+          </zeebe:ioMapping>
         </bpmn:extensionElements>
         <bpmn:incoming>flujo-manual-a-actualizar</bpmn:incoming>
         <bpmn:outgoing>flujo-manual-a-fin</bpmn:outgoing>
@@ -473,7 +475,7 @@
         <di:waypoint x="1277" y="995" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_subproceso-compensacion-manual" bpmnElement="subproceso-compensacion-manual" isExpanded="true">
-        <dc:Bounds x="765" y="1150" width="590" height="200" />
+        <dc:Bounds x="765" y="1150" width="740" height="200" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_compensacion-manual-inicio" bpmnElement="compensacion-manual-inicio">
@@ -483,51 +485,42 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-manual-compensar-vuelo" bpmnElement="evento-manual-compensar-vuelo">
-        <dc:Bounds x="887" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="892" y="1275" width="28" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="883" y="1210" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-manual-compensar-hotel" bpmnElement="evento-manual-compensar-hotel">
-        <dc:Bounds x="967" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="972" y="1275" width="26" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1003" y="1210" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_evento-manual-compensar-coche" bpmnElement="evento-manual-compensar-coche">
-        <dc:Bounds x="1047" y="1232" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1049" y="1275" width="32" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1123" y="1210" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_actualizar-registro-cliente" bpmnElement="actualizar-registro-cliente">
-        <dc:Bounds x="1127" y="1210" width="100" height="80" />
+        <dc:Bounds x="1243" y="1210" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_compensacion-manual-fin" bpmnElement="compensacion-manual-fin">
-        <dc:Bounds x="1277" y="1232" width="36" height="36" />
+        <dc:Bounds x="1387" y="1232" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1262" y="1275" width="67" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-vuelo" bpmnElement="flujo-manual-a-compensar-vuelo">
         <di:waypoint x="833" y="1250" />
-        <di:waypoint x="887" y="1250" />
+        <di:waypoint x="883" y="1250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-hotel" bpmnElement="flujo-manual-a-compensar-hotel">
-        <di:waypoint x="923" y="1250" />
-        <di:waypoint x="967" y="1250" />
+        <di:waypoint x="983" y="1250" />
+        <di:waypoint x="1003" y="1250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-manual-a-compensar-coche" bpmnElement="flujo-manual-a-compensar-coche">
-        <di:waypoint x="1003" y="1250" />
-        <di:waypoint x="1047" y="1250" />
+        <di:waypoint x="1103" y="1250" />
+        <di:waypoint x="1123" y="1250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-manual-a-actualizar" bpmnElement="flujo-manual-a-actualizar">
-        <di:waypoint x="1083" y="1250" />
-        <di:waypoint x="1127" y="1250" />
+        <di:waypoint x="1223" y="1250" />
+        <di:waypoint x="1243" y="1250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flujo-manual-a-fin" bpmnElement="flujo-manual-a-fin">
-        <di:waypoint x="1227" y="1250" />
-        <di:waypoint x="1277" y="1250" />
+        <di:waypoint x="1343" y="1250" />
+        <di:waypoint x="1387" y="1250" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Shape_subproceso-actualizar-tarjeta" bpmnElement="subproceso-actualizar-tarjeta" isExpanded="true">
         <dc:Bounds x="765" y="1380" width="350" height="150" />

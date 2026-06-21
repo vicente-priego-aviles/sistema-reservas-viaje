@@ -1,0 +1,90 @@
+name: Feature Request
+description: Proponer una nueva funcionalidad o mejora con impacto en el comportamiento del sistema
+title: "feat: "
+labels: ["enhancement"]
+assignees: ["vicente-priego-aviles"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa este template para proponer nuevas funcionalidades. Cuanto más contexto aportes, más fácil será priorizar y diseñar la solución.
+
+  - type: dropdown
+    id: microservicio
+    attributes:
+      label: Microservicio o área afectada
+      options:
+        - servicio-clientes
+        - servicio-vuelos
+        - servicio-hoteles
+        - servicio-alquiler-coches
+        - servicio-pagos
+        - servicio-reservas
+        - BPMN / Camunda
+        - Infraestructura / CI-CD
+        - Transversal (varios)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema que resuelve
+      description: ¿Qué limitación o necesidad motiva esta funcionalidad?
+      placeholder: |
+        Actualmente no existe ningún mecanismo de notificación al cliente cuando su reserva
+        cambia de estado. El cliente no sabe si la reserva fue confirmada o cancelada.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solucion
+    attributes:
+      label: Solución propuesta
+      description: Describe cómo debería funcionar la nueva funcionalidad.
+      placeholder: |
+        Añadir un worker de Camunda que envíe un email de confirmación/cancelación
+        mediante un adaptador de salida hacia un servicio de email (p.ej. SendGrid).
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterio
+    attributes:
+      label: Criterio de aceptación
+      description: Lista de condiciones que deben cumplirse para considerar la feature completa.
+      placeholder: |
+        - [ ] El cliente recibe un email al confirmar la reserva
+        - [ ] El cliente recibe un email al cancelar la reserva
+        - [ ] El email incluye el número de reserva y los detalles del viaje
+        - [ ] Existe un test de integración que verifica el envío
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impacto
+    attributes:
+      label: Impacto estimado
+      options:
+        - Alto — afecta al flujo principal de negocio
+        - Medio — mejora la experiencia pero no es bloqueante
+        - Bajo — nice-to-have, no urgente
+    validations:
+      required: true
+
+  - type: dropdown
+    id: esfuerzo
+    attributes:
+      label: Estimación de esfuerzo
+      options:
+        - XS — menos de 1 hora
+        - S — medio día
+        - M — 1 día
+        - L — 2-3 días
+        - XL — más de una semana
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto adicional
+      description: Mockups, referencias, documentación externa, alternativas consideradas, etc.

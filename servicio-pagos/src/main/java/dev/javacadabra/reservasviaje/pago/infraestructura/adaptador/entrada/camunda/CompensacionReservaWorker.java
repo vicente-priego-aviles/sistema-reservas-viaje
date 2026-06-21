@@ -1,9 +1,9 @@
 package dev.javacadabra.reservasviaje.pago.infraestructura.adaptador.entrada.camunda;
 
 import io.camunda.client.CamundaClient;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class CompensacionReservaWorker {
 
         if (reservaId == null) {
             log.error("❌ reservaId es nulo, no se puede publicar mensaje de compensación");
-            throw new ZeebeBpmnError("ERROR_COMPENSACION",
+            throw BpmnError.bpmnError("ERROR_COMPENSACION",
                     "Falta reservaId para publicar compensación",
                     Map.of("motivoInvalidez", "Error interno: reservaId no disponible"));
         }

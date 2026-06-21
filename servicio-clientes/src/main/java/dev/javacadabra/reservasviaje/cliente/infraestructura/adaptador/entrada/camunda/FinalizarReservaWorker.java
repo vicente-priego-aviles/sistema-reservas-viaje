@@ -3,9 +3,9 @@ package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.
 import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteDTO;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.GestionarEstadoClienteUseCase;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoExcepcion;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -69,7 +69,7 @@ public class FinalizarReservaWorker {
 
         } catch (ClienteNoEncontradoExcepcion e) {
             log.error("❌ Cliente no encontrado: {}", clienteId);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_NO_ENCONTRADO",
                     "Cliente no encontrado: " + clienteId,
                     Map.of(
@@ -82,7 +82,7 @@ public class FinalizarReservaWorker {
         } catch (IllegalStateException e) {
             log.error("❌ Estado inválido para finalizar reserva en cliente {}: {}",
                     clienteId, e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_ESTADO_INVALIDO",
                     "El cliente no puede finalizar reserva en su estado actual: " + e.getMessage(),
                     Map.of(
@@ -96,7 +96,7 @@ public class FinalizarReservaWorker {
         } catch (Exception e) {
             log.error("❌ Error al finalizar reserva para cliente {}: {}",
                     clienteId, e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_FINALIZAR_RESERVA",
                     "Error al finalizar reserva: " + e.getMessage(),
                     Map.of(

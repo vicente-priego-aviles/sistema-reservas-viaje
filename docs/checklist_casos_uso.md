@@ -16,7 +16,7 @@ Marcar como ✅ una vez probado y los logs confirmen el flujo esperado.
 | 4 | Cliente Bloqueado | ✅ Probado | `ERROR_CLIENTE_BLOQUEADO` en `actualizar-estado-en-proceso` → error gestión cliente |
 | 5 | Tarjeta Expirada | ✅ Probado | `ERROR_TARJETA_INVALIDA` boundary en `validar-tarjeta-credito` → error gestión cliente |
 | 6 | Error en Reserva con Compensación BPMN | ✅ Probado | `ERROR_VALIDACION_VUELO` → event subprocess `subproceso-manejo-errores` → BPMN compensation → gateway (`motivoFallo != null`) → notificar → `fin-reserva-fallida` |
-| 7 | Error en Pago con Compensación por Mensaje | ⬜ Pendiente | `ERROR_PROCESAR_PAGO` → mensaje `compensar-reserva` → subproceso compensación manual → `fin-reserva-no-completada` |
+| 7 | Error en Pago con Compensación por Mensaje | ✅ Verificado | `ERROR_PROCESAR_PAGO` → mensaje `compensar-reserva` → subproceso compensación manual → `cancelar-vuelo/hotel/coche` → `fin-reserva-no-completada` |
 | 8 | Advertencia en Actualización | ⬜ Pendiente | Error en `actualizar-estado-confirmado` → `revertir-estado-cliente` → `marcar-reserva-advertencia` → `fin-reserva-con-advertencia` |
 | 9 | Actualización de Tarjeta en Paralelo | ⬜ Pendiente | Mensaje no-interrumpible `tarjeta-proporcionada` → subproceso paralelo → `actualizar-informacion-tarjeta` |
 

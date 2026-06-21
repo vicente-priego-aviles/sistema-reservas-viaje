@@ -1,7 +1,7 @@
 package dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.salida.cliente;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import dev.javacadabra.reservasviaje.reserva.aplicacion.puerto.salida.EventoPublicadorPuerto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +83,7 @@ public class EventoPublicadorAdaptador implements EventoPublicadorPuerto {
     private <T> String serializarEvento(T evento) {
         try {
             return objectMapper.writeValueAsString(evento);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.warn("⚠️ No se pudo serializar el evento a JSON: {}", e.getMessage());
             return evento.toString();
         }

@@ -6,9 +6,9 @@ import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteDTO;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.CrearClienteUseCase;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.DniDuplicadoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.EmailDuplicadoExcepcion;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -109,7 +109,7 @@ public class CrearClienteWorker {
 
         } catch (EmailDuplicadoExcepcion e) {
             log.error("❌ Error: Email duplicado - {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_EMAIL_DUPLICADO",
                     "El email ya existe en el sistema: " + e.getMessage(),
                     Map.of(
@@ -120,7 +120,7 @@ public class CrearClienteWorker {
 
         } catch (DniDuplicadoExcepcion e) {
             log.error("❌ Error: DNI duplicado - {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_DNI_DUPLICADO",
                     "El DNI ya existe en el sistema",
                     Map.of(
@@ -130,7 +130,7 @@ public class CrearClienteWorker {
 
         } catch (IllegalArgumentException e) {
             log.error("❌ Error de validación: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_VALIDACION",
                     "Datos de entrada inválidos: " + e.getMessage(),
                     Map.of(
@@ -141,7 +141,7 @@ public class CrearClienteWorker {
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al crear cliente: {}", e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CREACION_CLIENTE",
                     "Error inesperado: " + e.getMessage(),
                     Map.of(

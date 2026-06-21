@@ -1,0 +1,86 @@
+name: Deuda Técnica
+description: Código incompleto, warnings, TODOs o mejoras de calidad sin impacto funcional inmediato
+title: "chore: "
+labels: ["tech-debt"]
+assignees: ["vicente-priego-aviles"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Usa este template para deuda técnica: warnings del compilador, TODOs pendientes, código incompleto, refactorizaciones necesarias, etc.
+
+  - type: dropdown
+    id: microservicio
+    attributes:
+      label: Microservicio afectado
+      options:
+        - servicio-clientes
+        - servicio-vuelos
+        - servicio-hoteles
+        - servicio-alquiler-coches
+        - servicio-pagos
+        - servicio-reservas
+        - Infraestructura / Build
+        - Varios
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de deuda técnica
+      options:
+        - Warning del compilador / IDE
+        - TODO / FIXME en código
+        - Código incompleto (stub / placeholder)
+        - Refactorización necesaria
+        - Falta de tests
+        - Documentación desactualizada
+        - Dependencia desactualizada
+    validations:
+      required: true
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción del problema
+      description: ¿Qué está mal o incompleto? ¿Dónde está exactamente?
+      placeholder: |
+        La clase CVV.java tiene un TODO en línea 156 indicando que el cifrado AES-256-GCM
+        no está implementado. Actualmente el valor se almacena en texto plano.
+    validations:
+      required: true
+
+  - type: textarea
+    id: archivos
+    attributes:
+      label: Archivos afectados
+      description: Lista de ficheros con ruta relativa.
+      placeholder: |
+        - servicio-clientes/src/main/java/.../dominio/modelo/objetovalor/CVV.java:156
+        - servicio-clientes/src/main/java/.../dominio/modelo/objetovalor/NumeroTarjeta.java:138
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterio
+    attributes:
+      label: Criterio de aceptación
+      description: ¿Cómo sabremos que está resuelto?
+      placeholder: |
+        - [ ] El compilador no muestra warnings en los archivos afectados
+        - [ ] Los tests pasan sin errores
+        - [ ] No quedan TODOs relacionados en el código
+    validations:
+      required: true
+
+  - type: dropdown
+    id: esfuerzo
+    attributes:
+      label: Estimación de esfuerzo
+      options:
+        - XS — menos de 1 hora
+        - S — medio día
+        - M — 1 día
+        - L — 2-3 días
+        - XL — más de una semana

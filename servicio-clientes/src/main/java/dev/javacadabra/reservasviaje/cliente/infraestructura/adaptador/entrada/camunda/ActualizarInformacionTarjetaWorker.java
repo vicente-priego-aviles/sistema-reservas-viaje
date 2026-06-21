@@ -12,9 +12,9 @@ import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.ClienteI
 import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.NumeroTarjeta;
 import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.TarjetaId;
 import dev.javacadabra.reservasviaje.cliente.dominio.repositorio.ClienteRepositorio;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +85,7 @@ public class ActualizarInformacionTarjetaWorker {
      *
      * @param job job activado por Camunda
      * @return mapa con variables de salida
-     * @throws ZeebeBpmnError si ocurre algún error durante la actualización
+     * @throws BpmnError si ocurre algún error durante la actualización
      */
     @JobWorker(type = "actualizar-informacion-tarjeta", autoComplete = true)
     @Transactional
@@ -160,7 +160,7 @@ public class ActualizarInformacionTarjetaWorker {
 
         } catch (ClienteNoEncontradoExcepcion e) {
             log.error("❌ Cliente no encontrado: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_NO_ENCONTRADO",
                     "El cliente especificado no existe: " + e.getMessage(),
                     Map.of("tarjetaActualizada", false)
@@ -168,7 +168,7 @@ public class ActualizarInformacionTarjetaWorker {
 
         } catch (TarjetaNoEncontradaExcepcion e) {
             log.error("❌ Tarjeta no encontrada: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_TARJETA_NO_ENCONTRADA",
                     "La tarjeta especificada no existe: " + e.getMessage(),
                     Map.of("tarjetaActualizada", false)
@@ -176,7 +176,7 @@ public class ActualizarInformacionTarjetaWorker {
 
         } catch (ClienteBloqueadoExcepcion e) {
             log.error("❌ Cliente bloqueado: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_BLOQUEADO",
                     "No se puede actualizar la tarjeta de un cliente bloqueado: " + e.getMessage(),
                     Map.of("tarjetaActualizada", false)
@@ -184,7 +184,7 @@ public class ActualizarInformacionTarjetaWorker {
 
         } catch (ClienteInactivoExcepcion e) {
             log.error("❌ Cliente inactivo: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_CLIENTE_INACTIVO",
                     "No se puede actualizar la tarjeta de un cliente inactivo: " + e.getMessage(),
                     Map.of("tarjetaActualizada", false)
@@ -196,7 +196,7 @@ public class ActualizarInformacionTarjetaWorker {
             // Determinar código de error específico
             String codigoError = determinarCodigoError(e.getMessage());
 
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     codigoError,
                     "Error en los datos de entrada: " + e.getMessage(),
                     Map.of("tarjetaActualizada", false)
@@ -204,7 +204,7 @@ public class ActualizarInformacionTarjetaWorker {
 
         } catch (Exception e) {
             log.error("❌ Error inesperado al actualizar información de tarjeta: {}", e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_ACTUALIZAR_TARJETA",
                     "Error inesperado al actualizar tarjeta: " + e.getMessage(),
                     Map.of("tarjetaActualizada", false)

@@ -1,8 +1,8 @@
 package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.camunda;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -94,7 +94,7 @@ public class ValidarDatosEntradaWorker {
      *
      * @param job job activado por Camunda
      * @return mapa con variables de salida
-     * @throws ZeebeBpmnError si los datos son inválidos
+     * @throws BpmnError si los datos son inválidos
      */
     @JobWorker(type = "validar-datos-entrada", autoComplete = true)
     public Map<String, Object> validarDatosEntrada(ActivatedJob job) {
@@ -149,7 +149,7 @@ public class ValidarDatosEntradaWorker {
                 errores.forEach(err -> log.error("❌ {}", err));
 
                 // Lanzar error BPMN con detalles
-                throw new ZeebeBpmnError(
+                throw BpmnError.bpmnError(
                         "ERROR_DATOS_INVALIDOS",
                         "Los datos de entrada contienen errores: " + String.join(", ", errores),
                         Map.of(
@@ -168,13 +168,13 @@ public class ValidarDatosEntradaWorker {
 
             return resultado;
 
-        } catch (ZeebeBpmnError e) {
+        } catch (BpmnError e) {
             // Propagar errores BPMN
             throw e;
 
         } catch (Exception e) {
             log.error("❌ Error inesperado durante validación: {}", e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_VALIDACION",
                     "Error inesperado durante validación: " + e.getMessage(),
                     Map.of(

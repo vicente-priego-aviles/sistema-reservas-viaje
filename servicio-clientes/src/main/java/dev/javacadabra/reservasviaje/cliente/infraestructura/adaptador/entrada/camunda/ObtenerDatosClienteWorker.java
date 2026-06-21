@@ -3,9 +3,9 @@ package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.
 import dev.javacadabra.reservasviaje.cliente.aplicacion.dto.salida.ClienteDTO;
 import dev.javacadabra.reservasviaje.cliente.aplicacion.puerto.entrada.ConsultarClienteUseCase;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoExcepcion;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.common.exception.ZeebeBpmnError;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.annotation.JobWorker;
+import io.camunda.client.exception.BpmnError;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +53,7 @@ import java.util.Map;
  * <ul>
  *   <li>Si el cliente existe: devuelve sus datos completos con clienteObtenido=true</li>
  *   <li>Si el cliente NO existe: devuelve clienteObtenido=false (permite que el gateway BPMN maneje el flujo)</li>
- *   <li>En caso de error inesperado: lanza ZeebeBpmnError para manejo en el BPMN</li>
+ *   <li>En caso de error inesperado: lanza BpmnError para manejo en el BPMN</li>
  * </ul>
  *
  * @author javacadabra
@@ -77,7 +77,7 @@ public class ObtenerDatosClienteWorker {
      *
      * @param job job activado por Zeebe con las variables del proceso
      * @return mapa con las variables de salida para el proceso BPMN
-     * @throws ZeebeBpmnError si ocurre un error inesperado al consultar el cliente
+     * @throws BpmnError si ocurre un error inesperado al consultar el cliente
      */
     @JobWorker(type = "obtener-datos-cliente", autoComplete = true)
     public Map<String, Object> manejarObtenerDatosCliente(ActivatedJob job) {
@@ -126,7 +126,7 @@ public class ObtenerDatosClienteWorker {
 
         } catch (IllegalArgumentException e) {
             log.error("❌ Error de validación al obtener datos del cliente: {}", e.getMessage());
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_VALIDACION_CLIENTE",
                     "Error de validación: " + e.getMessage(),
                     Map.of(
@@ -138,7 +138,7 @@ public class ObtenerDatosClienteWorker {
         } catch (Exception e) {
             log.error("❌ Error inesperado al obtener datos del cliente: {}",
                     e.getMessage(), e);
-            throw new ZeebeBpmnError(
+            throw BpmnError.bpmnError(
                     "ERROR_OBTENER_CLIENTE",
                     "Error al obtener datos del cliente: " + e.getMessage(),
                     Map.of(

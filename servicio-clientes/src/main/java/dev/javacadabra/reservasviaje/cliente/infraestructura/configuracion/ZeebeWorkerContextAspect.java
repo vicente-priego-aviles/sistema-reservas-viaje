@@ -1,6 +1,6 @@
 package dev.javacadabra.reservasviaje.cliente.infraestructura.configuracion;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.ActivatedJob;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 @Slf4j
 public class ZeebeWorkerContextAspect {
 
-    @Around("@annotation(io.camunda.zeebe.spring.client.annotation.JobWorker)")
+    @Around("@annotation(io.camunda.client.annotation.JobWorker)")
     public Object enriquecerContextoLog(ProceedingJoinPoint joinPoint) throws Throwable {
         ActivatedJob job = Arrays.stream(joinPoint.getArgs())
                 .filter(arg -> arg instanceof ActivatedJob)

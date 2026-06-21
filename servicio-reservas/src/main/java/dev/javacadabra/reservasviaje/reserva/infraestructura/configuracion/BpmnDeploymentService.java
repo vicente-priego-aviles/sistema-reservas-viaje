@@ -1,8 +1,8 @@
 package dev.javacadabra.reservasviaje.reserva.infraestructura.configuracion;
 
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.DeploymentEvent;
-import io.camunda.zeebe.client.api.response.Process;
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.DeploymentEvent;
+import io.camunda.client.api.response.Process;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +26,14 @@ import java.util.concurrent.TimeUnit;
  * 2. Proceso principal
  *
  * @author JavaCadabra
- * @see ZeebeClient
+ * @see CamundaClient
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class BpmnDeploymentService {
 
-    private final ZeebeClient zeebeClient;
+    private final CamundaClient camundaClient;
 
     /**
      * Orden de despliegue de procesos BPMN.
@@ -129,7 +129,7 @@ public class BpmnDeploymentService {
 
         try {
             // Intentar obtener la topología del cluster como health check
-            var topology = zeebeClient.newTopologyRequest()
+            var topology = camundaClient.newTopologyRequest()
                     .send()
                     .join();
 
@@ -203,7 +203,7 @@ public class BpmnDeploymentService {
         }
 
         // Desplegar en Zeebe
-        DeploymentEvent deployment = zeebeClient.newDeployResourceCommand()
+        DeploymentEvent deployment = camundaClient.newDeployResourceCommand()
                 .addResourceStream(resource.getInputStream(), resource.getFilename())
                 .send()
                 .join();
@@ -272,7 +272,7 @@ public class BpmnDeploymentService {
         if (!form.exists()) throw new IOException("Archivo no encontrado: bpmn/forms/iniciar-reserva.form");
         if (!bpmn.exists()) throw new IOException("Archivo no encontrado: bpmn/proceso-principal.bpmn");
 
-        DeploymentEvent deployment = zeebeClient.newDeployResourceCommand()
+        DeploymentEvent deployment = camundaClient.newDeployResourceCommand()
                 .addResourceStream(form.getInputStream(), form.getFilename())
                 .addResourceStream(bpmn.getInputStream(), bpmn.getFilename())
                 .send()
@@ -302,7 +302,7 @@ public class BpmnDeploymentService {
 
             for (Resource resource : recursos) {
                 try {
-                    DeploymentEvent deployment = zeebeClient.newDeployResourceCommand()
+                    DeploymentEvent deployment = camundaClient.newDeployResourceCommand()
                             .addResourceStream(resource.getInputStream(), resource.getFilename())
                             .send()
                             .join();

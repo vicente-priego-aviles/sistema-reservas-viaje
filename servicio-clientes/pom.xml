@@ -25,8 +25,8 @@
     <properties>
         <!-- Versiones heredadas del parent POM -->
         <java.version>21</java.version>
-        <spring-boot.version>3.5.6</spring-boot.version>
-        <camunda-spring-boot.version>8.8.0</camunda-spring-boot.version>
+        <spring-boot.version>4.0.6</spring-boot.version>
+        <camunda-spring-boot.version>8.9.6</camunda-spring-boot.version>
 
         <!-- Propiedades específicas del módulo -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,7 +69,7 @@
         <!-- Spring AOP - Aspect-oriented programming -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
 
         <!-- ========================================== -->
