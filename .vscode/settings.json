@@ -1,6 +1,7 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.compile.nullAnalysis.mode": "automatic",
+  "java.project.generatedSourcePaths": ["**/target/generated-sources/**"],
   "files.exclude": {
     "**/target/generated-sources": true,
     "**/target/generated-test-sources": true
