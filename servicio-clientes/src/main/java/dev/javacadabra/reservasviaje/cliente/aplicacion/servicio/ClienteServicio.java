@@ -598,8 +598,6 @@ public class ClienteServicio implements
             ClienteId clienteId,
             dev.javacadabra.reservasviaje.cliente.aplicacion.dto.entrada.CrearTarjetaDTO dto) {
 
-        // TODO: Encriptar número de tarjeta y CVV antes de crear value objects
-        // Por ahora usamos placeholder - los datos deberían encriptarse aquí
         NumeroTarjeta numeroTarjeta = NumeroTarjeta.de(dto.numeroTarjeta());
         CVV cvv = CVV.crear(dto.cvv());
 
