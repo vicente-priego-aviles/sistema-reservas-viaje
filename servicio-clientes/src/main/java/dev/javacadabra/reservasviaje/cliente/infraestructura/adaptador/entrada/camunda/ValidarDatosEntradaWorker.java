@@ -82,6 +82,13 @@ public class ValidarDatosEntradaWorker {
 
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private static LocalDate parseFecha(String s) {
+        // Camunda Forms datetime fields send ISO-8601 strings (e.g. "2024-01-16T10:00:00")
+        int tIndex = s.indexOf('T');
+        String datePart = tIndex > 0 ? s.substring(0, tIndex) : s;
+        return LocalDate.parse(datePart, FORMATO_FECHA);
+    }
+
     // Constantes de validación
     private static final int MIN_PASAJEROS = 1;
     private static final int MAX_PASAJEROS = 10;
@@ -245,7 +252,7 @@ public class ValidarDatosEntradaWorker {
         String fechaInicioStr = fechaInicioObj.toString().trim();
 
         try {
-            LocalDate fechaInicio = LocalDate.parse(fechaInicioStr, FORMATO_FECHA);
+            LocalDate fechaInicio = parseFecha(fechaInicioStr);
 
             // Validar que no esté en el pasado
             if (fechaInicio.isBefore(LocalDate.now())) {
@@ -284,7 +291,7 @@ public class ValidarDatosEntradaWorker {
         String fechaFinStr = fechaFinObj.toString().trim();
 
         try {
-            LocalDate fechaFin = LocalDate.parse(fechaFinStr, FORMATO_FECHA);
+            LocalDate fechaFin = parseFecha(fechaFinStr);
 
             // Validar que no esté en el pasado
             if (fechaFin.isBefore(LocalDate.now())) {
@@ -314,9 +321,9 @@ public class ValidarDatosEntradaWorker {
             List<String> errores,
             List<String> advertencias
     ) {
-        // Validar que fechaFin sea posterior a fechaInicio
-        if (!fechaFin.isAfter(fechaInicio)) {
-            errores.add("La 'fechaFin' debe ser posterior a la 'fechaInicio'");
+        // Validar que fechaFin no sea anterior a fechaInicio (mismo día permitido)
+        if (fechaFin.isBefore(fechaInicio)) {
+            errores.add("La 'fechaFin' no puede ser anterior a la 'fechaInicio'");
             return;
         }
 

@@ -31,6 +31,12 @@ public class ReservarHotelServicio implements ReservarHotelPuertoEntrada {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private static LocalDate parseFecha(String s) {
+        int tIndex = s.indexOf('T');
+        String datePart = tIndex > 0 ? s.substring(0, tIndex) : s;
+        return LocalDate.parse(datePart, FORMATTER);
+    }
+
     @Override
     @Transactional
     public ReservaHotel reservarHotel(String reservaId, String clienteId, String destino,
@@ -45,9 +51,9 @@ public class ReservarHotelServicio implements ReservarHotelPuertoEntrada {
             );
         }
 
-        // Parsear fechas
-        LocalDate fechaEntrada = LocalDate.parse(fechaInicio, FORMATTER);
-        LocalDate fechaSalida = LocalDate.parse(fechaFin, FORMATTER);
+        // Parsear fechas (admite ISO datetime "2024-01-16T10:00:00" y date "2024-01-16")
+        LocalDate fechaEntrada = parseFecha(fechaInicio);
+        LocalDate fechaSalida = parseFecha(fechaFin);
 
         // Crear el agregado de dominio
         ReservaHotel reserva = ReservaHotel.builder()
