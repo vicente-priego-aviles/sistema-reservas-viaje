@@ -134,7 +134,7 @@ public class ReservaHotelWorker {
     private void validarVariablesRequeridas(Map<String, Object> variables) {
         String[] camposRequeridos = {
                 "clienteId", "nombreHotel", "ciudad", "direccion",
-                "fechaEntrada", "fechaSalida", "tipoHabitacion",
+                "fechaEntrada", "fechaCheckout", "tipoHabitacion",
                 "numeroHabitaciones", "numeroHuespedes", "precioHotel"
         };
 
@@ -181,7 +181,7 @@ public class ReservaHotelWorker {
         try {
             // Mapear fechas
             LocalDate fechaEntrada = parseDate(variables.get("fechaEntrada"));
-            LocalDate fechaSalida = parseDate(variables.get("fechaSalida"));
+            LocalDate fechaSalida = parseDate(variables.get("fechaCheckout"));
 
             // Validar que la fecha de salida sea posterior a la de entrada
             if (!fechaSalida.isAfter(fechaEntrada)) {

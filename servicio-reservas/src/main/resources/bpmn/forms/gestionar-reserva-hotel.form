@@ -161,10 +161,9 @@
         "row": "Row_10",
         "columns": 6
       },
-      "id": "fechaSalida",
-      "key": "fechaSalida",
+      "id": "fechaCheckout",
+      "key": "fechaCheckout",
       "description": "Fecha de check-out del hotel",
-      "defaultValue": "=date(fechaEntrada) + duration(\"P2D\")",
       "validate": {
         "required": true
       },

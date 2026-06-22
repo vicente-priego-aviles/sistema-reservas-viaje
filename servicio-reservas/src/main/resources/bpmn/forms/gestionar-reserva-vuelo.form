@@ -145,7 +145,6 @@
       "id": "fechaSalida",
       "key": "fechaSalida",
       "description": "Fecha y hora de salida del vuelo",
-      "defaultValue": "=fechaInicio",
       "validate": {
         "required": true
       },
