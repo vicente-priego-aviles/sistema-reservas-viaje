@@ -115,7 +115,7 @@
       "id": "fechaInicio",
       "key": "fechaInicio",
       "description": "Fecha de inicio del viaje",
-      "defaultValue": "=today() + duration(\"P7D\")",
+      "defaultValue": "=today() + duration(\"P1D\")",
       "validate": { "required": true },
       "dateLabel": "Fecha de Inicio"
     },
@@ -127,7 +127,7 @@
       "id": "fechaFin",
       "key": "fechaFin",
       "description": "Fecha de fin del viaje (debe ser posterior a la fecha de inicio)",
-      "defaultValue": "=today() + duration(\"P14D\")",
+      "defaultValue": "=today() + duration(\"P1D\")",
       "validate": { "required": true },
       "dateLabel": "Fecha de Fin"
     },
