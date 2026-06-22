@@ -2,15 +2,10 @@ package dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.salida.p
 
 import dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.salida.persistencia.entidad.ReservaHotelEntidad;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repositorio JPA para operaciones de persistencia de Pagos de hotel.
- */
-@Repository
-public interface ReservaHotelJpaRepositorio extends JpaRepository<ReservaHotelEntidad, Long> {
+public interface ReservaHotelJpaRepositorio extends JpaRepository<ReservaHotelEntidad, String> {
 
     /**
      * Busca una reserva de hotel por su ID de negocio (ReservaId).

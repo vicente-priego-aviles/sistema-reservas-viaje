@@ -4,15 +4,10 @@ import dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.salida.pe
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repositorio JPA para operaciones de persistencia de Pagos de vuelo.
- */
-@Repository
-public interface ReservaVueloJpaRepositorio extends JpaRepository<ReservaVueloEntidad, Long> {
+public interface ReservaVueloJpaRepositorio extends JpaRepository<ReservaVueloEntidad, String> {
 
     /**
      * Busca una reserva de vuelo por su ID de negocio (ReservaId).

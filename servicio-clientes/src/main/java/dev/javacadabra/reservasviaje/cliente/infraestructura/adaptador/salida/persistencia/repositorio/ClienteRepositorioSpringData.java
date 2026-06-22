@@ -4,24 +4,10 @@ import dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.salida.pe
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repositorio Spring Data JPA para ClienteEntidad.
- *
- * <p>Proporciona operaciones CRUD básicas y métodos de consulta personalizados
- * para la entidad JPA ClienteEntidad.
- *
- * <p>Spring Data JPA genera automáticamente la implementación de este repositorio
- * en tiempo de ejecución, proporcionando métodos estándar y derivados.
- *
- * @author javacadabra
- * @version 1.0.0
- */
-@Repository
 public interface ClienteRepositorioSpringData extends JpaRepository<ClienteEntidad, String> {
 
     /**
