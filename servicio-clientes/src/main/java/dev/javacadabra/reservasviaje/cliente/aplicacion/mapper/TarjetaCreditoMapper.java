@@ -19,10 +19,7 @@ import java.util.List;
  * @author javacadabra
  * @version 1.0.0
  */
-@Mapper(
-        componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {ClienteMapper.class}  // ✅ Compartir métodos comunes con ClienteMapper
-)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TarjetaCreditoMapper {
 
     // ==================== DOMINIO → DTO ====================
