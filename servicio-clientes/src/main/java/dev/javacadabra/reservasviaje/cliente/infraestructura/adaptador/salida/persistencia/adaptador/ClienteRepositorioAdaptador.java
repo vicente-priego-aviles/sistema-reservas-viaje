@@ -53,11 +53,11 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
     @Override
     @Transactional
     public Cliente save(Cliente cliente) {
-        log.debug("💾 Guardando cliente: {}", cliente.getClienteId());
-
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
+
+        log.debug("💾 Guardando cliente: {}", cliente.getClienteId());
 
         // Buscar si ya existe la entidad JPA
         Optional<ClienteEntidad> entidadExistente =
@@ -93,11 +93,11 @@ public class ClienteRepositorioAdaptador implements ClienteRepositorio {
     @Override
     @Transactional
     public void delete(Cliente cliente) {
-        log.debug("🗑️ Eliminando cliente: {}", cliente.getClienteId());
-
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
         }
+
+        log.debug("🗑️ Eliminando cliente: {}", cliente.getClienteId());
 
         repositorioSpringData.deleteById(cliente.getClienteId().valor());
 
