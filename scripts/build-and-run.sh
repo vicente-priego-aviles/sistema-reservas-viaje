@@ -125,7 +125,8 @@ if [ $? -eq 0 ]; then
   echo -e "  🚗 Alquiler Coches: http://localhost:9083"
   echo -e "  💳 Pagos:          http://localhost:9084"
   echo -e "  📋 Reservas:       http://localhost:9090"
-  echo -e "  🧠 Camunda:        http://localhost:8088"
+  echo -e "  🧠 Operate:        http://localhost:8080/operate"
+  echo -e "  📋 Tasklist:       http://localhost:8080/tasklist"
 else
   echo -e "${CROSS} Ocurrió un error al iniciar los contenedores."
   exit 1

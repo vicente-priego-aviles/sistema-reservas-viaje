@@ -21,8 +21,8 @@ CYAN="\e[36m"
 RESET="\e[0m"
 
 BASE_URL="http://localhost:9080"
-OPERATE_URL="http://localhost:8081"   # Operate corre en 8081 (docker: 8081->8080)
-ZEEBE_REST_URL="http://localhost:8088"
+OPERATE_URL="http://localhost:8080"   # Camunda 8.9: Operate embebido en puerto 8080
+ZEEBE_REST_URL="http://localhost:8080"
 OPERATE_USER="demo"
 OPERATE_PASS="demo"
 OPERATE_COOKIE="/tmp/reset-operate-cookie.txt"

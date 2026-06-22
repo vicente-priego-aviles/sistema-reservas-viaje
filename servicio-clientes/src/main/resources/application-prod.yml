@@ -50,7 +50,7 @@ camunda:
     mode: self-managed
     zeebe:
       gateway-address: ${ZEEBE_ADDRESS:zeebe:26500}
-      rest-address: ${ZEEBE_REST:http://zeebe:8080}
+      rest-address: ${ZEEBE_REST:http://camunda:8080}
       prefer-rest-over-grpc: false
       security:
         plaintext: false

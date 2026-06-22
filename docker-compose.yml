@@ -17,8 +17,8 @@ services:
     ports:
       - "9080:9080"
     environment:
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
     networks:
        - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
@@ -36,8 +36,8 @@ services:
     ports:
       - "9081:9081"
     environment:
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
     networks:
        - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
@@ -55,8 +55,8 @@ services:
     ports:
       - "9082:9082"
     environment:
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
     networks:
        - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
@@ -74,8 +74,8 @@ services:
     ports:
       - "9083:9083"
     environment:
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
     networks:
        - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
@@ -93,8 +93,8 @@ services:
     ports:
       - "9084:9084"
     environment:
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
     networks:
        - sistema-reservas-viaje_camunda-platform
     restart: unless-stopped
@@ -112,8 +112,8 @@ services:
     ports:
       - "9090:9090"
     environment:
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
     volumes:
       - ./bpmn:/app/bpmn:ro
     networks:
