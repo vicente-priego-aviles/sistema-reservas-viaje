@@ -145,6 +145,7 @@
       "id": "fechaSalida",
       "key": "fechaSalida",
       "description": "Fecha y hora de salida del vuelo",
+      "defaultValue": "=fechaInicio",
       "validate": {
         "required": true
       },
@@ -428,9 +429,9 @@
           "nombre": "",
           "apellidos": "",
           "numeroDocumento": "",
-          "tipoDocumento": "PASAPORTE",
-          "fechaNacimiento": null,
-          "nacionalidad": ""
+          "tipoDocumento": "DNI",
+          "fechaNacimiento": "1974-12-09",
+          "nacionalidad": "Española"
         }
       ]
     },
