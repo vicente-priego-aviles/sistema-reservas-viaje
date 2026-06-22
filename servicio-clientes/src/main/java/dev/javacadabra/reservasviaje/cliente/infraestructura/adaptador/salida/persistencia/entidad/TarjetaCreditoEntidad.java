@@ -173,7 +173,7 @@ public class TarjetaCreditoEntidad {
     public enum TipoTarjetaEnum {
         VISA("Visa"),
         MASTERCARD("Mastercard"),
-        AMEX("American Express"),
+        AMERICAN_EXPRESS("American Express"),
         DISCOVER("Discover");
 
         private final String nombre;

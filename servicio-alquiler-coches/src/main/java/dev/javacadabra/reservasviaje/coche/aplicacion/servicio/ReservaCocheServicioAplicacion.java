@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @Service
@@ -22,8 +23,16 @@ public class ReservaCocheServicioAplicacion implements
         ReservarCochePuertoEntrada,
         CancelarCochePuertoEntrada {
 
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     private final ReservaCocheRepositorioPuertoSalida repositorio;
     private final Random random = new Random();
+
+    private static LocalDate parseFecha(String s) {
+        int tIndex = s.indexOf('T');
+        String datePart = tIndex > 0 ? s.substring(0, tIndex) : s;
+        return LocalDate.parse(datePart, FORMATTER);
+    }
 
     @Override
     @Transactional
@@ -36,8 +45,8 @@ public class ReservaCocheServicioAplicacion implements
 
         log.info("🚗 Reservando coche en {} para reserva: {}", ciudad, reservaViajeId);
 
-        LocalDate fechaRecogida = LocalDate.parse(fechaRecogidaStr);
-        LocalDate fechaDevolucion = LocalDate.parse(fechaDevolucionStr);
+        LocalDate fechaRecogida = parseFecha(fechaRecogidaStr);
+        LocalDate fechaDevolucion = parseFecha(fechaDevolucionStr);
 
         // Simular búsqueda de coche disponible
         String modelo = generarModelo();
