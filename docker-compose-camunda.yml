@@ -36,11 +36,11 @@ services:
       - "JAVA_TOOL_OPTIONS=-Xms512m -Xmx512m"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9600/actuator/health/readiness || exit 1"]
+      test: ["CMD-SHELL", "/usr/sbin/wget -q --spider http://localhost:9600/actuator/health/readiness || exit 1"]
       interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
     volumes:
       - camunda:/usr/local/camunda/data
     networks:
@@ -65,11 +65,11 @@ services:
       - logging.level.io.camunda.zeebe.client.impl.ZeebeCallCredentials=ERROR
       - logging.level.io.camunda.connector.runtime.inbound.importer=ERROR
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health/readiness"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health/readiness || exit 1"]
       interval: 30s
-      timeout: 1s
+      timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
     env_file: connector-secrets.txt
     networks:
       - camunda-platform
@@ -96,10 +96,11 @@ services:
         hard: -1
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cat/health | grep -q green"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cat/health | grep -qE 'green|yellow'"]
       interval: 30s
       timeout: 5s
-      retries: 3
+      retries: 5
+      start_period: 30s
     volumes:
       - elastic:/usr/share/elasticsearch/data
     networks:

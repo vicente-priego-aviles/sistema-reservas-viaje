@@ -2,7 +2,7 @@
 cd "$(dirname "$0")/.."  # Asegurar ejecución desde la raíz del proyecto
 
 # 1. Crear la red (si no existe)
-docker network create camunda-network
+docker network create camunda-network 2>/dev/null || true
 
 # 2. Levantar Camunda PRIMERO
 docker compose -f docker-compose-camunda.yml up -d
