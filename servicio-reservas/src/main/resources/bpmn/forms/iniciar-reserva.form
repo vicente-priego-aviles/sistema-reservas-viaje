@@ -108,30 +108,28 @@
       "validate": { "required": true }
     },
     {
+      "subtype": "date",
       "label": "Fecha de Inicio",
       "type": "datetime",
       "layout": { "row": "Row_7", "columns": 6 },
       "id": "fechaInicio",
       "key": "fechaInicio",
-      "description": "Fecha y hora de inicio del viaje",
-      "defaultValue": "=date and time(today() + duration(\"P1D\"), time(\"T10:00:00\"))",
+      "description": "Fecha de inicio del viaje",
+      "defaultValue": "=today() + duration(\"P1D\")",
       "validate": { "required": true },
-      "dateLabel": "Fecha de Inicio",
-      "timeLabel": "Hora de Inicio",
-      "use24h": true
+      "dateLabel": "Fecha de Inicio"
     },
     {
+      "subtype": "date",
       "label": "Fecha de Fin",
       "type": "datetime",
       "layout": { "row": "Row_7", "columns": 6 },
       "id": "fechaFin",
       "key": "fechaFin",
-      "description": "Fecha y hora de fin del viaje",
-      "defaultValue": "=date and time(today() + duration(\"P1D\"), time(\"T12:00:00\"))",
+      "description": "Fecha de fin del viaje",
+      "defaultValue": "=today() + duration(\"P1D\")",
       "validate": { "required": true },
-      "dateLabel": "Fecha de Fin",
-      "timeLabel": "Hora de Fin",
-      "use24h": true
+      "dateLabel": "Fecha de Fin"
     },
     {
       "label": "Número de Pasajeros",
