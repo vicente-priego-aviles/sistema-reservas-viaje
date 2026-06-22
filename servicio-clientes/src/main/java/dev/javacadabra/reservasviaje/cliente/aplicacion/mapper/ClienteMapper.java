@@ -178,9 +178,6 @@ public interface ClienteMapper {
         );
     }
 
-    // TODO(#44): DatosPersonales no expone getDni() ni getFechaNacimiento(), por lo que este método
-    // no puede reconstruir el VO correctamente. Devuelve null en ambos campos hasta que se resuelva
-    // añadiendo accessors al VO o cambiando la firma para recibirlos como parámetros.
     default DatosPersonales toDatosPersonales(
             ActualizarDatosPersonalesDTO dto,
             DatosPersonales datosPersonalesActuales
@@ -189,15 +186,11 @@ public interface ClienteMapper {
             return null;
         }
 
-        String emailNormalizado = dto.email().trim().toLowerCase();
-
-        return new DatosPersonales(
-                null, // TODO(#44): DNI no recuperable — DatosPersonales no expone accessor
+        return datosPersonalesActuales.actualizarDatosContacto(
                 dto.nombre(),
                 dto.apellidos(),
-                emailNormalizado,
-                dto.telefono(),
-                null  // TODO(#44): fechaNacimiento no recuperable — DatosPersonales no expone accessor
+                dto.email().trim().toLowerCase(),
+                dto.telefono()
         );
     }
 
