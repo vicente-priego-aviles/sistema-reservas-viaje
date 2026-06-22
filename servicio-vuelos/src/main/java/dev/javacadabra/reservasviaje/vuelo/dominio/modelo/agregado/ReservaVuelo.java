@@ -1,7 +1,6 @@
 package dev.javacadabra.reservasviaje.vuelo.dominio.modelo.agregado;
 
 import dev.javacadabra.reservasviaje.vuelo.dominio.modelo.objetovalor.*;
-import dev.javacadabra.reservasviaje.vuelo.dominio.excepcion.VueloNoDisponibleException;
 import lombok.*;
 import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;

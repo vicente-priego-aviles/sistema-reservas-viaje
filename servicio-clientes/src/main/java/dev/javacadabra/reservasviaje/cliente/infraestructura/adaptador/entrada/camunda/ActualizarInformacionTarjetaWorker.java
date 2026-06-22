@@ -1,6 +1,5 @@
 package dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.entrada.camunda;
 
-import dev.javacadabra.reservasviaje.cliente.aplicacion.servicio.ClienteServicio;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteBloqueadoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteInactivoExcepcion;
 import dev.javacadabra.reservasviaje.cliente.dominio.excepcion.ClienteNoEncontradoExcepcion;

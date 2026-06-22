@@ -4,7 +4,6 @@ import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.*;
 import lombok.*;
 import org.jmolecules.ddd.annotation.Entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
