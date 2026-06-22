@@ -55,4 +55,6 @@ public interface ClienteRepositorioSpringData extends JpaRepository<ClienteEntid
     Optional<ClienteEntidad> findByIdWithTarjetas(@Param("id") String id);
 
     List<ClienteEntidad> findByEstado(ClienteEntidad.EstadoClienteEnum estado);
+
+    List<ClienteEntidad> findByEstadoIn(List<ClienteEntidad.EstadoClienteEnum> estados);
 }
