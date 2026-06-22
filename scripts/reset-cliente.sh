@@ -133,7 +133,7 @@ if [ -n "$1" ]; then
 fi
 
 # ── Sin argumento: listar y seleccionar ──────────────────────────────────────
-echo -e "${CYAN}🔍 Buscando clientes atascados en EN_PROCESO_RESERVA...${RESET}"
+echo -e "${CYAN}🔍 Buscando clientes con estado no ACTIVO...${RESET}"
 
 HTTP_CODE=$(listar_atascados_parsed)
 
@@ -151,12 +151,12 @@ for c in data:
 " 2>/dev/null)
 
 if [ -z "$CLIENTES_INFO" ]; then
-  echo -e "${GREEN}✅ No hay clientes atascados en EN_PROCESO_RESERVA${RESET}"
+  echo -e "${GREEN}✅ Todos los clientes están en estado ACTIVO${RESET}"
   exit 0
 fi
 
 echo ""
-echo -e "${YELLOW}Clientes atascados en EN_PROCESO_RESERVA:${RESET}"
+echo -e "${YELLOW}Clientes con estado no ACTIVO:${RESET}"
 echo "──────────────────────────────────────────────────────────────"
 
 IDS=()

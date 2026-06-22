@@ -29,7 +29,10 @@ public class DevAdminController {
     @GetMapping("/clientes/atascados")
     public ResponseEntity<List<Map<String, String>>> listarClientesAtascados() {
         List<Map<String, String>> atascados = clienteRepositorio
-                .findByEstado(ClienteEntidad.EstadoClienteEnum.EN_PROCESO_RESERVA)
+                .findByEstadoIn(List.of(
+                        ClienteEntidad.EstadoClienteEnum.EN_PROCESO_RESERVA,
+                        ClienteEntidad.EstadoClienteEnum.RESERVA_CONFIRMADA
+                ))
                 .stream()
                 .map(c -> Map.of(
                         "clienteId", c.getId(),
@@ -38,7 +41,7 @@ public class DevAdminController {
                         "estado", c.getEstado().name()
                 ))
                 .toList();
-        log.info("🔍 [DEV] Clientes en EN_PROCESO_RESERVA: {}", atascados.size());
+        log.info("🔍 [DEV] Clientes no ACTIVO: {}", atascados.size());
         return ResponseEntity.ok(atascados);
     }
 
