@@ -178,23 +178,9 @@ public interface ClienteMapper {
         );
     }
 
-    /**
-     * Convierte DTO de actualización a DatosPersonales parcial.
-     *
-     * <p>Este método combina los datos del DTO de actualización con datos
-     * existentes del cliente (DNI y fecha de nacimiento) que no se pueden actualizar.
-     *
-     * <p><strong>IMPORTANTE:</strong> DNI y fechaNacimiento son inmutables,
-     * por lo que se mantienen del cliente existente.
-     *
-     * <p><strong>NOTA:</strong> DatosPersonales no expone un accessor público
-     * para DNI ni fechaNacimiento, por lo que usamos el objeto completo actual
-     * y creamos uno nuevo con los valores actualizados.
-     *
-     * @param dto DTO con datos actualizables (nombre, apellidos, email, teléfono)
-     * @param datosPersonalesActuales datos personales actuales del cliente
-     * @return value object DatosPersonales con datos actualizados y datos inmutables preservados
-     */
+    // TODO(#44): DatosPersonales no expone getDni() ni getFechaNacimiento(), por lo que este método
+    // no puede reconstruir el VO correctamente. Devuelve null en ambos campos hasta que se resuelva
+    // añadiendo accessors al VO o cambiando la firma para recibirlos como parámetros.
     default DatosPersonales toDatosPersonales(
             ActualizarDatosPersonalesDTO dto,
             DatosPersonales datosPersonalesActuales
@@ -203,42 +189,15 @@ public interface ClienteMapper {
             return null;
         }
 
-        // IMPORTANTE: Como DatosPersonales no expone accessors públicos para DNI
-        // y fechaNacimiento, usamos los métodos con* para crear una copia con
-        // los campos actualizados
-
-        // Actualizar nombre y apellidos usando el método helper del VO
-        DatosPersonales conNombre = datosPersonalesActuales;
-
-        // Como DatosPersonales es inmutable, necesitamos crear una nueva instancia
-        // Pero como no tenemos accessors para DNI y fechaNacimiento, usamos
-        // los métodos conEmail() y conTelefono() que ya existen en el VO
-
-        // Paso 1: Actualizar email
         String emailNormalizado = dto.email().trim().toLowerCase();
-        DatosPersonales conEmailActualizado = datosPersonalesActuales.conEmail(emailNormalizado);
 
-        // Paso 2: Actualizar teléfono
-        DatosPersonales conTelefonoActualizado = conEmailActualizado.conTelefono(dto.telefono());
-
-        // PROBLEMA: No tenemos métodos con* para nombre y apellidos en el VO
-        // Por lo tanto, debemos reconstruir el objeto completo
-        // Pero necesitamos acceso al DNI y fechaNacimiento originales
-
-        // SOLUCIÓN: Crear un nuevo objeto usando los valores que SÍ podemos obtener
         return new DatosPersonales(
-                // DNI: Debemos obtenerlo del objeto actual, pero no hay accessor
-                // Usamos obtenerDniEnmascarado() NO - está enmascarado
-                // No hay forma de obtener el DNI original del VO actual
-                // Por lo tanto, el servicio debe pasar el DNI explícitamente
-
-                // POR AHORA: Marcador de posición - el servicio debe manejar esto
-                null, // TODO: El servicio debe proporcionar el DNI actual
+                null, // TODO(#44): DNI no recuperable — DatosPersonales no expone accessor
                 dto.nombre(),
                 dto.apellidos(),
                 emailNormalizado,
                 dto.telefono(),
-                null  // TODO: El servicio debe proporcionar la fechaNacimiento actual
+                null  // TODO(#44): fechaNacimiento no recuperable — DatosPersonales no expone accessor
         );
     }
 
