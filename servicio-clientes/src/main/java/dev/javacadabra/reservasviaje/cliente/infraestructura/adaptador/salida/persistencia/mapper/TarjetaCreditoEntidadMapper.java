@@ -5,7 +5,6 @@ import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.*;
 import dev.javacadabra.reservasviaje.cliente.infraestructura.adaptador.salida.persistencia.entidad.TarjetaCreditoEntidad;
 import org.mapstruct.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
