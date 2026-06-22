@@ -64,9 +64,9 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 Swagger UI disponible en: http://localhost:9090/swagger-ui.html
 
-### Opción B: Zeebe REST API directamente (puerto 8088)
+### Opción B: Zeebe REST API directamente (puerto 8080)
 
-Swagger UI: http://localhost:8088/swagger-ui/index.html — endpoint `POST /v2/process-instances`
+Swagger UI: http://localhost:8080/swagger-ui/index.html — endpoint `POST /v2/process-instances`
 
 ```json
 {
@@ -96,9 +96,9 @@ Swagger UI: http://localhost:8088/swagger-ui/index.html — endpoint `POST /v2/p
 - [Procesos BPMN](doc_procesos_bpmn.md) — Documentación de workflows
 - [Checklist de Progreso](checklist_casos_uso.md) — Estado de cada caso probado
 - Swagger microservicio reservas: http://localhost:9090/swagger-ui.html
-- Swagger Zeebe REST API: http://localhost:8088/swagger-ui/index.html
-- Camunda Operate: http://localhost:8081
-- Camunda Tasklist: http://localhost:8082
+- Swagger Zeebe REST API: http://localhost:8080/swagger-ui/index.html
+- Camunda Operate: http://localhost:8080/operate
+- Camunda Tasklist: http://localhost:8080/tasklist
 
 ---
 

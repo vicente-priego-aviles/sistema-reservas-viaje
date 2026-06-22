@@ -3,125 +3,87 @@
 # an environment locally. It is not designed to be used in production.
 # We recommend to use Kubernetes in production with our Helm Charts:
 # https://docs.camunda.io/docs/self-managed/setup/install/
-# For local development, we recommend using KIND instead of `docker-compose`:
-# https://docs.camunda.io/docs/self-managed/platform-deployment/helm-kubernetes/guides/local-kubernetes-cluster/
 
-# This is a lightweight configuration with Zeebe, Operate, Tasklist, and Elasticsearch
-# See docker-compose.yml for a configuration that also includes Optimize, Identity, and Keycloak.
+# Camunda 8.9 Orchestration Cluster — imagen unificada camunda/camunda
+# A partir de 8.8, Zeebe + Operate + Tasklist se fusionan en una única imagen.
+# Operate: http://localhost:8080/operate   (usuario: demo / contraseña: demo)
+# Tasklist: http://localhost:8080/tasklist (usuario: demo / contraseña: demo)
+# Zeebe gRPC: localhost:26500
+# Zeebe REST: http://localhost:8080
 
 services:
 
-  zeebe: # https://docs.camunda.io/docs/self-managed/platform-deployment/docker/#zeebe
-    image: camunda/zeebe:${CAMUNDA_ZEEBE_VERSION}
-    container_name: zeebe
+  camunda:
+    image: camunda/camunda:${CAMUNDA_VERSION}
+    container_name: camunda
     ports:
-      - "26500:26500"
-      - "9600:9600"
-      - "8088:8080"
-    environment: # https://docs.camunda.io/docs/self-managed/zeebe-deployment/configuration/environment-variables/
-      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
-      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
-      # default is 1000, see here: https://github.com/camunda/zeebe/blob/main/exporters/elasticsearch-exporter/src/main/java/io/camunda/zeebe/exporter/ElasticsearchExporterConfiguration.java#L259
-      - ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_BULK_SIZE=1
-      # allow running with low disk space
+      - "26500:26500"  # Zeebe gRPC
+      - "8080:8080"    # REST API + Operate UI + Tasklist UI
+      - "9600:9600"    # Management / health
+    environment:
+      # Secondary storage (Elasticsearch)
+      - CAMUNDA_DATA_SECONDARY_STORAGE_TYPE=elasticsearch
+      - CAMUNDA_DATA_SECONDARY_STORAGE_ELASTICSEARCH_URL=http://elasticsearch:9200
+      # Elasticsearch exporter para registros Zeebe
+      - CAMUNDA_DATA_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
+      - CAMUNDA_DATA_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
+      - CAMUNDA_DATA_EXPORTERS_ELASTICSEARCH_ARGS_BULK_SIZE=1
+      # Evitar errores por disco casi lleno en entornos locales
       - ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK=0.998
       - ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK=0.999
-      - CAMUNDA_DATABASE_URL=http://elasticsearch:9200
+      # Autenticación: basic auth
+      - CAMUNDA_SECURITY_AUTHENTICATION_METHOD=basic
+      # Usuario inicial y rol admin (se aplica en el primer arranque)
+      - CAMUNDA_SECURITY_INITIALIZATION_USERS_0_USERNAME=demo
+      - CAMUNDA_SECURITY_INITIALIZATION_USERS_0_PASSWORD=demo
+      - CAMUNDA_SECURITY_INITIALIZATION_USERS_0_NAME=Demo
+      - CAMUNDA_SECURITY_INITIALIZATION_USERS_0_EMAIL=demo@demo.com
+      - CAMUNDA_SECURITY_INITIALIZATION_DEFAULTROLES_ADMIN_USERS_0=demo
       - "JAVA_TOOL_OPTIONS=-Xms512m -Xmx512m"
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/9600' || exit 1" ]
+      test: ["CMD-SHELL", "/usr/sbin/wget -q --spider http://localhost:9600/actuator/health/readiness || exit 1"]
       interval: 30s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 90s
     volumes:
-      - zeebe:/usr/local/zeebe/data
+      - camunda:/usr/local/camunda/data
     networks:
-        - camunda-platform
+      - camunda-platform
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
 
-  operate: # https://docs.camunda.io/docs/self-managed/platform-deployment/docker/#operate
-    image: camunda/operate:${CAMUNDA_OPERATE_VERSION}
-    container_name: operate
-    ports:
-      - "8081:8080"
-    environment: # https://docs.camunda.io/docs/self-managed/operate-deployment/configuration/
-      - CAMUNDA_OPERATE_ZEEBE_GATEWAYADDRESS=zeebe:26500
-      - CAMUNDA_OPERATE_ELASTICSEARCH_URL=http://elasticsearch:9200
-      - CAMUNDA_OPERATE_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
-      - CAMUNDA_OPERATE_CSRFPREVENTIONENABLED=false
-      - CAMUNDA_DATABASE_URL=http://elasticsearch:9200
-      - management.endpoints.web.exposure.include=health
-      - management.endpoint.health.probes.enabled=true
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -O - -q 'http://localhost:9600/actuator/health/readiness'" ]
-      interval: 30s
-      timeout: 1s
-      retries: 5
-      start_period: 30s
-    networks:
-        - camunda-platform
-    depends_on:
-      - zeebe
-      - elasticsearch
-
-  tasklist: # https://docs.camunda.io/docs/self-managed/platform-deployment/docker/#tasklist
-    image: camunda/tasklist:${CAMUNDA_TASKLIST_VERSION}
-    container_name: tasklist
-    ports:
-      - "8082:8080"
-    environment: # https://docs.camunda.io/docs/self-managed/tasklist-deployment/configuration/
-      - CAMUNDA_TASKLIST_ZEEBE_GATEWAYADDRESS=zeebe:26500
-      - CAMUNDA_TASKLIST_ZEEBE_RESTADDRESS=http://zeebe:8080
-      - CAMUNDA_TASKLIST_ELASTICSEARCH_URL=http://elasticsearch:9200
-      - CAMUNDA_TASKLIST_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
-      - CAMUNDA_TASKLIST_CSRFPREVENTIONENABLED=false
-      - CAMUNDA_DATABASE_URL=http://elasticsearch:9200
-      - management.endpoints.web.exposure.include=health
-      - management.endpoint.health.probes.enabled=true
-    healthcheck:
-      test: [ "CMD-SHELL", "wget -O - -q 'http://localhost:9600/actuator/health/readiness'" ]
-      interval: 30s
-      timeout: 1s
-      retries: 5
-      start_period: 30s
-    networks:
-        - camunda-platform
-    depends_on:
-      - zeebe
-      - elasticsearch
-
-  connectors: # https://docs.camunda.io/docs/components/integration-framework/connectors/out-of-the-box-connectors/available-connectors-overview/
+  connectors:
     image: camunda/connectors-bundle:${CAMUNDA_CONNECTORS_VERSION}
     container_name: connectors
     ports:
       - "8085:8080"
     environment:
       - CAMUNDA_CLIENT_MODE=self-managed
-      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://zeebe:26500
-      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://zeebe:8080
-      - OPERATE_CLIENT_BASEURL=http://operate:8080
+      - CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS=http://camunda:26500
+      - CAMUNDA_CLIENT_ZEEBE_RESTADDRESS=http://camunda:8080
+      - OPERATE_CLIENT_BASEURL=http://camunda:8080
       - OPERATE_CLIENT_PROFILE=simple
       - management.endpoints.web.exposure.include=health,metrics
       - management.endpoint.health.probes.enabled=true
       - logging.level.io.camunda.zeebe.client.impl.ZeebeCallCredentials=ERROR
       - logging.level.io.camunda.connector.runtime.inbound.importer=ERROR
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health/readiness" ]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health/readiness || exit 1"]
       interval: 30s
-      timeout: 1s
+      timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 60s
     env_file: connector-secrets.txt
     networks:
-        - camunda-platform
+      - camunda-platform
     depends_on:
-      - zeebe
-      - operate
+      camunda:
+        condition: service_healthy
 
-  elasticsearch: # https://hub.docker.com/_/elasticsearch
+  elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     container_name: elasticsearch
     ports:
@@ -140,17 +102,18 @@ services:
         hard: -1
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:9200/_cat/health | grep -q green" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cat/health | grep -qE 'green|yellow'"]
       interval: 30s
       timeout: 5s
-      retries: 3
+      retries: 5
+      start_period: 30s
     volumes:
       - elastic:/usr/share/elasticsearch/data
     networks:
-        - camunda-platform
+      - camunda-platform
 
 volumes:
-  zeebe:
+  camunda:
   elastic:
 
 networks:

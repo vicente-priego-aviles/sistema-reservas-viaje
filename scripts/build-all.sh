@@ -56,8 +56,19 @@ fi
 
 echo -e "${GREEN}✅ Imágenes Docker construidas correctamente.${RESET}"
 
-# Levantar los contenedores
-echo -e "${YELLOW}🚀 Iniciando los servicios con docker compose...${RESET}"
+# Levantar Camunda primero (crea la red camunda-platform que necesitan los microservicios)
+echo -e "${YELLOW}🚀 Levantando Camunda Platform...${RESET}"
+docker compose -f docker-compose-camunda.yml up -d
+
+echo -e "${YELLOW}⏳ Esperando a que Camunda esté listo...${RESET}"
+until curl -sf http://localhost:9600/actuator/health/readiness >/dev/null 2>&1; do
+  echo "   Camunda no está listo aún, reintentando en 10s..."
+  sleep 10
+done
+echo -e "${GREEN}✅ Camunda listo.${RESET}"
+
+# Levantar los microservicios
+echo -e "${YELLOW}🚀 Iniciando los microservicios con docker compose...${RESET}"
 docker compose up -d
 
 if [ $? -eq 0 ]; then

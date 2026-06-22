@@ -58,16 +58,27 @@ public class CargarDatosFormularioWorker {
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("clientesDisponibles", clientesDisponibles);
-        // Fechas del formulario inicial (inicio/fin del viaje)
+        // Fechas formulario inicial
         variables.put("fechaInicio", manana.format(FORMATO_FECHA));
         variables.put("fechaFin", checkout.format(FORMATO_FECHA));
-        // Hotel: solo checkin — checkout lo calcula el form con FEEL
+        // Hotel
         variables.put("fechaEntrada", manana.format(FORMATO_FECHA));
-        // Coche: recogida y devolución con hora (formato ISO con offset)
+        variables.put("fechaCheckout", checkout.format(FORMATO_FECHA));
+        // Vuelo: salida (ida) y llegada (vuelta posterior al hotel+coche)
+        variables.put("fechaSalida", manana.atTime(8, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
+        variables.put("fechaLlegada", checkout.plusDays(1).atTime(12, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
+        // Coche
         variables.put("fechaRecogida", manana.atTime(10, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
         variables.put("fechaDevolucion", checkout.atTime(15, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
-        // Vuelo: llegada de retorno, posterior al fin del hotel y del coche
-        variables.put("fechaLlegada", checkout.plusDays(1).atTime(12, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
+        // Pasajeros: fila por defecto con fecha de nacimiento
+        variables.put("pasajeros", List.of(Map.of(
+                "nombre", "María",
+                "apellidos", "González López",
+                "tipoDocumento", "DNI",
+                "numeroDocumento", "23456789B",
+                "fechaNacimiento", "1974-12-09",
+                "nacionalidad", "Española"
+        )));
         return variables;
     }
 }

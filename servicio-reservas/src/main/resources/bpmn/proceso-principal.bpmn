@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ProcesoPrincipal" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.45.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.7.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_ProcesoPrincipal" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.45.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
   <bpmn:process id="proceso-principal" name="Proceso Principal de Reserva de Viaje" isExecutable="true">
     <bpmn:startEvent id="evento-inicio-solicitud-reserva" name="📩 Solicitud de Reserva de Viaje">
       <bpmn:extensionElements>
@@ -18,6 +18,7 @@
     </bpmn:serviceTask>
     <bpmn:userTask id="iniciar-solicitud-reserva" name="🎯 Iniciar Solicitud de Reserva">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:formDefinition formId="iniciar-reserva" />
         <zeebe:assignmentDefinition assignee="demo" />
       </bpmn:extensionElements>
@@ -54,6 +55,7 @@
     </bpmn:endEvent>
     <bpmn:userTask id="revisar-datos-entrada" name="📋 Revisar Datos de Entrada">
       <bpmn:extensionElements>
+        <zeebe:userTask />
         <zeebe:assignmentDefinition assignee="demo" />
       </bpmn:extensionElements>
       <bpmn:incoming>flujo-gestion-cliente-a-revisar-datos</bpmn:incoming>
@@ -73,6 +75,7 @@
       </bpmn:parallelGateway>
       <bpmn:userTask id="introducir-datos-vuelo" name="✈️ Introducir Datos del Vuelo">
         <bpmn:extensionElements>
+          <zeebe:userTask />
           <zeebe:assignmentDefinition assignee="demo" />
           <zeebe:formDefinition formId="gestionar-reserva-vuelo" />
         </bpmn:extensionElements>
@@ -96,6 +99,7 @@
       </bpmn:boundaryEvent>
       <bpmn:userTask id="introducir-datos-hotel" name="🏨 Introducir Datos del Hotel">
         <bpmn:extensionElements>
+          <zeebe:userTask />
           <zeebe:assignmentDefinition assignee="demo" />
           <zeebe:formDefinition formId="gestionar-reserva-hotel" />
         </bpmn:extensionElements>
@@ -119,6 +123,7 @@
       </bpmn:boundaryEvent>
       <bpmn:userTask id="introducir-datos-coche" name="🚗 Introducir Datos del Coche">
         <bpmn:extensionElements>
+          <zeebe:userTask />
           <zeebe:assignmentDefinition assignee="demo" />
           <zeebe:formDefinition formId="gestionar-reserva-coche" />
         </bpmn:extensionElements>

@@ -21,9 +21,8 @@ docker --version
 **Puertos que deben estar libres:**
 
 ```
-8081  — Camunda Operate
-8082  — Camunda Tasklist
-8088  — Zeebe REST
+8080  — Camunda (Operate + Tasklist + REST unificados)
+
 26500 — Zeebe gRPC
 9080  — servicio-clientes
 9081  — servicio-vuelos
@@ -81,7 +80,7 @@ Este script hace todo automáticamente:
 
 ```bash
 # Camunda Operate
-curl http://localhost:8081/actuator/health
+curl http://localhost:9600/actuator/health/readiness
 
 # Microservicios
 curl http://localhost:9090/actuator/health   # Reservas (API principal)
@@ -98,8 +97,8 @@ Todos deben devolver `{"status":"UP"}`.
 
 | Componente | URL | Credenciales |
 |-----------|-----|-------------|
-| 📊 Camunda Operate | http://localhost:8081 | demo / demo |
-| 📋 Camunda Tasklist | http://localhost:8082 | demo / demo |
+| 📊 Camunda Operate | http://localhost:8080/operate | demo / demo |
+| 📋 Camunda Tasklist | http://localhost:8080/tasklist | demo / demo |
 
 ---
 
@@ -109,7 +108,7 @@ Todos deben devolver `{"status":"UP"}`.
 
 ### Iniciar el proceso desde Camunda Tasklist
 
-1. Abre http://localhost:8082 (demo/demo)
+1. Abre http://localhost:8080/tasklist (demo/demo)
 2. Click en **"Start Process"**
 3. Selecciona **"proceso-principal"**
 4. Rellena el formulario con los datos del cliente (ver [Datos de Prueba](#-datos-de-prueba) para IDs válidos)
@@ -163,11 +162,11 @@ Los IDs son UUIDs reales del script `data.sql` precargado en H2.
 
 ## 📊 Monitorear el Proceso
 
-### Camunda Operate (http://localhost:8081)
+### Camunda Operate (http://localhost:8080/operate)
 
 Permite ver el progreso visual de cada instancia de proceso:
 
-1. Abre http://localhost:8081 y haz login con demo/demo
+1. Abre http://localhost:8080/operate y haz login con demo/demo
 2. Ve a **Processes → proceso-principal**
 3. Haz click en una instancia activa para ver el flujo en tiempo real
 4. Navega a los Call Activities para ver los subprocesos
@@ -209,13 +208,13 @@ Usuario: `sa` / Contraseña: (vacía)
 
 Zeebe expone su propia Swagger UI con la API REST de orquestación de Camunda:
 
-**URL**: http://localhost:8088/swagger-ui/index.html
+**URL**: http://localhost:8080/swagger-ui/index.html
 
-> ⚠️ **Problema conocido**: el campo `port` viene prerelleno con `8080`. Hay que cambiarlo manualmente a `8088` para que las peticiones funcionen correctamente.
+
 
 **Pasos para usarla:**
-1. Abre http://localhost:8088/swagger-ui/index.html
-2. Localiza el campo `port` en la parte superior y cámbialo a `8088`
+1. Abre http://localhost:8080/swagger-ui/index.html
+
 3. Ya puedes ejecutar peticiones directamente — en la configuración local Self-Managed con perfil `demo`, la autenticación está desactivada y los endpoints funcionan sin necesidad de token.
 
 Esta API permite, entre otras cosas, iniciar instancias de procesos BPMN directamente sin pasar por Tasklist.

@@ -166,7 +166,7 @@ Crea un archivo `.env` en la raíz:
 # .env
 CAMUNDA_ZEEBE_ADDRESS=localhost:26500
 CAMUNDA_OPERATE_URL=http://localhost:8080
-CAMUNDA_TASKLIST_URL=http://localhost:8081
+CAMUNDA_TASKLIST_URL=http://localhost:8080/tasklist
 
 # Puertos de microservicios
 CLIENTES_PORT=9080
@@ -229,7 +229,7 @@ curl http://localhost:8080
 # Debería retornar HTML
 
 # Acceder a Tasklist
-curl http://localhost:8081
+curl http://localhost:8080/operate
 # Debería retornar HTML
 ```
 
@@ -409,7 +409,7 @@ else
 fi
 
 echo -n "Verificando Tasklist... "
-if curl -s http://localhost:8081 > /dev/null; then
+if curl -s http://localhost:8080/operate > /dev/null; then
   echo "✅ OK"
 else
   echo "❌ FAIL"
@@ -637,7 +637,7 @@ echo "mi_password_seguro" | docker secret create db_password -
 ```bash
 # Permitir solo puertos necesarios
 sudo ufw allow 8080/tcp  # Operate
-sudo ufw allow 8081/tcp  # Tasklist
+sudo ufw allow 8080/tcp  # Camunda (Operate + Tasklist + REST)
 sudo ufw deny 26500/tcp  # Zeebe (solo interno)
 ```
 

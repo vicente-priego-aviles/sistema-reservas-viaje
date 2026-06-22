@@ -45,7 +45,7 @@ Mismos datos que el Caso 1. El error se fuerza **manipulando la base de datos de
 
 ### Opción A — Camunda REST API (Swagger)
 
-Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+Accede a http://localhost:8080/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
 
 ```json
 {
@@ -84,7 +84,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ### Opción C — Tasklist
 
-Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
+Accede a http://localhost:8080/operate → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
 
 ## Respuesta Esperada
 
@@ -129,4 +129,4 @@ Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proces
 ## Verificar en Camunda
 
 1. **Operate** (http://localhost:8080): instancia terminada en `fin-reserva-con-advertencia`; variables `reservaConfirmada=true`, `estadoReservaFinal=CONFIRMADA_CON_ADVERTENCIA`, `requiereIntervencionManual=true`
-2. **Tasklist** (http://localhost:8081): no hay User Tasks pendientes
+2. **Tasklist** (http://localhost:8080/tasklist): no hay User Tasks pendientes

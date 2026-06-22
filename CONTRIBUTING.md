@@ -487,7 +487,7 @@ Si aplica, añade screenshots.
 - OS: [e.g. Windows 11]
 - Java: [e.g. 21.0.1]
 - Spring Boot: [e.g. 3.5.6]
-- Camunda: [e.g. 8.7.0]
+- Camunda: [e.g. 8.9.6]
 - Versión del proyecto: [e.g. 1.0.0]
 
 **Logs**
