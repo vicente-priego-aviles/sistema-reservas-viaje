@@ -30,7 +30,7 @@ INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimie
 VALUES ('323e4567-e89b-12d3-a456-426655440002', '34567890B', 'Carlos', 'Rodríguez Sánchez', 'carlos.rodriguez@example.com', '+34600345678', '1988-03-10', 'Calle Colón 23', 'Valencia', '46001', 'Valencia', 'España', 'ACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000003', '323e4567-e89b-12d3-a456-426655440002', 'Mzc4MjgyMjQ2MzEwMDA1', '0005', 2029, 3, 'AMEX', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000003', '323e4567-e89b-12d3-a456-426655440002', 'Mzc4MjgyMjQ2MzEwMDA1', '0005', 2029, 3, 'AMERICAN_EXPRESS', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Cliente 4: Ana Fernández Ruiz (ACTIVO)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
@@ -72,7 +72,7 @@ INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimie
 VALUES ('923e4567-e89b-12d3-a456-426655440008', '90123456H', 'Francisco', 'Navarro Blanco', 'francisco.navarro@example.com', '+34600901234', '1986-09-08', 'Calle San Vicente 90', 'Valencia', '46002', 'Valencia', 'España', 'ACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000009', '923e4567-e89b-12d3-a456-426655440008', 'MzcxNDQ5NjM1Mzk4NDMx', '8431', 2029, 7, 'AMEX', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000009', '923e4567-e89b-12d3-a456-426655440008', 'MzcxNDQ5NjM1Mzk4NDMx', '8431', 2029, 7, 'AMERICAN_EXPRESS', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Cliente 10: Isabel Romero Herrera (ACTIVO)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
@@ -104,7 +104,7 @@ INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimie
 VALUES ('d23e4567-e89b-12d3-a456-426655440012', '33456789M', 'Javier', 'Santos Delgado', 'javier.santos@example.com', '+34633456789', '1987-07-16', 'Calle Larios 20', 'Málaga', '29015', 'Málaga', 'España', 'BLOQUEADO', 'Solicitud del cliente', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000013', 'd23e4567-e89b-12d3-a456-426655440012', 'Mzc4MjgyMjQ2MzEwMDEy', '0012', 2029, 3, 'AMEX', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000013', 'd23e4567-e89b-12d3-a456-426655440012', 'Mzc4MjgyMjQ2MzEwMDEy', '0012', 2029, 3, 'AMERICAN_EXPRESS', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================================================
 -- CLIENTES PENDIENTE_VALIDACION (2 clientes - estado inicial)
@@ -151,7 +151,7 @@ INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimie
 VALUES ('1a3e4567-e89b-12d3-a456-426655440017', '88901234S', 'Cristina', 'Pascual León', 'cristina.pascual@example.com', '+34688901234', '1989-12-03', 'Calle Mayor 150', 'Zaragoza', '50001', 'Zaragoza', 'España', 'INACTIVO', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO tarjetas_credito (id, cliente_id, numero_encriptado, ultimos_digitos, anio_expiracion, mes_expiracion, tipo_tarjeta, validada, motivo_rechazo, fecha_creacion, fecha_modificacion)
-VALUES ('11111111-1111-1111-1111-000000000018', '1a3e4567-e89b-12d3-a456-426655440017', 'MzcxNDQ5NjM1Mzk4NDQ4', '8448', 2029, 7, 'AMEX', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES ('11111111-1111-1111-1111-000000000018', '1a3e4567-e89b-12d3-a456-426655440017', 'MzcxNDQ5NjM1Mzk4NDQ4', '8448', 2029, 7, 'AMERICAN_EXPRESS', TRUE, NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Cliente 19: Daniel Márquez Soler (INACTIVO)
 INSERT INTO clientes (id, dni, nombre, apellidos, email, telefono, fecha_nacimiento, calle, ciudad, codigo_postal, provincia, pais, estado, motivo_bloqueo, fecha_creacion, fecha_modificacion)
