@@ -56,7 +56,7 @@ Establecer la arquitectura base del sistema con todos los componentes fundamenta
   - Orquestación de procesos
 
 #### Integración con Camunda
-- ✅ Camunda Platform 8.7 (Zeebe, Operate, Tasklist)
+- ✅ Camunda Platform 8.9 (Zeebe, Operate, Tasklist)
 - ✅ Workers externos conectados vía gRPC
 - ✅ Job Workers con `@JobWorker`
 - ✅ Expresiones FEEL en BPMN

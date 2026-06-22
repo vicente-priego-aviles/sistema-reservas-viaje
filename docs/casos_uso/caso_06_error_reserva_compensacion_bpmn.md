@@ -36,7 +36,7 @@ Hay tres formas equivalentes de iniciar el proceso:
 
 ### Opción A — Camunda REST API (Swagger)
 
-Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+Accede a http://localhost:8080/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
 
 ```json
 {
@@ -85,13 +85,13 @@ Respuesta:
 
 ### Opción C — Tasklist
 
-Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía. El proceso arranca directamente desde la interfaz sin necesidad de cURL ni Swagger.
+Accede a http://localhost:8080/operate → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía. El proceso arranca directamente desde la interfaz sin necesidad de cURL ni Swagger.
 
 ---
 
 ## Paso 2: Completar "Revisar Datos de Entrada"
 
-En **Tasklist** (http://localhost:8082): aparecerá el User Task "Revisar Datos de Entrada". Complétalo con los datos que aparecen pre-rellenos.
+En **Tasklist** (http://localhost:8080/tasklist): aparecerá el User Task "Revisar Datos de Entrada". Complétalo con los datos que aparecen pre-rellenos.
 
 ---
 
@@ -99,13 +99,13 @@ En **Tasklist** (http://localhost:8082): aparecerá el User Task "Revisar Datos 
 
 Tras completar el paso anterior, el proceso avanza al subproceso de reserva y quedan activos tres User Tasks en paralelo (vuelo, hotel, coche). Necesitas el `userTaskKey` del task de vuelo para completarlo con `pasajeros: []` y forzar el error.
 
-**Opción A — Tasklist** (http://localhost:8082):
+**Opción A — Tasklist** (http://localhost:8080/tasklist):
 
 1. Ve a la sección **Tasks**
 2. Localiza "✈️ Introducir Datos del Vuelo"
 3. El `userTaskKey` es el número que aparece en la URL al hacer click sobre el task: `.../tasks/<userTaskKey>`
 
-**Opción B — Operate** (http://localhost:8081):
+**Opción B — Operate** (http://localhost:8080/operate):
 
 1. Entra en la instancia del proceso activa
 2. Haz click sobre el nodo "✈️ Introducir Datos del Vuelo" (aparece resaltado en azul)
@@ -119,7 +119,7 @@ Tras completar el paso anterior, el proceso avanza al subproceso de reserva y qu
 Sustituye `<userTaskKey>` por el valor obtenido en el paso anterior:
 
 ```bash
-curl -X PATCH "http://localhost:8088/v2/user-tasks/<userTaskKey>/completion" \
+curl -X PATCH "http://localhost:8080/v2/user-tasks/<userTaskKey>/completion" \
   -H "Content-Type: application/json" \
   -d '{
     "variables": {
@@ -137,9 +137,9 @@ curl -X PATCH "http://localhost:8088/v2/user-tasks/<userTaskKey>/completion" \
   }'
 ```
 
-> También puedes usar el Swagger de Zeebe en http://localhost:8088/swagger-ui/index.html, endpoint `PATCH /v2/user-tasks/{userTaskKey}/completion`.
+> También puedes usar el Swagger de Zeebe en http://localhost:8080/swagger-ui/index.html, endpoint `PATCH /v2/user-tasks/{userTaskKey}/completion`.
 
-**Alternativa — formulario en Tasklist**: abre el task "✈️ Introducir Datos del Vuelo" en Tasklist (http://localhost:8082), rellena el formulario con los datos del vuelo y deja el campo **Pasajeros** vacío (sin añadir ningún pasajero). Al enviar, el formulario completará el task con `pasajeros: []` con el mismo efecto.
+**Alternativa — formulario en Tasklist**: abre el task "✈️ Introducir Datos del Vuelo" en Tasklist (http://localhost:8080/tasklist), rellena el formulario con los datos del vuelo y deja el campo **Pasajeros** vacío (sin añadir ningún pasajero). Al enviar, el formulario completará el task con `pasajeros: []` con el mismo efecto.
 
 Esto provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`, que activa el Saga de compensación.
 
@@ -224,5 +224,5 @@ Esto provoca `ERROR_VALIDACION_VUELO` en el worker `reservar-vuelo`, que activa 
 
 ## Verificar en Camunda
 
-1. **Operate** (http://localhost:8081): instancia terminada en `fin-reserva-fallida`; ver el evento de error y los tres eventos de compensación ejecutados; variable `motivoFallo` con el mensaje de error
-2. **Tasklist** (http://localhost:8082): no hay User Tasks pendientes
+1. **Operate** (http://localhost:8080/operate): instancia terminada en `fin-reserva-fallida`; ver el evento de error y los tres eventos de compensación ejecutados; variable `motivoFallo` con el mensaje de error
+2. **Tasklist** (http://localhost:8080/tasklist): no hay User Tasks pendientes

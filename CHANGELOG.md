@@ -87,7 +87,7 @@ Primera versión funcional del Sistema de Pagos de Viaje con arquitectura de mic
 - Mensajes de compensación manual
 
 ##### Integración Camunda
-- Camunda Platform 8.7 (Zeebe, Operate, Tasklist)
+- Camunda Platform 8.9 (Zeebe, Operate, Tasklist)
 - Zeebe Client con Spring Boot Starter
 - Job Workers con anotación `@JobWorker`
 - Expresiones FEEL en BPMN
@@ -145,7 +145,7 @@ Primera versión funcional del Sistema de Pagos de Viaje con arquitectura de mic
 ##### Stack Tecnológico
 - Java 21
 - Spring Boot 3.5.6
-- Camunda Platform 8.7
+- Camunda Platform 8.9
 - Maven 3.9+
 - Docker & Docker Compose
 
@@ -164,8 +164,7 @@ Primera versión funcional del Sistema de Pagos de Viaje con arquitectura de mic
 - 9083: servicio-alquiler-coches
 - 9084: servicio-pagos
 - 9090: servicio-reservas
-- 8080: Camunda Operate
-- 8081: Camunda Tasklist
+- 8080: Camunda (Operate: /operate, Tasklist: /tasklist, REST: /)
 - 26500: Zeebe gRPC
 
 #### 📚 Estructura de Paquetes

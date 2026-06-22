@@ -59,8 +59,8 @@
                     ┌─────────────────────┐
                     │  Camunda Platform 8 │
                     │   - Zeebe (26500)   │
-                    │   - Operate (8081)  │
-                    │   - Tasklist (8082) │
+                    │   - Operate (/operate)  │
+                    │   - Tasklist (/tasklist)│
                     └──────────┬──────────┘
                                │
          ┌─────────────────────┼─────────────────────┐
@@ -109,13 +109,12 @@
 
 **Infraestructura Camunda Platform 8:**
 
-> La plataforma Docker (Zeebe, Operate, Tasklist) usa la versión **8.7.12**. El `camunda-spring-boot-starter` en el código es **8.9.6**. Ver [análisis de versiones](#).
+
 
 | Puerto | Componente | Versión | Acceso |
 |--------|-----------|---------|--------|
-| **8081** | Camunda Operate | 8.7.12 | `http://localhost:8081` (demo/demo) |
-| **8082** | Camunda Tasklist | 8.7.12 | `http://localhost:8082` (demo/demo) |
-| **26500** | Zeebe gRPC | 8.7.12 | Workers de los microservicios |
+| **8080** | Camunda (Operate + Tasklist + Zeebe REST) | 8.9.6 | Operate: `/operate`, Tasklist: `/tasklist` (demo/demo) |
+| **26500** | Zeebe gRPC | 8.9.6 | Workers de los microservicios |
 
 ### Arquitectura Hexagonal
 
@@ -192,7 +191,7 @@ docker --version # Docker con Compose
 **Puertos necesarios:**
 
 ```
-Camunda:         8081 (Operate), 8082 (Tasklist), 26500 (Zeebe gRPC)
+Camunda:         8080 (Operate/Tasklist/REST), 26500 (Zeebe gRPC), 9600 (management)
 Microservicios:  9080 (clientes), 9081 (vuelos), 9082 (hoteles),
                  9083 (coches), 9084 (pagos), 9090 (reservas)
 ```
@@ -249,7 +248,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
   }'
 ```
 
-El resto de la interacción se realiza a través de **Camunda Tasklist** (http://localhost:8082) completando las User Tasks del flujo.
+El resto de la interacción se realiza a través de **Camunda Tasklist** (http://localhost:8080/tasklist) completando las User Tasks del flujo.
 
 > Los demás microservicios (clientes, vuelos, hoteles, coches, pagos) no exponen REST público — operan exclusivamente como workers de Zeebe.
 
@@ -259,8 +258,8 @@ El resto de la interacción se realiza a través de **Camunda Tasklist** (http:/
 
 ## 📊 Monitoreo
 
-- **Camunda Operate** (http://localhost:8081) — visualización de instancias de proceso, incidents y variables
-- **Camunda Tasklist** (http://localhost:8082) — completar User Tasks del flujo
+- **Camunda Operate** (http://localhost:8080/operate) — visualización de instancias de proceso, incidents y variables
+- **Camunda Tasklist** (http://localhost:8080/tasklist) — completar User Tasks del flujo
 - **H2 Console** — cada servicio en `http://localhost:908X/h2-console` (usuario `sa`, sin contraseña)
 
 > 📖 **Logs, consolas H2 y monitoreo detallado**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
