@@ -2,17 +2,9 @@ package dev.javacadabra.reservasviaje.pago.infraestructura.adaptador.salida.pers
 
 import dev.javacadabra.reservasviaje.pago.infraestructura.adaptador.salida.persistencia.entidad.PagoEntidad;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repositorio JPA para PagoEntidad.
- *
- * <p>Spring Data JPA genera automáticamente la implementación
- * en tiempo de ejecución.</p>
- */
-@Repository
 public interface PagoRepositorioJPA extends JpaRepository<PagoEntidad, String> {
 
     /**

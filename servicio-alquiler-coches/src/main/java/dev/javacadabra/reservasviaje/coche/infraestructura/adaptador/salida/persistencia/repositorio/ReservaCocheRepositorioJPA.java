@@ -4,17 +4,9 @@ import dev.javacadabra.reservasviaje.coche.infraestructura.adaptador.salida.pers
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repositorio Spring Data JPA para ReservaCocheEntidad.
- *
- * <p>Proporciona acceso a datos mediante Spring Data JPA,
- * aprovechando los métodos derivados del nombre y queries personalizadas.</p>
- */
-@Repository
 public interface ReservaCocheRepositorioJPA extends JpaRepository<ReservaCocheEntidad, String> {
 
     /**

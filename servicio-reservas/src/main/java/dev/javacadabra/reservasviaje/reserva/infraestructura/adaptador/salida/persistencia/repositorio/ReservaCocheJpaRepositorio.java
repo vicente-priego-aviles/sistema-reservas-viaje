@@ -2,15 +2,10 @@ package dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.salida.p
 
 import dev.javacadabra.reservasviaje.reserva.infraestructura.adaptador.salida.persistencia.entidad.ReservaCocheEntidad;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repositorio JPA para operaciones de persistencia de Pagos de coche.
- */
-@Repository
-public interface ReservaCocheJpaRepositorio extends JpaRepository<ReservaCocheEntidad, Long> {
+public interface ReservaCocheJpaRepositorio extends JpaRepository<ReservaCocheEntidad, String> {
 
     /**
      * Busca una reserva de coche por su ID de negocio (ReservaId).
