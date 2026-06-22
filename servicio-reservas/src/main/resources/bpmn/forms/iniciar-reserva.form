@@ -22,16 +22,14 @@
       "id": "Field_ClienteHeader"
     },
     {
-      "label": "ID del Cliente (UUID)",
-      "type": "textfield",
+      "label": "Cliente",
+      "type": "select",
       "layout": { "row": "Row_3", "columns": null },
       "id": "clienteId",
       "key": "clienteId",
-      "description": "Identificador único del cliente. Ej: 123e4567-e89b-12d3-a456-426655440000",
-      "validate": {
-        "required": true,
-        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-      }
+      "description": "Selecciona el cliente que realizará la reserva",
+      "valuesExpression": "=clientesDisponibles",
+      "validate": { "required": true }
     },
     {
       "text": "---",
@@ -41,7 +39,7 @@
       "id": "Field_Divider_2"
     },
     {
-      "text": "## ✈️ Detalles del Viaje",
+      "text": "## 🗺️ Detalles del Viaje",
       "label": "Text view",
       "type": "text",
       "layout": { "row": "Row_5", "columns": null },
@@ -49,16 +47,65 @@
     },
     {
       "label": "Destino",
-      "type": "textfield",
+      "type": "select",
       "layout": { "row": "Row_6", "columns": null },
       "id": "destino",
       "key": "destino",
-      "description": "Ciudad o país de destino del viaje",
-      "validate": {
-        "required": true,
-        "minLength": 2,
-        "maxLength": 100
-      }
+      "description": "Capital de provincia de destino",
+      "values": [
+        { "label": "A Coruña", "value": "A Coruña" },
+        { "label": "Albacete", "value": "Albacete" },
+        { "label": "Alicante", "value": "Alicante" },
+        { "label": "Almería", "value": "Almería" },
+        { "label": "Ávila", "value": "Ávila" },
+        { "label": "Badajoz", "value": "Badajoz" },
+        { "label": "Bilbao", "value": "Bilbao" },
+        { "label": "Burgos", "value": "Burgos" },
+        { "label": "Cáceres", "value": "Cáceres" },
+        { "label": "Cádiz", "value": "Cádiz" },
+        { "label": "Castellón de la Plana", "value": "Castellón de la Plana" },
+        { "label": "Ceuta", "value": "Ceuta" },
+        { "label": "Ciudad Real", "value": "Ciudad Real" },
+        { "label": "Córdoba", "value": "Córdoba" },
+        { "label": "Cuenca", "value": "Cuenca" },
+        { "label": "Girona", "value": "Girona" },
+        { "label": "Granada", "value": "Granada" },
+        { "label": "Guadalajara", "value": "Guadalajara" },
+        { "label": "Huelva", "value": "Huelva" },
+        { "label": "Huesca", "value": "Huesca" },
+        { "label": "Jaén", "value": "Jaén" },
+        { "label": "Las Palmas de Gran Canaria", "value": "Las Palmas de Gran Canaria" },
+        { "label": "León", "value": "León" },
+        { "label": "Lleida", "value": "Lleida" },
+        { "label": "Logroño", "value": "Logroño" },
+        { "label": "Lugo", "value": "Lugo" },
+        { "label": "Madrid", "value": "Madrid" },
+        { "label": "Málaga", "value": "Málaga" },
+        { "label": "Melilla", "value": "Melilla" },
+        { "label": "Murcia", "value": "Murcia" },
+        { "label": "Ourense", "value": "Ourense" },
+        { "label": "Oviedo", "value": "Oviedo" },
+        { "label": "Palencia", "value": "Palencia" },
+        { "label": "Palma", "value": "Palma" },
+        { "label": "Pamplona", "value": "Pamplona" },
+        { "label": "Pontevedra", "value": "Pontevedra" },
+        { "label": "Salamanca", "value": "Salamanca" },
+        { "label": "San Sebastián", "value": "San Sebastián" },
+        { "label": "Santa Cruz de Tenerife", "value": "Santa Cruz de Tenerife" },
+        { "label": "Santander", "value": "Santander" },
+        { "label": "Segovia", "value": "Segovia" },
+        { "label": "Sevilla", "value": "Sevilla" },
+        { "label": "Soria", "value": "Soria" },
+        { "label": "Tarragona", "value": "Tarragona" },
+        { "label": "Teruel", "value": "Teruel" },
+        { "label": "Toledo", "value": "Toledo" },
+        { "label": "Valencia", "value": "Valencia" },
+        { "label": "Valladolid", "value": "Valladolid" },
+        { "label": "Vitoria-Gasteiz", "value": "Vitoria-Gasteiz" },
+        { "label": "Zamora", "value": "Zamora" },
+        { "label": "Zaragoza", "value": "Zaragoza" }
+      ],
+      "validate": { "required": true }
     },
     {
       "subtype": "date",
@@ -68,6 +115,7 @@
       "id": "fechaInicio",
       "key": "fechaInicio",
       "description": "Fecha de inicio del viaje",
+      "defaultValue": "=today() + duration(\"P7D\")",
       "validate": { "required": true },
       "dateLabel": "Fecha de Inicio"
     },
@@ -79,6 +127,7 @@
       "id": "fechaFin",
       "key": "fechaFin",
       "description": "Fecha de fin del viaje (debe ser posterior a la fecha de inicio)",
+      "defaultValue": "=today() + duration(\"P14D\")",
       "validate": { "required": true },
       "dateLabel": "Fecha de Fin"
     },
@@ -117,6 +166,7 @@
       "id": "emailContacto",
       "key": "emailContacto",
       "description": "Email para recibir notificaciones de la reserva",
+      "defaultValue": "reservas@viaje.dev",
       "validate": { "required": true }
     },
     {
@@ -126,6 +176,7 @@
       "id": "telefonoContacto",
       "key": "telefonoContacto",
       "description": "Teléfono en formato internacional. Ej: +34600123456",
+      "defaultValue": "+34600000000",
       "validate": { "required": true }
     },
     {
