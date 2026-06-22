@@ -1,0 +1,8 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "automatic",
+  "files.exclude": {
+    "**/target/generated-sources": true,
+    "**/target/generated-test-sources": true
+  }
+}
