@@ -32,9 +32,8 @@ import java.util.List;
  * @version 1.0.0
  */
 @Mapper(
-        componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {TarjetaCreditoMapper.class},
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+        config = AplicacionMapperConfig.class,
+        uses = {TarjetaCreditoMapper.class}
 )
 public interface ClienteMapper {
 

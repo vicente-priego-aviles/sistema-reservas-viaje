@@ -21,7 +21,7 @@ import java.util.List;
  * @author javacadabra
  * @version 1.0.1 - Corregido bug de encriptación
  */
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(config = EntidadMapperConfig.class)
 public interface TarjetaCreditoEntidadMapper {
 
     // ==================== DOMINIO → JPA ====================
