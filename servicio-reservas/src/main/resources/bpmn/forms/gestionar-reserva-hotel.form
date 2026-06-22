@@ -164,6 +164,7 @@
       "id": "fechaSalida",
       "key": "fechaSalida",
       "description": "Fecha de check-out del hotel",
+      "defaultValue": "=date(fechaEntrada) + duration(\"P2D\")",
       "validate": {
         "required": true
       },

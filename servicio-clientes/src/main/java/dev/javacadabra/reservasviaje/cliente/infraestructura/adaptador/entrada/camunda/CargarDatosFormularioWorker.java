@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,8 @@ public class CargarDatosFormularioWorker {
     private final ConsultarClienteUseCase consultarClienteUseCase;
 
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FORMATO_DATETIME = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    private static final ZoneOffset OFFSET = ZoneOffset.ofHours(1);
 
     @JobWorker(type = "cargar-datos-formulario", autoComplete = true)
     public Map<String, Object> cargarDatos() {
@@ -50,12 +53,21 @@ public class CargarDatosFormularioWorker {
 
         log.info("✅ {} clientes disponibles cargados", clientesDisponibles.size());
 
-        String manana = LocalDate.now().plusDays(1).format(FORMATO_FECHA);
+        LocalDate manana = LocalDate.now().plusDays(1);
+        LocalDate checkout = manana.plusDays(2); // 2 noches de estancia
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("clientesDisponibles", clientesDisponibles);
-        variables.put("fechaInicio", manana);
-        variables.put("fechaFin", manana);
+        // Fechas del formulario inicial (inicio/fin del viaje)
+        variables.put("fechaInicio", manana.format(FORMATO_FECHA));
+        variables.put("fechaFin", checkout.format(FORMATO_FECHA));
+        // Hotel: solo checkin — checkout lo calcula el form con FEEL
+        variables.put("fechaEntrada", manana.format(FORMATO_FECHA));
+        // Coche: recogida y devolución con hora (formato ISO con offset)
+        variables.put("fechaRecogida", manana.atTime(10, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
+        variables.put("fechaDevolucion", checkout.atTime(15, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
+        // Vuelo: llegada de retorno, posterior al fin del hotel y del coche
+        variables.put("fechaLlegada", checkout.plusDays(1).atTime(12, 0).atOffset(OFFSET).format(FORMATO_DATETIME));
         return variables;
     }
 }
