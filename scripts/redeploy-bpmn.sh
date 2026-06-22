@@ -85,4 +85,4 @@ done
 
 echo ""
 echo -e "${GREEN}🎉 BPMN desplegado correctamente en Zeebe.${RESET}"
-echo -e "${CYAN}   Comprueba la nueva versión en Operate: http://localhost:8081${RESET}"
+echo -e "${CYAN}   Comprueba la nueva versión en Operate: http://localhost:8080/operate${RESET}"

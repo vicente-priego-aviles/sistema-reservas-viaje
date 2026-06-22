@@ -471,8 +471,7 @@ public class ReservaVueloServicio {
 
 - **Camunda Platform 8** (se levanta con Docker Compose)
   - Zeebe (puerto 26500)
-  - Camunda Operate (puerto 8080)
-  - Camunda Tasklist (puerto 8081)
+  - Camunda 8.9 unificado: Operate (/operate) + Tasklist (/tasklist) + REST (puerto 8080)
 
 ---
 
@@ -496,7 +495,7 @@ Espera unos 60 segundos hasta que Camunda esté completamente iniciado.
 
 **Verificar que Camunda está funcionando:**
 ```bash
-curl http://localhost:8080/actuator/health
+curl http://localhost:9600/actuator/health/readiness
 ```
 
 ### 3. Compilar el Proyecto

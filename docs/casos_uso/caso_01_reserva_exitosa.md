@@ -47,7 +47,7 @@ Cliente activo con tarjeta válida realiza una reserva completa exitosamente.
 
 ### Opción A — Camunda REST API (Swagger)
 
-Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+Accede a http://localhost:8080/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
 
 ```json
 {
@@ -86,7 +86,7 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ### Opción C — Tasklist
 
-Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía. El proceso arranca directamente desde la interfaz sin necesidad de cURL ni Swagger.
+Accede a http://localhost:8080/operate → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía. El proceso arranca directamente desde la interfaz sin necesidad de cURL ni Swagger.
 
 ## Respuesta Esperada
 
@@ -159,4 +159,4 @@ Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proces
 ## Verificar en Camunda
 
 1. **Operate** (http://localhost:8080): instancia completada en `fin-solicitud-completada`
-2. **Tasklist** (http://localhost:8081): completar los User Tasks para avanzar el flujo
+2. **Tasklist** (http://localhost:8080/tasklist): completar los User Tasks para avanzar el flujo

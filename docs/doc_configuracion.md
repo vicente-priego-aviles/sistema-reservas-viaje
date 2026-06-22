@@ -233,59 +233,41 @@ reserva:
 
 ### docker-compose-camunda.yml
 
+> **Camunda 8.9** usa la imagen unificada `camunda/camunda` (Orchestration Cluster) en lugar de las imágenes separadas `camunda/zeebe`, `camunda/operate` y `camunda/tasklist` (deprecadas desde 8.8).
+
 ```yaml
-version: '3.8'
-
 services:
-  zeebe:
-    image: camunda/zeebe:8.7.0
-    container_name: zeebe
+  camunda:
+    image: camunda/camunda:8.9.6
+    container_name: camunda
     ports:
-      - "26500:26500"
-      - "9600:9600"
+      - "26500:26500"   # Zeebe gRPC (workers)
+      - "8080:8080"     # REST API + Operate UI + Tasklist UI
+      - "9600:9600"     # Management / health
     environment:
-      - ZEEBE_LOG_LEVEL=info
-      - ZEEBE_BROKER_GATEWAY_ENABLE=true
-      - ZEEBE_BROKER_NETWORK_HOST=0.0.0.0
+      - CAMUNDA_DATA_SECONDARY_STORAGE_TYPE=elasticsearch
+      - CAMUNDA_DATA_SECONDARY_STORAGE_ELASTICSEARCH_URL=http://elasticsearch:9200
+      - CAMUNDA_DATA_EXPORTERS_ELASTICSEARCH_CLASSNAME=io.camunda.zeebe.exporter.ElasticsearchExporter
+      - CAMUNDA_DATA_EXPORTERS_ELASTICSEARCH_ARGS_URL=http://elasticsearch:9200
+      - CAMUNDA_DATA_EXPORTERS_ELASTICSEARCH_ARGS_BULK_SIZE=1
+      - CAMUNDA_SECURITY_AUTHENTICATION_METHOD=basic
+      - "JAVA_TOOL_OPTIONS=-Xms512m -Xmx512m"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9600/actuator/health/readiness || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     volumes:
-      - zeebe-data:/usr/local/zeebe/data
+      - camunda:/usr/local/camunda/data
     networks:
-       - camunda-platform
-
-  operate:
-    image: camunda/operate:8.7.0
-    container_name: operate
-    ports:
-      - "8080:8080"
-    environment:
-      - CAMUNDA_OPERATE_ZEEBE_GATEWAYADDRESS=zeebe:26500
-      - CAMUNDA_OPERATE_ELASTICSEARCH_URL=http://elasticsearch:9200
-      - CAMUNDA_OPERATE_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
-      - SPRING_PROFILES_ACTIVE=dev
+      - camunda-platform
     depends_on:
-      - zeebe
-      - elasticsearch
-    networks:
-       - camunda-platform
-
-  tasklist:
-    image: camunda/tasklist:8.7.0
-    container_name: tasklist
-    ports:
-      - "8081:8080"
-    environment:
-      - CAMUNDA_TASKLIST_ZEEBE_GATEWAYADDRESS=zeebe:26500
-      - CAMUNDA_TASKLIST_ELASTICSEARCH_URL=http://elasticsearch:9200
-      - CAMUNDA_TASKLIST_ZEEBEELASTICSEARCH_URL=http://elasticsearch:9200
-      - SPRING_PROFILES_ACTIVE=dev
-    depends_on:
-      - zeebe
-      - elasticsearch
-    networks:
-       - camunda-platform
+      elasticsearch:
+        condition: service_healthy
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.10
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -293,19 +275,31 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
-       - camunda-platform
+      - camunda-platform
 
 volumes:
-  zeebe-data:
+  camunda:
   elasticsearch-data:
 
 networks:
   camunda-platform:
     driver: bridge
 ```
+
+**Interfaces web** (tras arrancar):
+- **Operate** (monitorización): http://localhost:8080/operate (demo/demo)
+- **Tasklist** (User Tasks): http://localhost:8080/tasklist (demo/demo)
+- **REST API / Swagger**: http://localhost:8080/swagger-ui/index.html
+- **Health check**: http://localhost:9600/actuator/health/readiness
 
 ---
 

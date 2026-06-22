@@ -15,7 +15,7 @@ import json
 import sys
 import time
 
-OPERATE_URL = "http://localhost:8081"
+OPERATE_URL = "http://localhost:8080"  # Camunda 8.9: Operate embebido en puerto 8080
 USER = "demo"
 PASSWORD = "demo"
 

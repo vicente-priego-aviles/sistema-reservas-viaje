@@ -54,7 +54,7 @@ This is a **Maven multi-module project** (`groupId: dev.javacadabra`, `artifactI
 | `servicio-alquiler-coches` | 9083 | Car rental booking and cancellation |
 | `servicio-pagos` | 9084 | Payment processing and confirmation |
 
-Camunda runs via Docker: Zeebe (gRPC :26500, REST :8088), Operate (:8080), Tasklist (:8081).
+Camunda runs via Docker using the unified `camunda/camunda:8.9.6` image: Zeebe gRPC :26500, REST/Operate/Tasklist :8080 (management :9600). Operate: http://localhost:8080/operate, Tasklist: http://localhost:8080/tasklist.
 
 ### Hexagonal Architecture (per microservice)
 
@@ -115,7 +115,7 @@ camunda:
     mode: self-managed
     zeebe:
       grpc-address: http://127.0.0.1:26500   # local dev
-      rest-address: http://127.0.0.1:8088
+      rest-address: http://127.0.0.1:8080
     auth:
       username: demo
       password: demo

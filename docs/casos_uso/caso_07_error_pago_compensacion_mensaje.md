@@ -59,7 +59,7 @@ Los datos de inicio son los mismos que el Caso 1. El error se fuerza en los User
 
 ### Opción A — Camunda REST API (Swagger)
 
-Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+Accede a http://localhost:8080/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
 
 ```json
 {
@@ -98,13 +98,13 @@ curl -X POST http://localhost:9090/api/reservas/iniciar \
 
 ### Opción C — Tasklist
 
-Accede a http://localhost:8082 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
+Accede a http://localhost:8080/tasklist → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
 
 ## Forzar el error: completar los User Tasks con precios altos
 
 > ⚠️ **Sin este paso el proceso terminará con éxito** (como el Caso 1). El error de pago solo se activa si los precios introducidos en los User Tasks superan el límite de €10.000.
 
-En **Tasklist** (http://localhost:8082) aparecerán tres User Tasks en paralelo una vez avanzado el proceso. Completa cada uno con los precios indicados:
+En **Tasklist** (http://localhost:8080/tasklist) aparecerán tres User Tasks en paralelo una vez avanzado el proceso. Completa cada uno con los precios indicados:
 
 | User Task | Campo de precio | Valor sugerido |
 |-----------|----------------|----------------|
@@ -147,7 +147,7 @@ El resto de campos (fechas, destinos, clase de vuelo, etc.) puedes dejarlos con 
 
 ## Verificar en Camunda Operate
 
-Accede a http://localhost:8081 y busca la instancia de `proceso-principal`.
+Accede a http://localhost:8080/operate y busca la instancia de `proceso-principal`.
 
 **Estado esperado:**
 - Instancia: `COMPLETED`

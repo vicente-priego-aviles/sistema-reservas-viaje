@@ -64,8 +64,8 @@ Para desarrollo local puedes dejarlo con el contenido por defecto (vacío). Si u
 
 | Servicio | URL |
 |---------|-----|
-| 📊 Camunda Operate | http://localhost:8081 (demo/demo) |
-| 📋 Camunda Tasklist | http://localhost:8082 (demo/demo) |
+| 📊 Camunda Operate | http://localhost:8080/operate (demo/demo) |
+| 📋 Camunda Tasklist | http://localhost:8080/tasklist (demo/demo) |
 | 👥 Clientes | http://localhost:9080 |
 | ✈️ Vuelos | http://localhost:9081 |
 | 🏨 Hoteles | http://localhost:9082 |
@@ -214,7 +214,7 @@ Camunda Platform debe estar corriendo. Si no lo está, usa `./scripts/build-and-
 # 1. Edita el BPMN en Camunda Modeler (carpeta bpmn/)
 # 2. Redesplegar (sincroniza automáticamente bpmn/ → runtime y reconstruye):
 ./scripts/redeploy-bpmn.sh
-# 3. Verificar nueva versión en Operate: http://localhost:8081
+# 3. Verificar nueva versión en Operate: http://localhost:8080/operate
 ```
 
 ### Tiempo estimado
@@ -306,7 +306,7 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 
 ### Requisito previo
 
-Camunda Operate debe estar corriendo en `http://localhost:8081`.
+Camunda Operate debe estar corriendo en `http://localhost:8080/operate`.
 
 ### Ejemplo de salida
 

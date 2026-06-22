@@ -32,7 +32,7 @@ La clave de correlación del mensaje es el `clienteId` (no el `processInstanceKe
 
 ### Opción A — Camunda REST API (Swagger)
 
-Accede a http://localhost:8088/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
+Accede a http://localhost:8080/swagger-ui/index.html, endpoint `POST /v2/process-instances`, con el body:
 
 ```json
 {
@@ -81,13 +81,13 @@ Respuesta:
 
 ### Opción C — Tasklist
 
-Accede a http://localhost:8081 → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
+Accede a http://localhost:8080/operate → pestaña **Processes** → selecciona "Proceso Principal de Reserva de Viaje" → pulsa **Start process**. Se abre el formulario de inicio (`iniciar-reserva`); rellénalo con los datos del caso y envía.
 
 ---
 
 ## Paso 2: Publicar mensaje de actualización de tarjeta
 
-Mientras el proceso espera el User Task "Revisar Datos de Entrada", publicar el mensaje desde **Zeebe Swagger** (http://localhost:8088/swagger-ui/index.html), endpoint `POST /v2/messages/publication`:
+Mientras el proceso espera el User Task "Revisar Datos de Entrada", publicar el mensaje desde **Zeebe Swagger** (http://localhost:8080/swagger-ui/index.html), endpoint `POST /v2/messages/publication`:
 
 ```json
 {
@@ -105,7 +105,7 @@ Mientras el proceso espera el User Task "Revisar Datos de Entrada", publicar el 
 O vía cURL:
 
 ```bash
-curl -X POST http://localhost:8088/v2/messages/publication \
+curl -X POST http://localhost:8080/v2/messages/publication \
   -H "Content-Type: application/json" \
   -d '{
     "messageName": "tarjeta-proporcionada",
@@ -136,4 +136,4 @@ curl -X POST http://localhost:8088/v2/messages/publication \
 ## Verificar en Camunda
 
 1. **Operate** (http://localhost:8080): ver el subproceso `subproceso-actualizar-tarjeta` activo en paralelo al flujo principal; verificar que el proceso principal continúa sin interrumpirse
-2. **Tasklist** (http://localhost:8081): completar los User Tasks del flujo principal normalmente
+2. **Tasklist** (http://localhost:8080/tasklist): completar los User Tasks del flujo principal normalmente
