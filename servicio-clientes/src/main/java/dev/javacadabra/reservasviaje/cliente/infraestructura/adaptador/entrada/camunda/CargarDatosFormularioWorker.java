@@ -6,6 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +33,8 @@ public class CargarDatosFormularioWorker {
 
     private final ConsultarClienteUseCase consultarClienteUseCase;
 
+    private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     @JobWorker(type = "cargar-datos-formulario", autoComplete = true)
     public Map<String, Object> cargarDatos() {
         log.info("📋 Cargando clientes ACTIVO para formulario de inicio");
@@ -45,6 +50,12 @@ public class CargarDatosFormularioWorker {
 
         log.info("✅ {} clientes disponibles cargados", clientesDisponibles.size());
 
-        return Map.of("clientesDisponibles", clientesDisponibles);
+        String manana = LocalDate.now().plusDays(1).format(FORMATO_FECHA);
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("clientesDisponibles", clientesDisponibles);
+        variables.put("fechaInicio", manana);
+        variables.put("fechaFin", manana);
+        return variables;
     }
 }

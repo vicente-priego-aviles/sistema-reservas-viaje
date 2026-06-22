@@ -16,6 +16,7 @@ Guía completa de los scripts disponibles para gestionar el ciclo de vida del si
 | [`redeploy-bpmn.sh`](#-redeploy-bpmnsh) | Recompilar y redesplegar solo los BPMN | Tras modificar archivos BPMN |
 | [`limpieza.sh`](#-limpiezash) | Limpiar todo el entorno Docker | Resolver problemas o liberar recursos |
 | [`reset-cliente.sh`](#-reset-clientesh) | Resetear estado de un cliente a ACTIVO | Cliente bloqueado en EN_PROCESO_RESERVA tras cancelar una prueba |
+| [`limpiar-instancias.sh`](#-limpiar-instanciassh) | Eliminar todas las instancias de proceso de Operate | Limpiar el historial antes de una nueva ronda de pruebas |
 
 ---
 
@@ -280,6 +281,43 @@ Este script afecta a **todos los contenedores Docker** de tu máquina, no solo l
 ### Requisito previo
 
 `servicio-clientes` debe estar corriendo. El endpoint `/dev/clientes/...` lo expone `DevAdminController`, que solo existe en este servicio.
+
+---
+
+## 🗑️ limpiar-instancias.sh
+
+**Elimina todas las instancias de proceso de Camunda Operate**, independientemente de su estado (activas, completadas, con error, canceladas). Útil para dejar Operate completamente limpio antes de una nueva ronda de pruebas.
+
+```bash
+./scripts/limpiar-instancias.sh
+```
+
+### Qué hace paso a paso
+
+1. 🔑 Obtiene sesión autenticada en Operate (`demo/demo`)
+2. 📋 Obtiene todas las instancias existentes (paginando de 50 en 50)
+3. 🗑️ Elimina **todas** las instancias sin excepción
+4. ✅ Muestra un resumen final con el número eliminado y las instancias restantes
+
+### Cuándo usarlo
+
+- ✅ Antes de lanzar una nueva ronda de pruebas desde cero
+- ✅ Cuando Operate acumula instancias de sesiones de prueba anteriores
+
+### Requisito previo
+
+Camunda Operate debe estar corriendo en `http://localhost:8081`.
+
+### Ejemplo de salida
+
+```
+Obteniendo instancias de Operate...
+Total encontradas: 24
+  Progreso: 20/24
+
+Eliminadas: 24  Errores: 0
+Instancias restantes en Operate: 0
+```
 
 ---
 
