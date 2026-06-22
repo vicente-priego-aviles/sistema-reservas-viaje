@@ -22,18 +22,18 @@ public record ActualizarDatosPersonalesDTO(
 
         @NotBlank(message = "El nombre es obligatorio")
         @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-        @Schema(description = "Nombre del cliente", example = "Juan", required = true)
+        @Schema(description = "Nombre del cliente", example = "Juan", requiredMode = Schema.RequiredMode.REQUIRED)
         String nombre,
 
         @NotBlank(message = "Los apellidos son obligatorios")
         @Size(min = 2, max = 100, message = "Los apellidos deben tener entre 2 y 100 caracteres")
-        @Schema(description = "Apellidos del cliente", example = "García Pérez", required = true)
+        @Schema(description = "Apellidos del cliente", example = "García Pérez", requiredMode = Schema.RequiredMode.REQUIRED)
         String apellidos,
 
         @NotBlank(message = "El email es obligatorio")
         @Email(message = "El email no tiene un formato válido")
         @Size(max = 255, message = "El email no puede exceder 255 caracteres")
-        @Schema(description = "Email del cliente", example = "juan.garcia@email.com", required = true)
+        @Schema(description = "Email del cliente", example = "juan.garcia@email.com", requiredMode = Schema.RequiredMode.REQUIRED)
         String email,
 
         @Pattern(
