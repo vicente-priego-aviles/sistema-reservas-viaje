@@ -5,7 +5,6 @@ import dev.javacadabra.reservasviaje.cliente.dominio.modelo.entidad.TarjetaCredi
 import dev.javacadabra.reservasviaje.cliente.dominio.modelo.objetovalor.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
 import org.mapstruct.Named;
 
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
  * @author javacadabra
  * @version 1.0.0
  */
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(config = AplicacionMapperConfig.class)
 public interface TarjetaCreditoMapper {
 
     // ==================== DOMINIO → DTO ====================

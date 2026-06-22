@@ -32,7 +32,7 @@ import java.util.List;
  * @version 1.0.0
  */
 @Mapper(
-        componentModel = MappingConstants.ComponentModel.SPRING,
+        config = AplicacionMapperConfig.class,
         uses = {TarjetaCreditoMapper.class}
 )
 public interface ClienteMapper {
