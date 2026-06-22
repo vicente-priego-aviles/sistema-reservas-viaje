@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
 """
-Elimina de Camunda Operate todas las instancias de proceso excepto
-las indicadas como argumento y sus procesos hijos.
+Elimina de Camunda Operate TODAS las instancias de proceso existentes,
+independientemente de su estado.
+
+Las instancias activas se cancelan primero vía Zeebe REST API y luego
+se eliminan de Operate una vez alcanzan estado terminal.
 
 Uso:
-  ./limpiar-instancias.sh <key1> [key2 ...]
-
-Ejemplo:
-  ./limpiar-instancias.sh 2251799814089895 2251799813880244
+  ./limpiar-instancias.sh
 """
 
 import subprocess
 import json
 import sys
+import time
 
 OPERATE_URL = "http://localhost:8081"
 USER = "demo"
 PASSWORD = "demo"
+
+TERMINAL_STATES = {"COMPLETED", "CANCELED"}
 
 
 def get_cookie():
@@ -55,6 +58,18 @@ def operate_delete(cookie, key):
     return data.get("deleted", 0) == 1, resp
 
 
+def operate_cancel(cookie, key):
+    cmd = [
+        "curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
+        "-X", "POST",
+        "-H", f"Cookie: OPERATE-SESSION={cookie}",
+        "-H", "Content-Type: application/json",
+        "-d", json.dumps({"operationType": "CANCEL_PROCESS_INSTANCE"}),
+        f"{OPERATE_URL}/api/process-instances/{key}/operation",
+    ]
+    return subprocess.check_output(cmd, text=True).strip()
+
+
 def fetch_all_instances(cookie):
     instances = []
     sort_values = None
@@ -73,41 +88,50 @@ def fetch_all_instances(cookie):
     return instances
 
 
+def wait_for_terminal(cookie, keys, timeout=30):
+    """Polls Operate until all given keys reach a terminal state or timeout."""
+    deadline = time.time() + timeout
+    pending = set(keys)
+    while pending and time.time() < deadline:
+        time.sleep(2)
+        instances = fetch_all_instances(cookie)
+        state_map = {inst["key"]: inst["state"] for inst in instances}
+        pending = {k for k in pending if state_map.get(k) not in TERMINAL_STATES}
+        if pending:
+            print(f"  Esperando cancelación: {len(pending)} instancia(s)...")
+    if pending:
+        print(f"  AVISO: {len(pending)} instancia(s) no alcanzaron estado terminal tras {timeout}s",
+              file=sys.stderr)
+
+
 def main():
-    if len(sys.argv) < 2:
-        print(__doc__)
-        sys.exit(1)
-
-    try:
-        keep_roots = {int(k) for k in sys.argv[1:]}
-    except ValueError:
-        print("ERROR: los argumentos deben ser números enteros (keys de proceso)", file=sys.stderr)
-        sys.exit(1)
-
     cookie = get_cookie()
 
     print("Obteniendo instancias de Operate...")
     instances = fetch_all_instances(cookie)
     print(f"Total encontradas: {len(instances)}")
 
-    # Expandir conjunto a conservar: raíces + todos sus hijos directos
-    keep_keys = set(keep_roots)
-    for inst in instances:
-        if inst.get("parentKey") in keep_roots:
-            keep_keys.add(inst["key"])
-
-    to_delete = [inst["key"] for inst in instances if inst["key"] not in keep_keys]
-
-    if not to_delete:
+    if not instances:
         print("No hay instancias que eliminar.")
         return
 
-    print(f"A conservar ({len(keep_keys)}): {sorted(keep_keys)}")
-    print(f"A eliminar: {len(to_delete)}")
+    # Cancelar las instancias activas vía Zeebe antes de borrarlas
+    active = [inst for inst in instances if inst["state"] not in TERMINAL_STATES]
+    if active:
+        print(f"Cancelando {len(active)} instancia(s) activa(s) vía Zeebe...")
+        for inst in active:
+            key = inst["key"]
+            status = operate_cancel(cookie, key)
+            if status not in ("200", "204"):
+                print(f"  AVISO: cancelación de {key} devolvió HTTP {status}", file=sys.stderr)
+        wait_for_terminal(cookie, [inst["key"] for inst in active])
+        # Refrescar lista tras esperar
+        instances = fetch_all_instances(cookie)
 
     deleted = 0
     errors = 0
-    for key in to_delete:
+    for inst in instances:
+        key = inst["key"]
         ok, raw = operate_delete(cookie, key)
         if ok:
             deleted += 1
@@ -115,11 +139,10 @@ def main():
             errors += 1
             print(f"  ERROR al eliminar {key}: {raw[:150]}", file=sys.stderr)
         if deleted % 20 == 0 and deleted > 0:
-            print(f"  Progreso: {deleted}/{len(to_delete)}")
+            print(f"  Progreso: {deleted}/{len(instances)}")
 
     print(f"\nEliminadas: {deleted}  Errores: {errors}")
 
-    # Verificación final
     remaining = fetch_all_instances(cookie)
     print(f"Instancias restantes en Operate: {len(remaining)}")
     for inst in remaining:
