@@ -1,5 +1,5 @@
 # Imagen base ligera con JDK 21
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:25-jdk-alpine
 
 # Crear usuario no root para mayor seguridad
 RUN addgroup -S appuser && adduser -S -G appuser appuser

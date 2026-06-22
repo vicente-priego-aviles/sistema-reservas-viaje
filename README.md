@@ -1,8 +1,8 @@
 # 🎯 Sistema de Reservas de Viaje con Camunda Platform 8
 
-[![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?style=flat-square&logo=spring)](https://spring.io/projects/spring-boot)
-[![Camunda](https://img.shields.io/badge/Camunda-8.7-blue?style=flat-square&logo=camunda)](https://camunda.com/)
+[![Java](https://img.shields.io/badge/Java-25-orange?style=flat-square&logo=openjdk)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen?style=flat-square&logo=spring)](https://spring.io/projects/spring-boot)
+[![Camunda](https://img.shields.io/badge/Camunda-8.9-blue?style=flat-square&logo=camunda)](https://camunda.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
 > Sistema empresarial de reservas de viajes construido con **arquitectura de microservicios**, **Camunda Platform 8** como orquestador BPMN, **arquitectura hexagonal**, y **Domain-Driven Design (DDD)**.
@@ -84,16 +84,16 @@
 
 | Categoría | Tecnología | Versión | Propósito |
 |-----------|-----------|---------|-----------|
-| **Lenguaje** | Java | 21 | Desarrollo backend |
-| **Framework** | Spring Boot | 3.5.6 | Framework base |
-| **Orquestador** | Camunda Platform 8 | 8.7 | Motor de workflows BPMN |
+| **Lenguaje** | Java | 25 | Desarrollo backend |
+| **Framework** | Spring Boot | 4.1.0 | Framework base |
+| **Orquestador** | Camunda Platform 8 (starter) | 8.9.6 | Motor de workflows BPMN |
 | **Persistencia** | Spring Data JPA | — | Acceso a datos |
 | **BD Desarrollo** | H2 Database | 2.3.232 | Base de datos en memoria |
-| **Utilidades** | Lombok | 1.18.36 | Reducción de boilerplate |
+| **Utilidades** | Lombok | 1.18.40 | Reducción de boilerplate |
 | **Mapeo** | MapStruct | 1.6.3 | DTO ↔ Entity |
 | **Validación** | Jakarta Bean Validation | — | Validación de entrada |
 | **DDD** | JMolecules | 1.10.0 | Anotaciones DDD explícitas |
-| **API Docs** | SpringDoc OpenAPI | 2.7.0 | Documentación automática |
+| **API Docs** | SpringDoc OpenAPI | 3.0.3 | Documentación automática |
 | **Containerización** | Docker + Compose | — | Despliegue |
 
 ### Microservicios
@@ -109,11 +109,13 @@
 
 **Infraestructura Camunda Platform 8:**
 
-| Puerto | Componente | Acceso |
-|--------|-----------|--------|
-| **8081** | Camunda Operate | `http://localhost:8081` (demo/demo) |
-| **8082** | Camunda Tasklist | `http://localhost:8082` (demo/demo) |
-| **26500** | Zeebe gRPC | Workers de los microservicios |
+> La plataforma Docker (Zeebe, Operate, Tasklist) usa la versión **8.7.12**. El `camunda-spring-boot-starter` en el código es **8.9.6**. Ver [análisis de versiones](#).
+
+| Puerto | Componente | Versión | Acceso |
+|--------|-----------|---------|--------|
+| **8081** | Camunda Operate | 8.7.12 | `http://localhost:8081` (demo/demo) |
+| **8082** | Camunda Tasklist | 8.7.12 | `http://localhost:8082` (demo/demo) |
+| **26500** | Zeebe gRPC | 8.7.12 | Workers de los microservicios |
 
 ### Arquitectura Hexagonal
 
@@ -182,7 +184,7 @@ Los procesos residen en `servicio-reservas/src/main/resources/bpmn/` y se despli
 ## 📦 Prerequisitos
 
 ```bash
-java --version   # Java 21+
+java --version   # Java 25+
 mvn --version    # Maven 3.9+
 docker --version # Docker con Compose
 ```
@@ -226,16 +228,32 @@ Para reiniciar sin recompilar: `./scripts/start.sh` · Para parar todo: `./scrip
 
 ## 🌐 API REST
 
-> ⚠️ **Pendiente de implementar.** Los controladores REST no existen aún en ningún microservicio — Swagger mostrará "No operations defined in spec!". La interacción actual con el sistema se realiza exclusivamente a través de **Camunda Tasklist** (http://localhost:8082).
-
-Los endpoints planificados para `servicio-reservas` (puerto 9090) son:
+`servicio-reservas` (puerto 9090) expone un endpoint REST para iniciar el proceso de reserva:
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| `POST` | `/api/Pagos` | Iniciar una reserva de viaje |
-| `GET` | `/api/Pagos/{reservaId}` | Consultar el estado de una reserva |
+| `POST` | `/api/reservas/iniciar` | Inicia un proceso de reserva de viaje |
 
-> 📖 **Cómo iniciar una reserva hoy (vía Tasklist)**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
+```bash
+curl -X POST http://localhost:9090/api/reservas/iniciar \
+  -H "Content-Type: application/json" \
+  -d '{
+    "clienteId": "123e4567-e89b-12d3-a456-426655440000",
+    "origen": "Madrid",
+    "destino": "Barcelona",
+    "fechaInicio": "2027-06-01",
+    "fechaFin": "2027-06-08",
+    "numeroPasajeros": 2,
+    "emailContacto": "juan.perez@example.com",
+    "telefonoContacto": "+34600123456"
+  }'
+```
+
+El resto de la interacción se realiza a través de **Camunda Tasklist** (http://localhost:8082) completando las User Tasks del flujo.
+
+> Los demás microservicios (clientes, vuelos, hoteles, coches, pagos) no exponen REST público — operan exclusivamente como workers de Zeebe.
+
+> 📖 **Guía completa de inicio**: [docs/doc_quick_start.md](docs/doc_quick_start.md)
 
 ---
 

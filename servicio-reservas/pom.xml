@@ -23,11 +23,6 @@
     <!-- PROPIEDADES (heredadas del parent, aquí para referencia) -->
     <!-- ============================================ -->
     <properties>
-        <!-- Versiones heredadas del parent POM -->
-        <java.version>21</java.version>
-        <spring-boot.version>4.0.6</spring-boot.version>
-        <camunda-spring-boot.version>8.9.6</camunda-spring-boot.version>
-
         <!-- Propiedades específicas del módulo -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
