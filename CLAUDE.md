@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. Each microservice has its own `servicio-*/CLAUDE.md` with its port, database, aggregates, workers and endpoints; Claude Code loads it when working inside that module.
 
 ## Build & Run Commands
 
@@ -8,17 +8,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Compile all microservices (skipping tests)
 mvn clean package -DskipTests
 
-# Compile a single microservice
-cd servicio-clientes && mvn clean package -DskipTests
-
-# Run tests for all modules
-mvn test
-
-# Run tests for a single module
+# Compile / test a single microservice
+mvn clean package -DskipTests -pl servicio-clientes
 mvn test -pl servicio-clientes
-
-# Run a specific test class
-mvn test -pl servicio-clientes -Dtest=ClienteServicioTest
+mvn test -pl servicio-clientes -Dtest=<Clase>Test
 
 # Run integration tests
 mvn verify -pl servicio-clientes
@@ -29,10 +22,8 @@ mvn verify -pl servicio-clientes
 # Start full system (Camunda + microservices)
 ./scripts/start.sh
 
-# Start only Camunda infrastructure
+# Start only Camunda infrastructure / only the microservices (requires Camunda running)
 docker-compose -f docker-compose-camunda.yml up -d
-
-# Start microservices (requires Camunda already running)
 docker-compose up -d
 
 # View logs for a specific service
@@ -43,16 +34,14 @@ docker-compose up -d
 
 This is a **Maven multi-module project** (`groupId: dev.javacadabra`, `artifactId: reservasviaje`) with 6 Spring Boot microservices orchestrated by **Camunda Platform 8** (Zeebe engine).
 
-### Modules and Ports
-
-| Module | Port | Role |
-|--------|------|------|
-| `servicio-reservas` | 9090 | Orchestrator — exposes the public API, deploys BPMN processes, has NO Zeebe workers |
-| `servicio-clientes` | 9080 | Customer lifecycle & credit card validation |
-| `servicio-vuelos` | 9081 | Flight booking and cancellation |
-| `servicio-hoteles` | 9082 | Hotel booking and cancellation |
-| `servicio-alquiler-coches` | 9083 | Car rental booking and cancellation |
-| `servicio-pagos` | 9084 | Payment processing and confirmation |
+| Module | Port | Role | Details |
+|--------|------|------|---------|
+| `servicio-reservas` | 9090 | Public API, BPMN deployment, flight/hotel/car booking workers and their compensations | [CLAUDE.md](servicio-reservas/CLAUDE.md) |
+| `servicio-clientes` | 9080 | Customer lifecycle & credit card validation | [CLAUDE.md](servicio-clientes/CLAUDE.md) |
+| `servicio-pagos` | 9084 | Payment processing, booking confirmation, compensation trigger | [CLAUDE.md](servicio-pagos/CLAUDE.md) |
+| `servicio-vuelos` | 9081 | Flight domain model (no Zeebe workers yet) | [CLAUDE.md](servicio-vuelos/CLAUDE.md) |
+| `servicio-hoteles` | 9082 | Hotel domain model (no Zeebe workers yet) | [CLAUDE.md](servicio-hoteles/CLAUDE.md) |
+| `servicio-alquiler-coches` | 9083 | Car rental domain model (no Zeebe workers yet) | [CLAUDE.md](servicio-alquiler-coches/CLAUDE.md) |
 
 Camunda runs via Docker using the unified `camunda/camunda:8.9.6` image: Zeebe gRPC :26500, REST/Operate/Tasklist :8080 (management :9600). Operate: http://localhost:8080/operate, Tasklist: http://localhost:8080/tasklist.
 
@@ -86,25 +75,9 @@ infraestructura/
 
 **Dependency rule**: `infraestructura` → `aplicacion` → `dominio`. The domain layer has no framework dependencies.
 
-### BPMN Process Flow
-
-Processes are stored in `servicio-reservas/src/main/resources/bpmn/` and deployed automatically at startup by `BpmnDeploymentService`.
-
-There are 4 BPMN processes (all call activities from the main one):
-1. `proceso-principal` — Top-level orchestrator
-2. `subproceso-gestion-cliente` — Validates client and credit card
-3. `subproceso-reserva` — Parallel flight + hotel + car booking with Saga compensations
-4. `subproceso-pago` — Payment processing with rollback paths
-
-The `bpmn/` root directory contains modifiable copies for Camunda Modeler. The runtime copies are inside `servicio-reservas/src/main/resources/bpmn/`.
-
 ### Zeebe Workers
 
-Workers are `@Component` classes under `infraestructura/adaptador/entrada/camunda/` annotated with `@JobWorker(type = "job-type-name")`. They receive variables via `ActivatedJob.getVariablesAsMap()` and return `Map<String, Object>` to set process variables. Business errors are thrown as `ZeebeBpmnError("ERROR_CODE", message)`.
-
-### Saga / Compensation Pattern
-
-The reservation subprocess uses BPMN compensation boundary events. Each booking task (`reservar-vuelo`, `reservar-hotel`, `reservar-coche`) has an attached compensation boundary event that triggers the matching cancellation task (`cancelar-vuelo`, etc.) if payment fails.
+Workers are `@Component` classes under `infraestructura/adaptador/entrada/camunda/` annotated with `@JobWorker(type = "job-type-name")`. They receive variables via `ActivatedJob.getVariablesAsMap()` and return `Map<String, Object>` to set process variables. Business errors are thrown as `BpmnError.bpmnError("ERROR_CODE", message, ...)` with an `ERROR_*` code that must match the BPMN boundary event. The BPMN processes and the Saga live in `servicio-reservas` (see its CLAUDE.md).
 
 ### Key Configuration
 
@@ -120,9 +93,9 @@ camunda:
       username: demo
       password: demo
 ```
-In Docker, environment variables `CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS` and `CAMUNDA_CLIENT_ZEEBE_RESTADDRESS` override these to point at the `zeebe` container.
+In Docker, environment variables `CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS` and `CAMUNDA_CLIENT_ZEEBE_RESTADDRESS` override these to point at the `zeebe` container.
 
-Databases are H2 in-memory (development). Each service has its own isolated DB (`cliente_db`, `vuelos_db`, etc.) defined in its own `application.yml`.
+Databases are H2 in-memory (development), one isolated DB per service defined in its own `application.yml`.
 
 ### Lombok + MapStruct
 
@@ -130,12 +103,14 @@ The compiler is configured with `lombok-mapstruct-binding` to ensure Lombok proc
 
 ### Testing
 
-- **Unit**: Domain and application layer tests with Mockito (`@ExtendWith(MockitoExtension.class)`)
-- **Architecture**: ArchUnit rules enforcing hexagonal layer boundaries
-- **Integration**: `@SpringBootTest` with H2; Testcontainers (PostgreSQL) for persistence tests
-- **Camunda**: `@ZeebeSpringTest` with embedded Zeebe engine
+No module has tests yet (every `src/test/java` is empty), although all of them declare `spring-boot-starter-test`, JUnit 5 and `archunit-junit5`. The intended stack: Mockito unit tests for domain and application, ArchUnit rules for the hexagonal boundaries, `@SpringBootTest` with H2 plus Testcontainers (PostgreSQL) for integration, and `@ZeebeSpringTest` for processes.
 
-```bash
-# Architecture tests (ArchUnit)
-mvn test -pl servicio-clientes -Dtest=ArchitectureTest
-```
+<!-- mh:inicio -->
+## Meta-harness
+Brain: brain/   (memoria del proyecto: consulta brain/wiki/index.md antes de decidir; skill `brain`)
+Diagramas: docs/diagramas/   (skill `excalidraw`)
+Vistas: brain/tableros/   (archivos .base; skill `obsidian-bases`)
+- Carriles Responder · FTD · ASDD; constitución en brain/factory/constitucion.md; glosario en brain/wiki/factoria/glosario.md.
+- Maven con `node .mh/scripts/mvnq.mjs <objetivos>`; riesgo del cambio con `node .mh/scripts/riesgo.mjs`.
+- Arranque y smoke test: `./init.sh`.
+<!-- mh:fin -->
