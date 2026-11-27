@@ -139,3 +139,13 @@ The compiler is configured with `lombok-mapstruct-binding` to ensure Lombok proc
 # Architecture tests (ArchUnit)
 mvn test -pl servicio-clientes -Dtest=ArchitectureTest
 ```
+
+<!-- mh:inicio -->
+## Meta-harness
+Brain: brain/   (memoria del proyecto: consulta brain/wiki/index.md antes de decidir; skill `brain`)
+Diagramas: docs/diagramas/   (skill `excalidraw`)
+Vistas: brain/tableros/   (archivos .base; skill `obsidian-bases`)
+- Carriles Responder · FTD · ASDD; constitución en brain/factory/constitucion.md; glosario en brain/wiki/factoria/glosario.md.
+- Maven con `node .mh/scripts/mvnq.mjs <objetivos>`; riesgo del cambio con `node .mh/scripts/riesgo.mjs`.
+- Arranque y smoke test: `./init.sh`.
+<!-- mh:fin -->
