@@ -93,7 +93,7 @@ camunda:
       username: demo
       password: demo
 ```
-In Docker, environment variables `CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS` and `CAMUNDA_CLIENT_ZEEBE_RESTADDRESS` override these to point at the `zeebe` container.
+In Docker, environment variables `CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS` and `CAMUNDA_CLIENT_ZEEBE_RESTADDRESS` override these to point at the `zeebe` container.
 
 Databases are H2 in-memory (development), one isolated DB per service defined in its own `application.yml`.
 

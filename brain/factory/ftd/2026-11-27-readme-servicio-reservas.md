@@ -42,4 +42,4 @@ Resolver la decisión pendiente D4: el README del módulo era una copia del de p
 > Tests de ArchUnit: no ejecutado (no existen). Prueba manual de `POST /api/reservas/iniciar`: no ejecutada (no se ha levantado Camunda).
 
 ## Notas
-Hallazgo fuera de alcance: el `CLAUDE.md` raíz cita `CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS`, pero `docker-compose.yml` usa `CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS` en todos los servicios.
+Hallazgo fuera de alcance: el `CLAUDE.md` raíz citaba `CAMUNDA_CLIENT_ZEEBE_GATEWAYADDRESS`, pero `docker-compose.yml` usa `CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS` en todos los servicios. Corregido después en un commit aparte (riesgo 2 por la ruta, autorizado por Vicente el 2026-11-27 como excepción en FTD).
