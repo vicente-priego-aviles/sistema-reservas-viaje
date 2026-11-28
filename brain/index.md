@@ -1,5 +1,6 @@
 # Brain de sistema-reservas-viaje
 
+* [Panel](Panel.md) - Dónde se quedó el proyecto, lo urgente, timeline y limpieza. Se genera con `/panel` (no se versiona).
 * [Conocimiento](wiki/index.md) - Producto, arquitectura, decisiones, herramientas, lecciones.
 * [Glosario de la factoría](wiki/factoria/glosario.md) - Qué significan FTD, ASDD, riesgo, evidencia…
 * [Glosario del producto](wiki/producto/glosario.md) - Lenguaje ubicuo del negocio.

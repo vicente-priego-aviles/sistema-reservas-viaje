@@ -6,7 +6,9 @@
       "Bash(node .mh/scripts/riesgo.mjs *)",
       "Bash(node .mh/scripts/tarea.mjs *)",
       "Bash(node .mh/scripts/traza.mjs *)",
-      "Bash(python3 -I .claude/skills/brain/scripts/verificar_evidencias.py *)"
+      "Bash(python3 -I .claude/skills/brain/scripts/verificar_evidencias.py *)",
+      "Bash(node scripts/panel.mjs)",
+      "Bash(node scripts/panel.mjs *)"
     ],
     "deny": [
       "Read(./**/*.pem)",
@@ -27,6 +29,16 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.mh/hooks/sesion-inicio.mjs\"",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/panel.mjs\" --inicio",
+            "timeout": 5
           }
         ]
       }
@@ -125,6 +137,15 @@
             "type": "command",
             "command": "node \"$CLAUDE_PROJECT_DIR/.mh/hooks/sesion-fin.mjs\"",
             "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/scripts/panel.mjs\" --fin",
+            "timeout": 30
           }
         ]
       }
