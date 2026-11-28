@@ -121,7 +121,8 @@ export function comprobarRamaProtegida(cmd, raiz, protegidas = []) {
   if (!protegidas.includes(rama)) return null;
   const actual = git(raiz, ["rev-parse", "--abbrev-ref", "HEAD"]);
   if (rama === actual && git(raiz, ["rev-parse", "-q", "--verify", "MERGE_HEAD"])) return null; // cerrar un merge está permitido
-  return `Estás en «${rama}», una rama protegida del proyecto: no se hace commit directo. Crea una rama con el formato del proyecto (skill git) y abre un PR. Si el usuario lo pide expresamente, puede desactivarse con MH_DESACTIVAR=rama-protegida.`;
+  const donde = rama === actual ? `Estás en «${rama}», una rama protegida` : `El comando cambia a «${rama}» antes del commit, y es una rama protegida`;
+  return `${donde} del proyecto: no se hace commit directo. Crea una rama con el formato del proyecto (skill git) y abre un PR. Si el usuario lo pide expresamente, puede desactivarse con MH_DESACTIVAR=rama-protegida.`;
 }
 
 if (process.argv[1]?.endsWith("bash-previo.mjs")) {
