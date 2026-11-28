@@ -33,10 +33,9 @@ build/
 .vscode/*
 !.vscode/settings.json
 
-# Maven
-.mvn/
-mvnw
-mvnw.cmd
+# Python
+__pycache__/
+*.pyc
 
 # Spring Boot
 spring-shell.log
@@ -46,12 +45,11 @@ spring-shell.log
 Thumbs.db
 
 # Secrets
-.env
+# .env sí se versiona: solo lleva los valores por defecto de Camunda que lee docker compose.
 *.pem
 *.key
 
 # Camunda Secrets
-.env
 connector-secrets.txt
 
 # logs
@@ -63,7 +61,6 @@ logs/
 .agents/
 skills-lock.json
 .claude/settings.local.json
-.claude/settings.json
 .mh/tmp/
 .mh/backups/
 brain/raw/sesiones/

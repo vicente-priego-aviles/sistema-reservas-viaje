@@ -3,7 +3,7 @@
   "perfil": "standard",
   "brain": "brain",
   "desactivados": [],
-  "protegidos": [],
+  "protegidos": ["**/*.bpmn"],
   "riesgo": {
     "nivel0": [],
     "nivel2": [],
