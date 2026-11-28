@@ -40,7 +40,7 @@
   },
   "plan": {
     "id": "a6e49228cc01",
-    "aceptado": "2026-11-28T09:42:54.709Z",
+    "aceptado": "2026-11-28T09:47:04.146Z",
     "respuestas": {
       "nivel": "tecnico",
       "tipo": "orquestador-procesos",
@@ -125,7 +125,7 @@
     ]
   },
   "gestionados": {
-    ".mh/hooks/bash-previo.mjs": "4c2d4fc7e53716e8383ed644f643b3a46e6bec4fae1b1527f1bc87af245dceae",
+    ".mh/hooks/bash-previo.mjs": "d90a04f68506c9c1b644005ef49180fe19370d218ee0ec08616dcbf8dde91599",
     ".mh/hooks/compactar.mjs": "59e6bb29dbd1628ffdbef3e772484b85ae8a91d5a87a090886d2d311105716b3",
     ".mh/hooks/editar-posterior.mjs": "60705b610cd202995b3b6cf3bf3fc892ba2f66d91e54367a8dad138d06611fc2",
     ".mh/hooks/editar-previo.mjs": "8b9b49b9ab545f4ff0466aea9f204c98df88f8511ebd41ddb3064ea4f6e78ab8",
