@@ -50,7 +50,7 @@ status: stable
 - G2. Código, commits, issues y PR en español; notas del brain en español.
 - G3. `develop` es la rama base: las ramas salen de `develop` y los PR van a `develop`; `main` solo recibe merges desde `develop`.
 - G4. Ramas con el formato `<issue>-<tipo>-<descripcion>` (por ejemplo, `28-chore-migrar-camunda-87-a-89-imagen-unificada`).
-- G5. Commits con Conventional Commits; el gitmoji es opcional.
+- G5. Commits con Conventional Commits y gitmoji obligatorio al principio (lo exige el hook `convencion-commit`).
 
 ## 7. Definición de terminado
 - [ ] `node .mh/scripts/mvnq.mjs verify` en verde
@@ -63,3 +63,4 @@ status: stable
 |---|---|---|
 | 2026-11-27 | Borrador inicial | — |
 | 2026-11-27 | Stack completado; Flyway solo en `prod`; C2–C4; P1 endurecida y P2–P5; G3–G5; ArchUnit pendiente de crear | Vicente |
+| 2026-11-28 | G5: gitmoji obligatorio, alineado con `git.convencion: conventional-gitmoji` (#70) | Vicente |
