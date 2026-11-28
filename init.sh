@@ -15,6 +15,19 @@ ESPERA_MAX="${ESPERA_MAX:-300}"
 # Los dos compose comparten nombre de proyecto (el del directorio): sin esto, cada uno avisa de que los contenedores del otro están huérfanos
 export COMPOSE_IGNORE_ORPHANS=true
 
+# Resultado de la última ejecución, para el Panel del proyecto (brain/Panel.md): logs/init-ultimo.json (ignorado por git)
+MODO="completo"; [[ "${1:-}" == "--solo-compilar" ]] && MODO="solo-compilar"
+FASE="compilar"
+SANOS=()
+registrar() {
+  local codigo=$? resultado="ok" sanos=""
+  (( codigo )) && resultado="fallo"
+  (( ${#SANOS[@]} )) && sanos=$(printf '"%s",' "${SANOS[@]}") && sanos="${sanos%,}"
+  mkdir -p logs
+  printf '{"fecha":"%s","modo":"%s","resultado":"%s","fase":"%s","sanos":[%s]}\n' "$(date -Iseconds)" "$MODO" "$resultado" "$FASE" "$sanos" > logs/init-ultimo.json
+}
+trap registrar EXIT
+
 # Puerto de cada microservicio (docker-compose.yml)
 SERVICIOS=(
   "servicio-clientes:9080"
@@ -36,6 +49,7 @@ esperar() {
     sleep 5
   done
   echo "  ✔ $nombre ($url)"
+  SANOS+=("$nombre")
 }
 
 # Los Dockerfile copian el jar de target/, así que hace falta package, no solo compile.
@@ -44,26 +58,32 @@ echo "› Empaquetando desde cero (sin tests)…"
 node .mh/scripts/mvnq.mjs -q clean package -DskipTests
 
 if [[ "${1:-}" == "--solo-compilar" ]]; then
+  FASE="listo"
   echo "✔ Entorno listo (solo compilado; Docker no ejecutado)"
   exit 0
 fi
 
+FASE="docker"
 if ! docker info >/dev/null 2>&1; then
   echo "✘ Docker no está disponible: arráncalo o usa ./init.sh --solo-compilar" >&2
   exit 1
 fi
 
 # Camunda primero: crea la red sistema-reservas-viaje_camunda-platform que usan los microservicios
+FASE="camunda"
 echo "› Levantando Camunda…"
 docker compose -f docker-compose-camunda.yml up -d
 esperar "Camunda" "http://localhost:9600/actuator/health/readiness"
 
+FASE="microservicios"
 echo "› Levantando los microservicios (reconstruye las imágenes que hayan cambiado)…"
 docker compose up -d --build
 
+FASE="smoke test"
 echo "› Smoke test: /actuator/health de cada microservicio…"
 for s in "${SERVICIOS[@]}"; do
   esperar "${s%%:*}" "http://localhost:${s##*:}/actuator/health"
 done
 
+FASE="listo"
 echo "✔ Entorno listo (Operate: http://localhost:8080/operate · Tasklist: http://localhost:8080/tasklist)"

@@ -1,0 +1,71 @@
+/* Panel del proyecto (brain/Panel.md, lo genera scripts/panel.mjs). Colores con las variables de Obsidian: valen en claro y oscuro. */
+.panel-proyecto .pp-chip { --c: var(--mono-rgb-100); display: inline-block; padding: 0 .6em; margin: 0 .15em; border-radius: 999px; font-size: .75em; line-height: 1.75; font-weight: 600; white-space: nowrap; vertical-align: middle; background: rgba(var(--c), .14); color: rgb(var(--c)); border: 1px solid rgba(var(--c), .35); }
+.panel-proyecto .pp-c-gris { --c: var(--mono-rgb-100); }
+.panel-proyecto .pp-c-verde { --c: var(--color-green-rgb); }
+.panel-proyecto .pp-c-rojo { --c: var(--color-red-rgb); }
+.panel-proyecto .pp-c-naranja { --c: var(--color-orange-rgb); }
+.panel-proyecto .pp-c-amarillo { --c: var(--color-yellow-rgb); }
+.panel-proyecto .pp-c-azul { --c: var(--color-blue-rgb); }
+.panel-proyecto .pp-c-cian { --c: var(--color-cyan-rgb); }
+.panel-proyecto .pp-c-morado { --c: var(--color-purple-rgb); }
+.panel-proyecto .pp-c-etiqueta { filter: saturate(1.2); }
+.theme-dark .panel-proyecto .pp-c-etiqueta { color: rgb(var(--c)); filter: brightness(1.35) saturate(1.1); }
+
+.panel-proyecto .pp-resumen { display: flex; flex-wrap: wrap; gap: .4em; margin: .4em 0 1.2em; }
+.panel-proyecto .pp-resumen .pp-chip { font-size: .85em; padding: .1em .8em; margin: 0; }
+
+.panel-proyecto .pp-tl { position: relative; margin: 1em 0 1.5em; padding-left: 30px; }
+.panel-proyecto .pp-tl::before { content: ""; position: absolute; left: 11px; top: .4em; bottom: .4em; width: 3px; border-radius: 3px; background: linear-gradient(rgba(var(--color-blue-rgb), .5), rgba(var(--color-purple-rgb), .7)); }
+.panel-proyecto .pp-mes { margin: 1.2em 0 .5em; font-size: .8em; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+.panel-proyecto .pp-dia { position: relative; margin: .6em 0; padding: .7em .9em; border-radius: 12px; background: var(--background-secondary); border: 1px solid var(--background-modifier-border); box-shadow: 0 1px 3px rgba(0, 0, 0, .06); }
+.panel-proyecto .pp-dia::before { content: ""; position: absolute; left: -25px; top: 1em; width: 13px; height: 13px; border-radius: 50%; background: rgb(var(--color-blue-rgb)); box-shadow: 0 0 0 3px var(--background-primary); }
+.panel-proyecto .pp-fecha { font-weight: 700; margin-bottom: .35em; }
+.panel-proyecto .pp-item { display: flex; flex-wrap: wrap; align-items: center; gap: .3em; padding: .2em 0; border-top: 1px dashed var(--background-modifier-border); }
+.panel-proyecto .pp-fecha + .pp-item { border-top: none; }
+.panel-proyecto .pp-icono { width: 1.5em; text-align: center; }
+.panel-proyecto .pp-num { font-family: var(--font-monospace); font-weight: 700; font-size: .9em; }
+.panel-proyecto .pp-texto { flex: 1 1 14em; }
+.panel-proyecto .pp-pausa { position: relative; display: inline-block; margin: .5em 0; padding: .25em .9em; border-radius: 999px; border: 2px dashed var(--background-modifier-border); color: var(--text-muted); font-style: italic; font-size: .9em; }
+.panel-proyecto .pp-pausa::before { content: ""; position: absolute; left: -24px; top: .55em; width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--text-faint); background: var(--background-primary); }
+.panel-proyecto .pp-siguiente { background: rgba(var(--color-purple-rgb), .10); border: 1px solid rgba(var(--color-purple-rgb), .45); }
+.panel-proyecto .pp-siguiente::before { background: rgb(var(--color-purple-rgb)); width: 15px; height: 15px; left: -26px; }
+
+/* Dónde lo dejé: siguiente paso y tarjetas */
+.panel-proyecto .pp-heroe { margin: .6em 0 1em; padding: 1em 1.2em; border-radius: 14px; border: 1px solid; }
+.panel-proyecto .pp-heroe-ok { background: linear-gradient(135deg, rgba(var(--color-purple-rgb), .16), rgba(var(--color-blue-rgb), .10)); border-color: rgba(var(--color-purple-rgb), .45); }
+.panel-proyecto .pp-heroe-vacio { background: rgba(var(--color-yellow-rgb), .10); border-color: rgba(var(--color-yellow-rgb), .45); border-style: dashed; }
+.panel-proyecto .pp-heroe-titulo { font-size: .85em; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+.panel-proyecto .pp-heroe-texto { margin-top: .35em; font-size: 1.25em; font-weight: 600; line-height: 1.4; }
+.panel-proyecto .pp-heroe-notas { margin-top: .45em; color: var(--text-muted); }
+.panel-proyecto .pp-tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .7em; margin: .5em 0 1.2em; }
+.panel-proyecto .pp-tarjeta { position: relative; padding: .75em .9em .8em 1.05em; border-radius: 12px; overflow: hidden; background: rgba(var(--c), .07); border: 1px solid rgba(var(--c), .30); }
+.panel-proyecto .pp-tarjeta::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: rgb(var(--c)); }
+.panel-proyecto .pp-tarjeta-titulo { font-size: .78em; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: rgb(var(--c)); }
+.panel-proyecto .pp-tarjeta-valor { margin-top: .3em; font-size: 1.15em; font-weight: 700; }
+.panel-proyecto .pp-tarjeta-valor code { font-size: .8em; }
+.panel-proyecto .pp-tarjeta-pie { margin-top: .4em; font-size: .85em; color: var(--text-muted); line-height: 1.6; }
+.panel-proyecto .pp-tarjeta .pp-chip { margin-left: 0; }
+
+/* Actividad: mapa de commits, milestones y barras */
+.panel-proyecto .pp-actividad { margin: .5em 0 1em; padding: .9em 1em; border-radius: 12px; background: var(--background-secondary); border: 1px solid var(--background-modifier-border); overflow-x: auto; }
+.panel-proyecto .pp-actividad-cabecera { display: flex; flex-wrap: wrap; gap: .3em; margin-bottom: .7em; }
+.panel-proyecto .pp-mapa-meses { display: grid; gap: 3px; font-size: .7em; color: var(--text-muted); margin-bottom: 3px; }
+.panel-proyecto .pp-mapa { display: grid; grid-template-rows: repeat(7, 12px); grid-auto-flow: column; grid-auto-columns: 12px; gap: 3px; }
+.panel-proyecto .pp-dia-mapa { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--background-modifier-border); }
+.panel-proyecto .pp-dia-mapa.pp-n1 { background: rgba(var(--color-green-rgb), .35); }
+.panel-proyecto .pp-dia-mapa.pp-n2 { background: rgba(var(--color-green-rgb), .55); }
+.panel-proyecto .pp-dia-mapa.pp-n3 { background: rgba(var(--color-green-rgb), .78); }
+.panel-proyecto .pp-dia-mapa.pp-n4 { background: rgb(var(--color-green-rgb)); }
+.panel-proyecto .pp-dia-mapa.pp-futuro { background: transparent; }
+.panel-proyecto .pp-mapa-leyenda { display: flex; align-items: center; gap: 3px; justify-content: flex-end; margin-top: .5em; font-size: .75em; color: var(--text-muted); }
+.panel-proyecto .pp-barra { height: 8px; margin-top: .55em; border-radius: 999px; background: rgba(var(--c), .15); overflow: hidden; }
+.panel-proyecto .pp-barra span { display: block; height: 100%; border-radius: 999px; background: rgb(var(--c)); }
+
+/* Desde que lo dejaste, versiones y cómo arrancar */
+.panel-proyecto .pp-nota { margin: .3em 0 .6em; color: var(--text-muted); font-size: .9em; }
+.panel-proyecto .pp-ancha { grid-column: span 2; }
+@media (max-width: 600px) { .panel-proyecto .pp-ancha { grid-column: auto; } }
+.panel-proyecto .pp-chuleta { margin: .8em 0 1.2em; padding: .6em .9em .8em; border-radius: 12px; background: var(--background-secondary); border: 1px solid var(--background-modifier-border); }
+.panel-proyecto .pp-chuleta > summary { cursor: pointer; font-weight: 700; font-size: 1.05em; padding: .2em 0; }
+.panel-proyecto .pp-chuleta .pp-item code { white-space: nowrap; }
+.panel-proyecto .pp-tarjeta-pie .pp-item { border-top: none; padding: .12em 0; }
