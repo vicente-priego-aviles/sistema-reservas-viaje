@@ -9,8 +9,6 @@
       "Bash(python3 -I .claude/skills/brain/scripts/verificar_evidencias.py *)"
     ],
     "deny": [
-      "Read(./.env)",
-      "Read(./**/.env)",
       "Read(./**/*.pem)",
       "Read(./**/*.key)",
       "Read(./connector-secrets.txt)",
