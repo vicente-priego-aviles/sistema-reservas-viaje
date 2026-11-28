@@ -80,6 +80,10 @@ export function evaluar(rutas, config = {}, leer = () => "") {
 
 export function ramaBase(raiz, pedida) {
   if (pedida) return pedida;
+  // Manda la rama base del proyecto (.mh.json → git.ramaBase): origin/HEAD suele apuntar a main aunque las ramas salgan de develop,
+  // y comparar con main contaría como cambio de la rama todo lo que develop ya tiene. Primero la remota, que es contra la que va el PR.
+  const configurada = leerConfig(raiz).git?.ramaBase;
+  if (configurada) for (const r of [`origin/${configurada}`, configurada]) if (git(raiz, ["rev-parse", "--verify", "--quiet", r])) return r;
   const origen = git(raiz, ["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"]);
   if (origen) return origen;
   for (const r of ["main", "master"]) if (git(raiz, ["rev-parse", "--verify", "--quiet", r])) return r;

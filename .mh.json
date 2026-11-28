@@ -3,7 +3,9 @@
   "perfil": "standard",
   "brain": "brain",
   "desactivados": [],
-  "protegidos": ["**/*.bpmn"],
+  "protegidos": [
+    "**/*.bpmn"
+  ],
   "riesgo": {
     "nivel0": [],
     "nivel2": [],
@@ -37,8 +39,8 @@
     }
   },
   "plan": {
-    "id": "c4e4c38d0eb9",
-    "aceptado": "2026-11-27T18:48:45.177Z",
+    "id": "a6e49228cc01",
+    "aceptado": "2026-11-28T09:42:54.709Z",
     "respuestas": {
       "nivel": "tecnico",
       "tipo": "orquestador-procesos",
@@ -123,7 +125,7 @@
     ]
   },
   "gestionados": {
-    ".mh/hooks/bash-previo.mjs": "205983e4bca4eb60e39da057e49d7050059dd4dd8d644e692c6aa49bfbda9262",
+    ".mh/hooks/bash-previo.mjs": "4c2d4fc7e53716e8383ed644f643b3a46e6bec4fae1b1527f1bc87af245dceae",
     ".mh/hooks/compactar.mjs": "59e6bb29dbd1628ffdbef3e772484b85ae8a91d5a87a090886d2d311105716b3",
     ".mh/hooks/editar-posterior.mjs": "60705b610cd202995b3b6cf3bf3fc892ba2f66d91e54367a8dad138d06611fc2",
     ".mh/hooks/editar-previo.mjs": "8b9b49b9ab545f4ff0466aea9f204c98df88f8511ebd41ddb3064ea4f6e78ab8",
@@ -135,7 +137,7 @@
     ".mh/hooks/sesion-inicio.mjs": "5d93d4368bf52db5ebb1d147fefa0e315d82eeed1b1532697cc417330adcf985",
     ".mh/hooks/traza.mjs": "fcf5415dbfe5925f598d0b3117c4fbec2126a337112ab3e23b2713731bd0c4e7",
     ".mh/scripts/mvnq.mjs": "f35e237a3c1943a335bb7898b26b05094fc88d6ebd18392b10f33af5a60c2bb4",
-    ".mh/scripts/riesgo.mjs": "c366b2cff8fb12d2790220c19e927de911b74e165c97348cb365f088fdf610e1",
+    ".mh/scripts/riesgo.mjs": "24a6315cd2a6829a8805b4d69c7acc634eceff12d2a3f6df95f6be244d09e917",
     ".mh/scripts/tarea.mjs": "5fa34a94e9c3158b98c63b74138f5372d7d0db3338a7a6412ba6f65b0c8a8501",
     ".mh/scripts/traza.mjs": "4572ee49d93e92a7e06e784fbe351916cfee022bcdc92e630a983b654f7a5a42",
     ".mh/orientacion.md": "117283187db2d1b32cb1c3eb4412e65def476ee7a6a9195892fe43590fada2f4",
@@ -143,7 +145,6 @@
     ".claude/skills/brain/references/formato-index-log.md": "644d6a3f951e0e6edc2370e0b85fa747005694a76981ba1557d57c06d986b8b9",
     ".claude/skills/brain/references/plantilla-nota.md": "58db4f6f3cb8b666ba59d10207741d762ee164ad680c6f1cace506f8842d94a0",
     ".claude/skills/brain/references/plantilla-raw.md": "885b9385355d509c30cc639639ce1eb58197eb6faa264c07e82c8c0cbae60e74",
-    ".claude/skills/brain/scripts/__pycache__/verificar_evidencias.cpython-314.pyc": "086166becfd1822067ac1535c17c22a1f792a51ff457d78471ab64e7d92258f0",
     ".claude/skills/brain/scripts/verificar_evidencias.py": "c606b25ad3ec0a09ea47d5b9ef1b3ec467d666a5a675ead71e59edb9b54bcc5b",
     ".claude/skills/ftd/SKILL.md": "868537839b58ead1871e0cfa5897c5e0aedd14d0e62d7c2513ceffae7858fec1",
     ".claude/skills/ftd/references/plantilla-ftd.md": "d09b562433518061cd660c59eab63fe6012e3858b708fa923ac1ee82ccdfea57",
