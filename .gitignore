@@ -63,7 +63,6 @@ logs/
 .agents/
 skills-lock.json
 .claude/settings.local.json
-.claude/settings.json
 .mh/tmp/
 .mh/backups/
 brain/raw/sesiones/
