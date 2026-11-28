@@ -60,3 +60,12 @@
 .panel-proyecto .pp-mapa-leyenda { display: flex; align-items: center; gap: 3px; justify-content: flex-end; margin-top: .5em; font-size: .75em; color: var(--text-muted); }
 .panel-proyecto .pp-barra { height: 8px; margin-top: .55em; border-radius: 999px; background: rgba(var(--c), .15); overflow: hidden; }
 .panel-proyecto .pp-barra span { display: block; height: 100%; border-radius: 999px; background: rgb(var(--c)); }
+
+/* Desde que lo dejaste, versiones y cómo arrancar */
+.panel-proyecto .pp-nota { margin: .3em 0 .6em; color: var(--text-muted); font-size: .9em; }
+.panel-proyecto .pp-ancha { grid-column: span 2; }
+@media (max-width: 600px) { .panel-proyecto .pp-ancha { grid-column: auto; } }
+.panel-proyecto .pp-chuleta { margin: .8em 0 1.2em; padding: .6em .9em .8em; border-radius: 12px; background: var(--background-secondary); border: 1px solid var(--background-modifier-border); }
+.panel-proyecto .pp-chuleta > summary { cursor: pointer; font-weight: 700; font-size: 1.05em; padding: .2em 0; }
+.panel-proyecto .pp-chuleta .pp-item code { white-space: nowrap; }
+.panel-proyecto .pp-tarjeta-pie .pp-item { border-top: none; padding: .12em 0; }

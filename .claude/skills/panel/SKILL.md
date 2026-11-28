@@ -6,14 +6,14 @@ disable-model-invocation: true
 
 # Panel del proyecto
 
-`brain/Panel.md` lo genera `node scripts/panel.mjs` con datos de git, GitHub (`gh`), los worklogs de `brain/raw/sesiones/` y `brain/factory/` (specs, FTD y decisiones pendientes). No se edita a mano: lo único que se escribe a mano son sus propiedades `siguiente_paso`, `notas` y `prioridad`, y se cambian con las opciones del script, que las conserva al regenerar.
+`brain/Panel.md` lo genera `node scripts/panel.mjs` con datos de git, GitHub (`gh`), los worklogs de `brain/raw/sesiones/`, `brain/factory/` (specs, FTD, planes y decisiones pendientes), los `docker-compose`, `scripts/`, `logs/init-ultimo.json`, los informes de surefire y las versiones publicadas (Maven Central y Adoptium, como mucho una consulta al día, en `logs/panel-versiones.json`). No se edita a mano: lo único que se escribe a mano son sus propiedades `siguiente_paso`, `notas` y `prioridad`, y se cambian con las opciones del script, que las conserva al regenerar.
 
 | Opción | Qué hace |
 |---|---|
-| `--siguiente "texto"` | apunta el siguiente paso (y la fecha en `apuntado`) |
+| `--siguiente "texto"` | apunta el siguiente paso (y la fecha en `apuntado`) y guarda la foto de cierre (`logs/panel-cierre.json`) con la que se calcula «Desde que lo dejaste» |
 | `--notas "texto"` | lo que quedó a medias o hay que recordar; `""` lo borra |
 | `--prioridad 68,65` | issues que van primero en «Lo más urgente», en ese orden; `""` lo borra |
-| `--sin-github` | sin llamar a `gh` (sin red) |
+| `--sin-github` | sin red: ni `gh` ni consulta de versiones (usa la última guardada) |
 | `--limpieza` | imprime en JSON las issues abiertas cuya rama ya se fusionó y las ramas locales fusionadas; no escribe el Panel |
 | `--inicio`, `--fin` | los usan los hooks de `.claude/settings.json`: al abrir la sesión pasan a Claude el siguiente paso apuntado; al cerrarla, regeneran el Panel |
 

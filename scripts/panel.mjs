@@ -4,7 +4,7 @@
 // Hooks: --inicio (SessionStart: pasa a Claude el siguiente paso apuntado, sin regenerar) · --fin (SessionEnd: regenera en silencio)
 // Lo apuntado a mano (siguiente paso, notas, prioridad) vive en las propiedades del Panel y se conserva al regenerarlo.
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -211,7 +211,7 @@ function timeline() {
       const { tipo, ambito } = tipoDe(p);
       const [icono, color] = TIPOS[tipo] ?? ["🔀", "gris"];
       const titulo = sinPrefijo(p.title).replace(new RegExp("^" + tipo + " ", "i"), "");
-      h.push('<div class="pp-item"><span class="pp-icono">' + icono + "</span>" + enlace(urlPrRaw(p.number), "#" + p.number) + (tipo ? chip(tipo, color) : "") + (ambito ? chip(ambito, "gris") : "") + '<span class="pp-texto">' + esc(corto(titulo, 80)) + "</span></div>");
+      h.push('<div class="pp-item"><span class="pp-icono">' + icono + "</span>" + enlace(urlPrRaw(p.number), "#" + p.number) + (tipo ? chip(tipo, color) : "") + (ambito ? chip(ambito, "gris") : "") + nuevo("pr", p.number) + '<span class="pp-texto">' + esc(corto(titulo, 80)) + "</span></div>");
     }
     h.push("</div>");
     anterior = d;
@@ -231,6 +231,139 @@ function iconoMotivo(por) { return por === "prioridad apuntada" ? "‼️" : por
 const DIAS_OLVIDADA = 90;
 const olvidada = (i) => { const n = diasEntre(i.updatedAt.slice(0, 10), hoy); return n >= DIAS_OLVIDADA ? chip("💤 olvidada · " + nDias(n), "amarillo") : ""; };
 const colorMotivo = (por) => (por === "prioridad apuntada" ? "morado" : por === "bug" || por === "seguridad" ? "rojo" : "azul");
+
+// ── Desde que lo dejaste: foto al cerrar (/panel cerrar) en logs/panel-cierre.json ──
+const FOTO = join(RAIZ, "logs", "panel-cierre.json");
+const headBase = git("rev-parse", BASE);
+let foto = null; try { foto = JSON.parse(leer(FOTO)); } catch {}
+const desde = (() => {
+  if (!foto) return null;
+  const abiertasAntes = new Set(foto.issues ?? []), prsAntes = new Set(foto.prs ?? []);
+  const nuevas = hayGithub && foto.issues ? (issues ?? []).filter((i) => !abiertasAntes.has(i.number)) : [];
+  const abiertasAhora = new Set((issues ?? []).map((i) => i.number));
+  const cerradas = hayGithub && foto.issues ? [...abiertasAntes].filter((n) => !abiertasAhora.has(n)) : [];
+  const prs = hayGithub && foto.prs ? (fusionados ?? []).filter((p) => !prsAntes.has(p.number)) : [];
+  const commits = foto.head && headBase ? Number(git("rev-list", "--count", foto.head + ".." + BASE)) || 0 : 0;
+  return { fecha: foto.fecha, nuevas, cerradas, prs, commits, nuevasNum: new Set(nuevas.map((i) => i.number)), prsNum: new Set(prs.map((p) => p.number)) };
+})();
+const nuevo = (tipo, n) => (desde && (tipo === "pr" ? desde.prsNum : desde.nuevasNum).has(n) ? chip("🆕 nuevo", "verde") : "");
+function guardarFoto() {
+  mkdirSync(join(RAIZ, "logs"), { recursive: true });
+  writeFileSync(FOTO, JSON.stringify({ fecha: new Date().toISOString().slice(0, 16).replace("T", " "), head: headBase,
+    issues: hayGithub ? (issues ?? []).map((i) => i.number) : null, prs: hayGithub ? (fusionados ?? []).map((p) => p.number) : null }) + "\n");
+}
+function seccionDesde() {
+  if (!desde) return '<div class="pp-nota">🆕 Lo nuevo se cuenta desde el próximo <code>/panel cerrar</code>.</div>';
+  const t = [];
+  const caja = (color, icono, titulo, n, lista) => '<div class="pp-tarjeta pp-c-' + (n ? color : "gris") + '"><div class="pp-tarjeta-titulo">' + icono + " " + titulo + '</div><div class="pp-tarjeta-valor">' + n + "</div>" + (lista ? '<div class="pp-tarjeta-pie">' + lista + "</div>" : "") + "</div>";
+  t.push(caja("verde", "📥", "Issues nuevas", desde.nuevas.length, desde.nuevas.slice(0, 5).map((i) => enlace(urlIssueRaw(i.number), "#" + i.number) + " " + esc(corto(sinPrefijo(i.title), 40))).join("<br>")));
+  t.push(caja("morado", "✅", "Issues cerradas", desde.cerradas.length, desde.cerradas.slice(0, 8).map((n) => enlace(urlIssueRaw(n), "#" + n)).join(" ")));
+  t.push(caja("azul", "🔀", "PR fusionados", desde.prs.length, desde.prs.slice(0, 5).map((p) => enlace(urlPrRaw(p.number), "#" + p.number) + " " + esc(corto(sinPrefijo(p.title), 40))).join("<br>")));
+  t.push(caja("cian", "📌", "Commits en " + esc(BASE), desde.commits, ""));
+  return '<div class="pp-nota">Desde el último <code>/panel cerrar</code>, el ' + esc(desde.fecha) + ".</div>" + '<div class="pp-tarjetas">' + t.join("") + "</div>";
+}
+
+// ── Versiones (Maven Central y Adoptium), como mucho una consulta al día: logs/panel-versiones.json ──
+const pomRaiz = leer(join(RAIZ, "pom.xml"));
+const propPom = (k) => pomRaiz.match(new RegExp("<" + k.replace(/\./g, "\\.") + ">([^<]+)</"))?.[1] ?? null;
+const DEPENDENCIAS = [
+  { nombre: "Spring Boot", icono: "🍃", actual: propPom("spring-boot.version"), maven: "org/springframework/boot/spring-boot" },
+  { nombre: "Camunda", icono: "⚙️", actual: propPom("camunda-spring-boot.version"), maven: "io/camunda/camunda-spring-boot-starter" },
+  { nombre: "Java", icono: "☕", actual: propPom("java.version"), java: true },
+];
+const conRed = !args.sinGithub;
+async function traer(url, json) {
+  try { const r = await fetch(url, { signal: AbortSignal.timeout(6000) }); return r.ok ? (json ? r.json() : r.text()) : null; } catch { return null; }
+}
+const num = (v) => v.split(".").map(Number);
+const mayorQue = (a, b) => { const x = num(a), y = num(b); for (let k = 0; k < 3; k++) if ((x[k] ?? 0) !== (y[k] ?? 0)) return (x[k] ?? 0) > (y[k] ?? 0); return false; };
+async function versiones() {
+  const ruta = join(RAIZ, "logs", "panel-versiones.json");
+  let cache = null; try { cache = JSON.parse(leer(ruta)); } catch {}
+  if (cache && (cache.fecha === hoy || !conRed)) return cache;
+  if (!conRed) return null;
+  const datos = { fecha: hoy, dependencias: {} };
+  for (const d of DEPENDENCIAS) {
+    if (d.java) {
+      const j = await traer("https://api.adoptium.net/v3/info/available_releases", true);
+      if (j) datos.dependencias[d.nombre] = { lts: String(j.most_recent_lts), ultima: String(j.most_recent_feature_release) };
+    } else {
+      const xml = await traer("https://repo1.maven.org/maven2/" + d.maven + "/maven-metadata.xml");
+      // la versión estable más alta (no la etiqueta <latest>, que puede apuntar a una publicación antigua)
+      const estables = xml ? [...xml.matchAll(/<version>(\d+\.\d+\.\d+)<\/version>/g)].map((m) => m[1]) : [];
+      if (estables.length) datos.dependencias[d.nombre] = { estables };
+    }
+  }
+  if (!Object.keys(datos.dependencias).length) return cache;
+  mkdirSync(join(RAIZ, "logs"), { recursive: true });
+  writeFileSync(ruta, JSON.stringify(datos) + "\n");
+  return datos;
+}
+const datosVersiones = await versiones();
+function tarjetaVersiones() {
+  if (!datosVersiones) return "";
+  const filas = DEPENDENCIAS.filter((d) => d.actual && datosVersiones.dependencias[d.nombre]).map((d) => {
+    const info = datosVersiones.dependencias[d.nombre];
+    if (d.java) {
+      const estado = d.actual === info.lts ? chip("última LTS", "verde") : Number(d.actual) > Number(info.lts) ? chip("posterior a la LTS", "azul") : chip("LTS " + info.lts + " disponible", "amarillo");
+      return '<div class="pp-item"><span class="pp-icono">' + d.icono + "</span><b>" + d.nombre + "</b> <code>" + esc(d.actual) + "</code>" + estado + (info.ultima !== d.actual ? chip("última " + info.ultima, "gris") : "") + "</div>";
+    }
+    const [ma, mi] = num(d.actual);
+    const max = info.estables.reduce((a, b) => (mayorQue(b, a) ? b : a));
+    const parche = info.estables.filter((v) => num(v)[0] === ma && num(v)[1] === mi).reduce((a, b) => (mayorQue(b, a) ? b : a), d.actual);
+    const estado = !mayorQue(max, d.actual) ? chip("al día", "verde")
+      : (mayorQue(parche, d.actual) ? chip("parche " + parche, "amarillo") : "") + (mayorQue(max, parche) ? chip("nueva " + max, num(max)[0] > ma ? "naranja" : "azul") : "");
+    return '<div class="pp-item"><span class="pp-icono">' + d.icono + "</span><b>" + d.nombre + "</b> <code>" + esc(d.actual) + "</code>" + estado + "</div>";
+  });
+  if (!filas.length) return "";
+  return '<div class="pp-tarjeta pp-c-azul pp-ancha"><div class="pp-tarjeta-titulo">📦 Versiones</div><div class="pp-tarjeta-pie">' + filas.join("") + chip("consultado el " + datosVersiones.fecha, "gris") + "</div></div>";
+}
+
+// ── CI (GitHub Actions) ──
+function tarjetaCI() {
+  const dir = join(RAIZ, ".github", "workflows");
+  if (!existsSync(dir) || !readdirSync(dir).some((f) => /\.ya?ml$/.test(f))) return '<div class="pp-tarjeta pp-c-gris"><div class="pp-tarjeta-titulo">🤖 CI</div><div class="pp-tarjeta-valor">sin workflows</div><div class="pp-tarjeta-pie">No hay <code>.github/workflows/</code>: nada comprueba los PR.</div></div>';
+  const r = conGithub ? gh("run", "list", "--branch", BASE, "--limit", "1", "--json", "conclusion,status,workflowName,createdAt,url") : null;
+  const u = r?.[0];
+  if (!u) return '<div class="pp-tarjeta pp-c-gris"><div class="pp-tarjeta-titulo">🤖 CI</div><div class="pp-tarjeta-valor">sin ejecuciones</div></div>';
+  const ok = u.conclusion === "success", color = u.status !== "completed" ? "amarillo" : ok ? "verde" : "rojo";
+  return '<div class="pp-tarjeta pp-c-' + color + '"><div class="pp-tarjeta-titulo">🤖 CI en ' + esc(BASE) + '</div><div class="pp-tarjeta-valor"><a class="external-link" href="' + u.url + '">' + (u.status !== "completed" ? "⏳ en curso" : ok ? "✔ bien" : "✘ " + esc(u.conclusion)) + "</a></div>" +
+    '<div class="pp-tarjeta-pie">' + chip(u.workflowName, "gris") + chip(u.createdAt.slice(0, 10), "gris") + "</div></div>";
+}
+
+// ── Cómo arrancar: comandos y URLs (de los docker-compose y de scripts/) ──
+function chuleta() {
+  const servicios = [];
+  for (const f of ["docker-compose-camunda.yml", "docker-compose.yml"]) {
+    let nombre = null;
+    for (const l of leer(join(RAIZ, f)).split("\n")) {
+      const c = l.match(/^\s{4}container_name:\s*(\S+)/); if (c) nombre = c[1];
+      const p = l.match(/^\s{6}- "?(\d+):\d+"?\s*(?:#\s*(.*))?$/); if (p && nombre) servicios.push({ nombre, puerto: p[1], nota: p[2] ?? "" });
+    }
+  }
+  const primero = new Map(); for (const s of servicios) if (!primero.has(s.nombre)) primero.set(s.nombre, s);
+  const micro = [...primero.values()].filter((s) => s.nombre.startsWith("servicio-"));
+  const urls = [];
+  if (primero.has("camunda")) urls.push(["🛰️ Operate", "http://localhost:8080/operate"], ["📋 Tasklist", "http://localhost:8080/tasklist"], ["💓 Salud de Camunda", "http://localhost:9600/actuator/health/readiness"]);
+  if (primero.has("elasticsearch")) urls.push(["🔎 Elasticsearch", "http://localhost:9200"]);
+  const comandos = [["./init.sh", "compila, levanta Camunda y los servicios, y hace el smoke test"], ["./init.sh --solo-compilar", "solo compila"]];
+  const dirS = join(RAIZ, "scripts");
+  if (existsSync(dirS)) for (const f of readdirSync(dirS).filter((x) => x.endsWith(".sh")).sort()) {
+    const lineas = leer(join(dirS, f)).split("\n"), k = lineas.findIndex((l) => /^#[ \t]*Descripción:/.test(l));
+    if (k < 0) continue;
+    const partes = [lineas[k].replace(/^#[ \t]*Descripción:/, "")];
+    for (let j = k + 1; j < lineas.length && /^#/.test(lineas[j]) && !/^#[\s=-]*$/.test(lineas[j]) && !/^#[ \t]*\w+:/.test(lineas[j]); j++) partes.push(lineas[j].slice(1));
+    const d = partes.map((p) => p.replace(/^[\s\-•*]*(\p{Extended_Pictographic}\p{M}*\s*)?/u, "").trim()).filter(Boolean).map((p, n, a) => (n < a.length - 1 && /^\p{Lu}/u.test(a[n + 1]) && !/[.,;:]$/.test(p) ? p + " ·" : p)).join(" ");
+    if (d) comandos.push(["scripts/" + f, corto(d, 90)]);
+  }
+  if (existsSync(join(dirS, "logs.sh"))) comandos.push(["scripts/logs.sh <servicio>", "logs de un microservicio (clientes, vuelos, hoteles, coches, pagos, reservas)"]);
+  const h = ['<details class="pp-chuleta" open><summary>🚀 Cómo arrancar</summary><div class="pp-tarjetas">'];
+  h.push('<div class="pp-tarjeta pp-c-verde pp-ancha"><div class="pp-tarjeta-titulo">⌨️ Comandos</div><div class="pp-tarjeta-pie">' + comandos.map(([c, d]) => '<div class="pp-item"><code>' + esc(c) + '</code><span class="pp-texto">' + esc(d) + "</span></div>").join("") + "</div></div>");
+  if (urls.length) h.push('<div class="pp-tarjeta pp-c-morado"><div class="pp-tarjeta-titulo">🔗 Camunda</div><div class="pp-tarjeta-pie">' + urls.map(([n, u]) => '<div class="pp-item">' + n + ' <a class="external-link" href="' + u + '">' + esc(u.replace("http://", "")) + "</a></div>").join("") + "</div></div>");
+  if (micro.length) h.push('<div class="pp-tarjeta pp-c-azul"><div class="pp-tarjeta-titulo">🧩 Microservicios</div><div class="pp-tarjeta-pie">' + micro.map((s) => '<div class="pp-item">' + chip(":" + s.puerto, "azul") + esc(s.nombre.replace("servicio-", "")) + ' <a class="external-link" href="http://localhost:' + s.puerto + '/swagger-ui.html">swagger</a> · <a class="external-link" href="http://localhost:' + s.puerto + '/actuator/health">salud</a></div>').join("") + "</div></div>");
+  h.push("</div></details>");
+  return h.join("");
+}
 
 // ── Actividad, milestones y salud ────────────────────────────────────────
 const SEMANAS = 26;
@@ -293,6 +426,8 @@ function salud() {
   }
   const pieTests = ultimo ? chip(ejecutados + " ejecutados", "azul") + (fallos ? chip(fallos + " fallan", "rojo") : chip("0 fallos", "verde")) + (saltados ? chip(saltados + " saltados", "amarillo") : "") + chip("última vez " + new Date(ultimo).toISOString().slice(0, 10), "gris") : "Sin informes de surefire en <code>target/</code>.";
   t.push(tarjeta(archivos === 0 ? "rojo" : fallos ? "rojo" : "verde", "🧪", "Tests", archivos + (archivos === 1 ? " clase de test" : " clases de test"), pieTests));
+  t.push(tarjetaCI());
+  const v = tarjetaVersiones(); if (v) t.push(v);
   return '<div class="pp-tarjetas">' + t.join("") + "</div>";
 }
 
@@ -344,10 +479,12 @@ o.push("## 📍 Dónde lo dejé", "");
   o.push(h.join("\n"), "");
 }
 
+o.push("## 🆕 Desde que lo dejaste", "", seccionDesde(), "");
+
 o.push("## 🚦 Lo más urgente", "");
 if (urgentes.length) {
   o.push("| Issue | Por qué | Título | Etiquetas |", "|---|---|---|---|");
-  for (const i of urgentes) o.push("| " + urlIssue(i.number) + " | " + chip(iconoMotivo(i.m.por) + " " + i.m.por, colorMotivo(i.m.por)) + " | " + corto(sinPrefijo(i.title), 90).replace(/\|/g, "\\|") + " " + olvidada(i) + " | " + i.labels.map(chipEtiqueta).join(" ") + " |");
+  for (const i of urgentes) o.push("| " + urlIssue(i.number) + " | " + chip(iconoMotivo(i.m.por) + " " + i.m.por, colorMotivo(i.m.por)) + " | " + corto(sinPrefijo(i.title), 90).replace(/\|/g, "\\|") + " " + nuevo("issue", i.number) + olvidada(i) + " | " + i.labels.map(chipEtiqueta).join(" ") + " |");
 } else if (hayGithub) o.push("Ninguna issue con prioridad apuntada, bug ni spec en marcha.");
 o.push("");
 if (decs.length) {
@@ -360,6 +497,8 @@ if (docs.length) {
   for (const d of docs) o.push("- [" + d.titulo + "](" + d.ruta + ") · " + d.tipo + " · " + d.estado + (d.riesgo ? " · riesgo " + d.riesgo : "") + (d.tarea ? " · " + urlIssue(d.tarea) : ""));
   o.push("");
 }
+
+o.push(chuleta(), "");
 
 o.push("## 🕒 Timeline", "");
 o.push(timeline() || "Sin PR fusionados que mostrar.", "");
@@ -382,7 +521,7 @@ if (resto.length) {
   o.push("> [!note]- 📋 Resto de issues abiertas (" + resto.length + ")");
   for (const [g, lista] of grupos) {
     o.push("> **" + g + "**", ">");
-    for (const i of lista) o.push("> - " + urlIssue(i.number) + " " + corto(sinPrefijo(i.title), 90) + " " + (olvidada(i) || chip("actualizada el " + i.updatedAt.slice(0, 10), "gris")));
+    for (const i of lista) o.push("> - " + urlIssue(i.number) + " " + corto(sinPrefijo(i.title), 90) + " " + nuevo("issue", i.number) + (olvidada(i) || chip("actualizada el " + i.updatedAt.slice(0, 10), "gris")));
     o.push(">");
   }
   o.pop();
@@ -390,4 +529,5 @@ if (resto.length) {
 }
 
 writeFileSync(PANEL, o.join("\n"));
+if (args.siguiente !== undefined) guardarFoto();
 console.log("Panel escrito en brain/Panel.md" + (hayGithub ? "" : " (sin datos de GitHub)") + ": " + urgentes.length + " urgentes, " + decs.length + " decisiones, " + yaResueltas.length + " issues para cerrar, " + ramasFusionadas.length + " ramas para borrar.");
