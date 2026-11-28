@@ -98,11 +98,29 @@ export function comprobarConvencion(cmd, convencion) {
   return `El mensaje «${msg.slice(0, 80)}» no sigue la convención del proyecto (${convencion}). Formato: <tipo>(<ámbito>): <descripción>, tipos ${TIPOS.replace(/\|/g, ", ")}. Ejemplo: ${ejemplo}. Detalle: skill git.`;
 }
 
+/**
+ * Rama en la que caerá el `git commit` del comando: la actual o, si el propio comando cambia antes de rama
+ * (`git checkout develop && git commit …`), la última a la que cambie. Solo cuenta como cambio de rama un destino
+ * nuevo (`-b`, `-c`…) o una rama que exista; `git checkout archivo` o `git checkout rama -- archivo` no cambian de rama.
+ */
+export function ramaDelCommit(cmd, raiz) {
+  let rama = git(raiz, ["rev-parse", "--abbrev-ref", "HEAD"]);
+  const antes = cmd.slice(0, cmd.search(/\bgit\s+commit\b/));
+  for (const m of antes.matchAll(/\bgit\s+(?:checkout|switch)\s+((?:-[^\s-]\S*\s+)*)([^\s;&|()-][^\s;&|()]*)(\s+--(?:\s|$))?/g)) {
+    const [, opciones, destino, rutas] = m;
+    if (rutas) continue;
+    const nueva = /(^|\s)-[bBcC](\s|$)/.test(opciones);
+    if (nueva || git(raiz, ["rev-parse", "--verify", "--quiet", `refs/heads/${destino}`])) rama = destino;
+  }
+  return rama;
+}
+
 export function comprobarRamaProtegida(cmd, raiz, protegidas = []) {
   if (!protegidas.length || !/\bgit\s+commit\b/.test(cmd)) return null;
-  const rama = git(raiz, ["rev-parse", "--abbrev-ref", "HEAD"]);
+  const rama = ramaDelCommit(cmd, raiz);
   if (!protegidas.includes(rama)) return null;
-  if (git(raiz, ["rev-parse", "-q", "--verify", "MERGE_HEAD"])) return null; // cerrar un merge está permitido
+  const actual = git(raiz, ["rev-parse", "--abbrev-ref", "HEAD"]);
+  if (rama === actual && git(raiz, ["rev-parse", "-q", "--verify", "MERGE_HEAD"])) return null; // cerrar un merge está permitido
   return `Estás en «${rama}», una rama protegida del proyecto: no se hace commit directo. Crea una rama con el formato del proyecto (skill git) y abre un PR. Si el usuario lo pide expresamente, puede desactivarse con MH_DESACTIVAR=rama-protegida.`;
 }
 
