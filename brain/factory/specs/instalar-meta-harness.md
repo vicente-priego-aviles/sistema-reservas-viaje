@@ -3,9 +3,9 @@ type: Spec
 title: Instalar meta-harness-factory en sistema-reservas-viaje
 description: Quien clone el repositorio tendrá el harness de Claude Code (brain, carriles FTD y ASDD, hooks, subagentes y skills de stack) funcionando y sin secretos, sin que cambie cómo se compila y arranca el sistema.
 tags: [spec, factoria, harness]
-estado: borrador
+estado: implementada
 tarea: 67
-rama:
+rama: 67-chore-instalar-harness
 riesgo: 2
 sources:
   - { resource: ../../wiki/index.md }
@@ -18,6 +18,7 @@ sources:
   - { resource: ../../../.mh/hooks/bash-previo.mjs }
   - { resource: ../../../.mh/hooks/editar-previo.mjs }
   - { resource: https://github.com/vicente-priego-aviles/sistema-reservas-viaje/issues/67 }
+  - { resource: https://github.com/vicente-priego-aviles/sistema-reservas-viaje/issues/70 }
 generated: { by: agent:claude-opus-5-5, at: 2026-11-27 }
 ---
 
@@ -25,6 +26,9 @@ generated: { by: agent:claude-opus-5-5, at: 2026-11-27 }
 
 > [!info] Origen
 > Issue [#67](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/issues/67). La instalación ya está hecha en la rama `67-chore-instalar-harness` (commit `fe15183` sobre `develop`: 151 archivos; 64 en `.claude/skills`, 43 en `.mh`, 23 en `brain`, 12 en `.claude/agents`, 5 en `.claude/rules`, más `.mh.json`, `init.sh`, `.gitignore` y `CLAUDE.md`). No toca código Java, `pom.xml` ni `.bpmn`. Esta spec fija qué falta para darla por terminada: los hallazgos de la revisión del commit.
+
+> [!success] Implementada (2026-11-28)
+> Fusionada en `develop` en tres PR: [#69](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/pull/69) (instalación, `CLAUDE.md` por microservicio, constitución y esta spec), [#71](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/pull/71) (hooks versionados, `.gitignore`, `.pyc`, `.bpmn` protegidos y G5) y [#72](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/pull/72) (`init.sh`). Los pendientes de la revisión se siguieron en la issue [#70](https://github.com/vicente-priego-aviles/sistema-reservas-viaje/issues/70). Cumplidos sobre la copia de trabajo: CA1, CA2, CA3, CA4, CA5, CA7, CA8, CA9, CA10, CA11 y CA12. No ejecutado: CA6 (hooks activos en una sesión nueva sobre un clon limpio) y las pruebas de CA1, CA2, CA3 y CA5 sobre un clon limpio; la #70 sigue abierta por CA6. Las decisiones de cada punto abierto están en su tabla.
 
 > [!warning] Riesgo 2
 > `riesgo.mjs` sobre el commit da 2 por rutas sensibles (`.claude/agents/*`, `.claude/rules/*`). Según G1, PR con aprobación humana.
@@ -99,14 +103,14 @@ Sobre un clon limpio de la rama (`git clone --branch 67-chore-instalar-harness �
 ## Puntos abiertos
 | # | Tipo | Punto | Decisión |
 |---|---|---|---|
-| P1 | pregunta abierta | ¿Se versiona un `.claude/settings.json` limpio con los hooks y los permisos del harness, y lo personal pasa a `.claude/settings.local.json` (que sigue ignorado)? Recomendada: **sí**; quitar `.claude/settings.json` de `.gitignore` y versionar solo hooks + permisos genéricos del harness. Sin esto CA6 no se puede cumplir en un clon limpio. | |
-| P2 | pregunta abierta | Token personal de GitHub en `settings.json` local. Recomendada: **revocarlo en GitHub ya**, borrar las reglas que lo contienen y usar `gh auth` (o variable de entorno fuera del repositorio). Hacerlo antes de P1. | |
-| P3 | pregunta abierta | ¿Se podan las 84 reglas `allow` y se añaden `deny` básicas? Recomendada: **sí**; las de sesión (`curl` con `demo:demo`, `reset-cliente.sh`, lecturas fuera del proyecto) a `settings.local.json` o fuera; en el `settings.json` versionado, `deny` para `Read` de `.env`, `*.pem`, `*.key` y `connector-secrets.txt`. | |
-| P4 | pregunta abierta | `.gitignore` frente al wrapper. Recomendada: **quitar** las líneas `.mvn/`, `mvnw` y `mvnw.cmd` (se mantiene `.mvn/wrapper/maven-wrapper.jar`) y versionar `mvnw.cmd` si no lo está. | |
-| P5 | pregunta abierta | ¿Qué se corrige ahora en `CLAUDE.md`? Recomendada: **solo** la frase de `ArchitectureTest` (darlo como pendiente, #68); la reducción a 120 líneas queda para la siguiente tarea de #67. ¿El bloque gestionado lo admite sin `mh actualizar`? Lo comprueba el plan. | |
-| P6 | pregunta abierta | ¿Proteger los `.bpmn`? Recomendada: **sí**, `"protegidos": ["**/*.bpmn"]` en `.mh.json` (pide confirmación, coherente con P1 de la constitución); no `deny`, que impediría los cambios autorizados. | |
-| P7 | pregunta abierta | El hook exige gitmoji y G5 lo deja opcional. Opciones: (a) enmendar G5 a «gitmoji obligatorio» (como ya elegiste en el plan de `mh onboard`); (b) `"conventional"`, que rechazaría los commits con emoji; (c) pedir a meta-harness-factory un modo que acepte ambos. Recomendada: **(a)** ahora, con fila en el registro de enmiendas, y (c) como issue en meta-harness-factory. | |
-| P8 | pregunta abierta | ¿Cómo se demuestra «arranca igual que antes» (CA5)? Recomendada: CA4 (ningún cambio en código ni en configuración de ejecución) + CA3 bastan como prueba principal; además, `./scripts/start.sh` y `curl -fsS` a `/actuator/health` de los puertos 9080–9084 y 9090 (todos los `pom.xml` declaran actuator) como evidencia; si no hay Docker, se declara «no ejecutado». | |
-| P9 | pregunta abierta | El `.pyc` está en `gestionados` de `.mh.json`: borrarlo puede hacer fallar `mh comprobar`. Recomendada: quitarlo de git, añadir `__pycache__/` y `*.pyc` a `.gitignore`, abrir issue en meta-harness-factory para que no lo copie, y verificar CA1 después. | |
-| P10 | decisión aplazada | `init.sh` es la plantilla genérica (solo compila). Recomendada: dejarlo así en esta tarea y completarlo (Docker + smoke test) en una tarea aparte. | |
-| P11 | supuesto tomado | `mh comprobar` se ejecuta desde la instalación local de meta-harness (`~/Proyectos/meta-harness`) y no requiere red. | |
+| P1 | pregunta abierta | ¿Se versiona un `.claude/settings.json` limpio con los hooks y los permisos del harness, y lo personal pasa a `.claude/settings.local.json` (que sigue ignorado)? Recomendada: **sí**; quitar `.claude/settings.json` de `.gitignore` y versionar solo hooks + permisos genéricos del harness. Sin esto CA6 no se puede cumplir en un clon limpio. | **Sí** (#71): `.claude/settings.json` versionado con los hooks de la plantilla; lo personal, en `settings.local.json`. |
+| P2 | pregunta abierta | Token personal de GitHub en `settings.json` local. Recomendada: **revocarlo en GitHub ya**, borrar las reglas que lo contienen y usar `gh auth` (o variable de entorno fuera del repositorio). Hacerlo antes de P1. | **Hecho** (2026-11-28): token revocado por Vicente; ya no está en ningún `settings*.json`. |
+| P3 | pregunta abierta | ¿Se podan las 84 reglas `allow` y se añaden `deny` básicas? Recomendada: **sí**; las de sesión (`curl` con `demo:demo`, `reset-cliente.sh`, lecturas fuera del proyecto) a `settings.local.json` o fuera; en el `settings.json` versionado, `deny` para `Read` de `.env`, `*.pem`, `*.key` y `connector-secrets.txt`. | **Sí** (#71): de unas 135 reglas `allow` entre los dos archivos quedan 16 en `settings.local.json`; `deny` para `*.pem`, `*.key` y `connector-secrets.txt`. No para `.env`: solo lleva los valores por defecto de Camunda y se versiona. |
+| P4 | pregunta abierta | `.gitignore` frente al wrapper. Recomendada: **quitar** las líneas `.mvn/`, `mvnw` y `mvnw.cmd` (se mantiene `.mvn/wrapper/maven-wrapper.jar`) y versionar `mvnw.cmd` si no lo está. | **Sí** (#71): `.gitignore` deja de ignorar `mvnw`, `mvnw.cmd`, `.mvn/` y `.env`; `mvnw.cmd` ya estaba versionado. |
+| P5 | pregunta abierta | ¿Qué se corrige ahora en `CLAUDE.md`? Recomendada: **solo** la frase de `ArchitectureTest` (darlo como pendiente, #68); la reducción a 120 líneas queda para la siguiente tarea de #67. ¿El bloque gestionado lo admite sin `mh actualizar`? Lo comprueba el plan. | **Resuelto en #69**: `CLAUDE.md` repartido por microservicio (116 líneas) y sin afirmar que exista `ArchitectureTest`. |
+| P6 | pregunta abierta | ¿Proteger los `.bpmn`? Recomendada: **sí**, `"protegidos": ["**/*.bpmn"]` en `.mh.json` (pide confirmación, coherente con P1 de la constitución); no `deny`, que impediría los cambios autorizados. | **Sí** (#71): `"protegidos": ["**/*.bpmn"]`. |
+| P7 | pregunta abierta | El hook exige gitmoji y G5 lo deja opcional. Opciones: (a) enmendar G5 a «gitmoji obligatorio» (como ya elegiste en el plan de `mh onboard`); (b) `"conventional"`, que rechazaría los commits con emoji; (c) pedir a meta-harness-factory un modo que acepte ambos. Recomendada: **(a)** ahora, con fila en el registro de enmiendas, y (c) como issue en meta-harness-factory. | **(a)** (#71): G5 enmendada a gitmoji obligatorio, con fila en el registro de enmiendas. (c) sin issue: meta-harness no tiene remoto. |
+| P8 | pregunta abierta | ¿Cómo se demuestra «arranca igual que antes» (CA5)? Recomendada: CA4 (ningún cambio en código ni en configuración de ejecución) + CA3 bastan como prueba principal; además, `./scripts/start.sh` y `curl -fsS` a `/actuator/health` de los puertos 9080–9084 y 9090 (todos los `pom.xml` declaran actuator) como evidencia; si no hay Docker, se declara «no ejecutado». | **Sí** (#72): `./init.sh` levanta todo y comprueba `/actuator/health` de los 6 microservicios. |
+| P9 | pregunta abierta | El `.pyc` está en `gestionados` de `.mh.json`: borrarlo puede hacer fallar `mh comprobar`. Recomendada: quitarlo de git, añadir `__pycache__/` y `*.pyc` a `.gitignore`, abrir issue en meta-harness-factory para que no lo copie, y verificar CA1 después. | **Sí** (#71): `.pyc` fuera de git y `__pycache__/`, `*.pyc` en `.gitignore`; `mh comprobar` sigue en LISTO. Sigue en `gestionados` de `.mh.json`; que meta-harness no lo copie queda para meta-harness. |
+| P10 | decisión aplazada | `init.sh` es la plantilla genérica (solo compila). Recomendada: dejarlo así en esta tarea y completarlo (Docker + smoke test) en una tarea aparte. | **Completado en #72** en vez de aplazarse: Docker, espera a Camunda, smoke test y `--solo-compilar`. |
+| P11 | supuesto tomado | `mh comprobar` se ejecuta desde la instalación local de meta-harness (`~/Proyectos/meta-harness`) y no requiere red. | **Confirmado**: `node ~/Proyectos/meta-harness/installer/mh.mjs comprobar` funciona sin red. |
